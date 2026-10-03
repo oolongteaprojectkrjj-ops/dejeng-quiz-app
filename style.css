@@ -273,34 +273,14 @@ body {
   margin-top: 1px;
 }
 
-.st-cheer-msg {
-  margin-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.st-cheer-title {
-  font-size: 0.82rem;
-  font-weight: 900;
-  color: #111111;
-  letter-spacing: 0.5px;
-}
-
-.st-cheer-desc {
-  font-size: 0.74rem;
-  font-weight: 600;
-  color: #444444;
-}
-
 .st-text-orderno {
   position: absolute;
-  top: 83.5%;
+  top: 85.5%;
   left: 0;
   right: 0;
   text-align: center;
-  font-size: 3.2rem;
-  font-weight: 900;
+  font-size: 1.85rem;
+  font-weight: 800;
   color: #000000;
   line-height: 1;
   letter-spacing: 1px;

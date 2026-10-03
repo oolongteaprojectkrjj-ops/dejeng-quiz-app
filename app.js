@@ -189,8 +189,21 @@ function calculateRecipe(categoryName, drinkName, size, ice, sugar, topping) {
   const steps = [];
   const shortenBreakdown = [];
 
+  const TEA_NAMES = ['그린 티', '다크 티', '라이트 티', '루이보스 티', '블랙 티', '스프링 티'];
+
   baseRecipe.steps.forEach(step => {
+    // 1. 치즈 밀크폼 메뉴에서 치즈폼 넣는 단계 제외
+    if (step.name === '치즈 밀크폼' || step.name.includes('치즈폼')) {
+      return;
+    }
+
     const s = { ...step };
+
+    // 2. 티 이름 단순화 ('그린 티', '다크 티', '스프링 티' 등 -> '티')
+    if (TEA_NAMES.includes(s.name) || (s.name.endsWith('티') && s.type === 'liquid' && !s.name.includes('밀크티') && !s.name.includes('라떼'))) {
+      s.name = '티';
+    }
+
     let amount = 0;
 
     if (s.amount_by_sugar) {
@@ -225,6 +238,11 @@ function calculateRecipe(categoryName, drinkName, size, ice, sugar, topping) {
     steps.push(s);
   });
 
+  let sheetOrderRule = category.order_rule;
+  if (categoryName === '치즈 밀크폼') {
+    sheetOrderRule = '티 → 얼음 → 시럽 (초코/호지차: 파우더 → 크리머 → 온수 → 얼음 → 시럽)';
+  }
+
   return {
     categoryName,
     drinkName,
@@ -239,7 +257,7 @@ function calculateRecipe(categoryName, drinkName, size, ice, sugar, topping) {
     ruleBadge,
     ruleText,
     ruleClass,
-    sheetOrderRule: category.order_rule,
+    sheetOrderRule,
     steps,
     shortenBreakdown
   };
