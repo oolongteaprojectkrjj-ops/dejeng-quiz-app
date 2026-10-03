@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>得正 Oolong Tea Project - 레시피 퀴즈</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700;900&family=Noto+Serif+KR:wght@700;900&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Header Navigation -->
+    <header class="top-nav">
+      <div class="brand-zone">
+        <span class="brand-kanji">得正</span>
+        <div class="brand-meta">
+          <span class="brand-title">OOLONG TEA PROJECT</span>
+          <span class="brand-desc">레시피 트레이닝 퀴즈</span>
+        </div>
+      </div>
+
+      <!-- Official Category Filter Pills -->
+      <div class="filter-bar">
+        <span class="filter-label">카테고리:</span>
+        <div class="filter-pills" id="categoryFilter">
+          <button class="filter-pill active" data-cat="all">전체</button>
+          <button class="filter-pill" data-cat="오리지널 티">오리지널 티</button>
+          <button class="filter-pill" data-cat="클래식 밀크티">클래식 밀크티</button>
+          <button class="filter-pill" data-cat="신선한 우유">신선한 우유 (라떼)</button>
+          <button class="filter-pill" data-cat="더블 과일티">더블 과일티</button>
+          <button class="filter-pill" data-cat="치즈 밀크폼">치즈 밀크폼</button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="top-actions">
+        <div class="filter-pills" id="toppingFilter">
+          <button class="filter-pill active" data-top="all">전체 랜덤</button>
+          <button class="filter-pill" data-top="with">토핑 필수 (쇼튼/L)</button>
+          <button class="filter-pill" data-top="without">토핑 없음</button>
+        </div>
+        <button id="soundToggle" class="btn-icon" title="효과음 켜기/끄기">🔊</button>
+        <button id="btnOpenReference" class="btn btn-outline-gold">📖 시트 & 쇼튼폼</button>
+      </div>
+    </header>
+
+    <!-- Main Problem & Answer Stage -->
+    <main class="quiz-container">
+      <!-- Left: The Single Sticker Problem (Using Photo Background Image) -->
+      <section class="sticker-card-column">
+        <div class="printer-indicator-bar">
+          <span class="pulse-dot"></span>
+          <span class="indicator-text">문제 스티커 라벨 (실제 이미지 배경)</span>
+        </div>
+
+        <!-- The Photo-Matched Single Sticker -->
+        <div class="sticker-holder">
+          <div class="printer-feed-head"></div>
+          <div class="dejeng-photo-sticker" id="dejengPhotoSticker">
+            <!-- Dynamic text overlaid on the exact background template image -->
+            <div class="st-text-title" id="stDrinkTitle">다크<br>로스티드 우롱 밀크티</div>
+            <div class="st-text-specs">
+              <div id="stSize">L</div>
+              <div id="stIce">얼음 보통</div>
+              <div id="stSugar">당도 30%</div>
+              <div id="stTopping" class="topping-item">우롱티 젤리</div>
+            </div>
+            <div class="st-text-orderno" id="stOrderNo">101</div>
+            <div class="st-text-footer">
+              <span id="stTimestamp">2026/10/03 19:41</span>
+              <span id="stSeq">3/3</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sticker-action-bar">
+          <button id="btnNextQuiz" class="btn btn-gold btn-next">
+            <span>다음 문제</span>
+            <kbd>Space</kbd>
+          </button>
+        </div>
+      </section>
+
+      <!-- Right: Fill-in-the-Blank Recipe Quiz Stage -->
+      <section class="answer-card-column">
+        <div class="recipe-quiz-card">
+          <!-- Quiz Card Header matching media_1791043190315.png -->
+          <div class="quiz-card-header">
+            <div class="quiz-title-group">
+              <h2 class="quiz-main-title">✍️ 직접 제조 레시피 입력하기</h2>
+              <span class="quiz-subtitle">시트 순서대로 용량을 맞춰보세요</span>
+            </div>
+            <button id="btnToggleKeypad" class="btn btn-sm btn-outline-gold mobile-keypad-toggle-btn" title="가상 번호패드 열기/닫기">
+              🔢 번호패드
+            </button>
+          </div>
+
+          <!-- Manufacturing Sequence Hint Box -->
+          <div class="sequence-hint-box">
+            <div class="hint-header">제조 순서 힌트</div>
+            <div class="hint-body" id="quizSequenceHint">ICE: 크리머 → 시럽 → 티 → 얼음 / HOT: 크리머 → 시럽 → 티</div>
+          </div>
+
+          <!-- Step-by-Step Inputs (Without Any Units!) -->
+          <div class="quiz-inputs-list" id="quizInputsList">
+            <!-- Dynamically populated via JS -->
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="quiz-action-buttons">
+            <button id="btnGradeQuiz" class="btn btn-gold btn-grade">
+              <span>채점하기</span>
+              <kbd class="desktop-only">Enter</kbd>
+            </button>
+            <button id="btnShowAllAnswers" class="btn btn-outline-gold btn-show-all">
+              <span>정답 전체보기</span>
+            </button>
+          </div>
+
+          <!-- Grade Result Feedback Banner -->
+          <div id="quizResultBanner" class="quiz-result-banner hidden"></div>
+
+          <!-- Detailed Answer Sheet (Revealed upon grading or when clicking 정답 전체보기) -->
+          <div id="detailedAnswerCard" class="detailed-answer-card hidden">
+            <!-- Exception Rule Box -->
+            <div class="exception-banner" id="ansExceptionBox">
+              <span class="exception-badge" id="ansExceptionBadge">M사이즈 + 토핑</span>
+              <p class="exception-text" id="ansExceptionText">M사이즈에 토핑이 추가되어 쇼튼 폼(검정 ➔ 빨강)이 적용됩니다.</p>
+            </div>
+
+            <!-- Shorten Form Breakdown Details -->
+            <div class="shorten-summary-box hidden" id="ansShortenBox">
+              <h4 class="shorten-header">⚡ 쇼튼 폼(Shorten Form) 감량 변환 내역</h4>
+              <div class="shorten-pills-grid" id="ansShortenGrid"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Mobile-Optimized On-Screen Number Pad (Includes '.' and control keys) -->
+    <div id="mobileNumberPad" class="mobile-number-pad">
+      <div class="pad-header">
+        <div class="pad-active-target">
+          <span class="pad-target-icon">✏️</span>
+          <span id="padTargetName" class="pad-target-label">입력할 칸을 선택하세요</span>
+        </div>
+        <div class="pad-header-actions">
+          <button id="btnPadPrev" class="pad-nav-btn" type="button" title="이전 항목">◀ 이전</button>
+          <button id="btnPadNext" class="pad-nav-btn" type="button" title="다음 항목">다음 ▶</button>
+          <button id="btnPadClose" class="pad-close-btn" type="button" title="키패드 닫기">✕</button>
+        </div>
+      </div>
+      <div class="pad-grid">
+        <button class="pad-key" type="button" data-key="1">1</button>
+        <button class="pad-key" type="button" data-key="2">2</button>
+        <button class="pad-key" type="button" data-key="3">3</button>
+
+        <button class="pad-key" type="button" data-key="4">4</button>
+        <button class="pad-key" type="button" data-key="5">5</button>
+        <button class="pad-key" type="button" data-key="6">6</button>
+
+        <button class="pad-key" type="button" data-key="7">7</button>
+        <button class="pad-key" type="button" data-key="8">8</button>
+        <button class="pad-key" type="button" data-key="9">9</button>
+
+        <button class="pad-key pad-key-dot" type="button" data-key=".">.</button>
+        <button class="pad-key" type="button" data-key="0">0</button>
+        <button class="pad-key pad-key-backspace" type="button" data-key="backspace">⌫</button>
+      </div>
+      <div class="pad-footer">
+        <button id="btnPadClear" class="pad-action-btn pad-btn-clear" type="button">전체삭제</button>
+        <button id="btnPadGrade" class="pad-action-btn pad-btn-submit" type="button">✓ 채점하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reference Modal -->
+  <div id="referenceModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-top">
+        <h3>📖 득정 레시피 시트 원본 & 쇼튼 폼</h3>
+        <button id="btnCloseModal" class="btn-close">✕</button>
+      </div>
+      <div class="modal-nav">
+        <button class="modal-nav-tab active" data-ref="shorten">⚡ 쇼튼 폼 (Shorten Form Table)</button>
+        <button class="modal-nav-tab" data-ref="오리지널 티">오리지널 티</button>
+        <button class="modal-nav-tab" data-ref="클래식 밀크티">클래식 밀크티</button>
+        <button class="modal-nav-tab" data-ref="신선한 우유">신선한 우유</button>
+        <button class="modal-nav-tab" data-ref="더블 과일티">더블 과일티</button>
+        <button class="modal-nav-tab" data-ref="치즈 밀크폼">치즈 밀크폼</button>
+      </div>
+      <div class="modal-scroll-area">
+        <div id="viewShorten" class="modal-pane active">
+          <div class="info-callout">
+            <strong>Formula Shorten Reference Table</strong>: M사이즈에 토핑 추가 시 원래 용량(검정숫자)을 찾아 하단의 빨간숫자로 적용합니다.
+          </div>
+          <div class="table-group">
+            <h4>💧 시럽 / 티 / 주스 / 우유 / 온수 (액체류)</h4>
+            <div class="table-scroll"><table class="ref-table" id="modalLiquidTable"></table></div>
+          </div>
+          <div class="table-group">
+            <h4>🥄 파우더 (크리머, 호지차, 초코)</h4>
+            <div class="table-scroll"><table class="ref-table" id="modalPowderTable"></table></div>
+          </div>
+          <div class="table-group">
+            <h4>🧊 얼음 (스쿱)</h4>
+            <div class="table-scroll"><table class="ref-table" id="modalIceTable"></table></div>
+          </div>
+        </div>
+        <div id="viewSheet" class="modal-pane hidden">
+          <div class="info-callout" id="modalSheetRule"></div>
+          <div class="table-scroll" id="modalSheetContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="template_b64.js"></script>
+  <script src="recipe_database.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
