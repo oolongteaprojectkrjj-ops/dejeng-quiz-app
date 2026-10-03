@@ -219,15 +219,13 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-/* --- 100% PHOTO MATCHED REAL STICKER (800:1000 High-Res Aspect Ratio) --- */
+/* --- 100% PHOTO MATCHED REAL STICKER (741:1024 High-Res Aspect Ratio) --- */
 .dejeng-photo-sticker {
-  width: 380px;
-  height: 475px;
+  width: 350px;
+  height: 484px;
   background-image: url('dejeng_real_bg.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  border-radius: 12px;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.25);
   position: relative;
   user-select: none;
   animation: stickerDrop 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.15);
@@ -235,7 +233,7 @@ body {
 
 @keyframes stickerDrop {
   0% {
-    transform: translateY(-25px);
+    transform: translateY(-20px);
     opacity: 0.3;
   }
   100% {
@@ -244,30 +242,30 @@ body {
   }
 }
 
-/* Exact Text Placement Overlay matching media_1791043106962.png */
+/* Exact Text Placement Overlay matching media_1791044325110.png */
 .st-text-title {
   position: absolute;
-  top: 30.0%;
-  left: 7.8%;
-  max-width: 48%;
-  font-size: 1.45rem;
+  top: 31.5%;
+  left: 7.2%;
+  max-width: 50%;
+  font-size: 1.35rem;
   font-weight: 800;
   line-height: 1.25;
-  color: var(--sticker-ink);
+  color: #111111;
   word-break: keep-all;
   letter-spacing: -0.3px;
 }
 
 .st-text-specs {
   position: absolute;
-  top: 48.0%;
-  left: 7.8%;
+  top: 46.5%;
+  left: 7.2%;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  font-size: 1.22rem;
+  gap: 4px;
+  font-size: 1.15rem;
   font-weight: 700;
-  color: var(--sticker-ink);
+  color: #222222;
   line-height: 1.35;
 }
 
@@ -275,36 +273,56 @@ body {
   margin-top: 1px;
 }
 
+.st-cheer-msg {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.st-cheer-title {
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: #111111;
+  letter-spacing: 0.5px;
+}
+
+.st-cheer-desc {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #444444;
+}
+
 .st-text-orderno {
   position: absolute;
-  top: 83.0%;
+  top: 83.5%;
   left: 0;
   right: 0;
   text-align: center;
-  font-size: 2.75rem;
-  font-weight: 800;
-  color: var(--sticker-mono-ink);
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: #000000;
   line-height: 1;
-  letter-spacing: 2px;
-  font-family: 'Courier Prime', 'SF Mono', monospace;
+  letter-spacing: 1px;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .st-text-footer {
   position: absolute;
-  top: 93.0%;
-  left: 8.5%;
-  right: 8.0%;
+  top: 93.8%;
+  left: 7.5%;
+  right: 7.5%;
   display: flex;
   justify-content: space-between;
   font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--sticker-mono-ink);
+  font-weight: 600;
+  color: #9ca3af;
   font-family: 'Courier Prime', 'SF Mono', monospace;
 }
 
 .sticker-action-bar {
-  margin-top: 1.5rem;
-  width: 380px;
+  margin-top: 1.25rem;
+  width: 350px;
 }
 
 .btn-next {

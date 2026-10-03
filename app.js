@@ -246,52 +246,161 @@ function calculateRecipe(categoryName, drinkName, size, ice, sugar, topping) {
 }
 
 /**
- * Generate Next Single Question
+ * Official Store Frequency Distribution Weights (from Spreadsheet 확률분포도)
+ */
+const FREQUENCY_WEIGHTS = {
+  // Category & Drink Weights (22,075 orders total)
+  drinks: {
+    // 클래식 밀크티 (10,175건, 46.09%)
+    '다크 로스티드 우롱 밀크티': 6463,
+    '라이트 로스티드 우롱 밀크티': 1252,
+    '블랙 밀크티': 1044,
+    '그린 밀크티': 836,
+    '호지차 밀크티': 580,
+
+    // 치즈 밀크폼 (5,012건, 22.70%)
+    '치즈 밀크폼 다크 로스티드 우롱티': 2093,
+    '치즈 밀크폼 스프링 우롱티': 1883,
+    '치즈 밀크폼 라이트 로스티드 우롱티': 386,
+    '치즈 밀크폼 초콜렛': 298,
+    '치즈 밀크폼 호지차': 237,
+
+    // 더블 과일티 (3,279건, 14.85%)
+    '레몬 스프링 우롱티': 2351,
+    '자몽 시트러스 우롱티': 772,
+    '오렌지 스프링 우롱티': 156,
+
+    // 오리지널 티 (2,266건, 10.26%)
+    '스프링 우롱티': 994,
+    '다크 로스티드 우롱티': 454,
+    '라이트 로스티드 우롱티': 338,
+    '메밀 그린 루이보스티': 233,
+    '블랙티': 127,
+    '그린티': 120,
+
+    // 신선한 우유 (1,343건, 6.08%)
+    '다크 로스티드 우롱티 라떼': 470,
+    '라이트 로스티드 우롱티 라떼': 259,
+    '호지차 라떼': 222,
+    '블랙티 라떼': 221,
+    '그린티 라떼': 171
+  },
+
+  // Size Weights (20,566건: M 57.17%, L 42.83%)
+  sizes: {
+    'M': 11758,
+    'L': 8808
+  },
+
+  // Sugar Weights (22,075건)
+  sugar: {
+    '30%': 10261, // 46.48%
+    '50%': 5219,  // 23.64%
+    '0%': 2797,   // 12.67%
+    '10%': 2760,  // 12.50%
+    '100%': 1038  // 4.70%
+  },
+
+  // Ice / Temperature Weights (22,075건)
+  ice: {
+    '얼음 적게': 9564,     // 43.33%
+    '얼음 보통': 9545,     // 43.24% (9409 + 136)
+    '얼음 없이': 1240,     // 5.62%
+    '매우적게': 1094,       // 4.96%
+    '뜨겁게': 632          // 2.86% (432 + 97 + 103)
+  },
+
+  // Topping Weights (22,075건)
+  toppings: {
+    '공백': 12630,                 // 57.21% (토핑 없음)
+    '블랙펄': 4270,                // 19.34%
+    '우롱티 젤리': 2501,           // 11.33%
+    '골든버블': 2185,              // 9.90%
+    '블랙펄+골든버블': 194,        // 0.88%
+    '골든버블+우롱티 젤리': 150,   // 0.68%
+    '블랙펄+우롱티 젤리': 145     // 0.66%
+  }
+};
+
+/**
+ * Weighted Random Selection
+ */
+function weightedChoice(weightMap) {
+  const entries = Object.entries(weightMap);
+  if (entries.length === 0) return null;
+  const totalWeight = entries.reduce((acc, [, w]) => acc + w, 0);
+  let random = Math.random() * totalWeight;
+  for (const [item, w] of entries) {
+    if (random < w) return item;
+    random -= w;
+  }
+  return entries[entries.length - 1][0];
+}
+
+/**
+ * Generate Next Single Question (Frequency-Weighted)
  */
 function nextQuestion() {
   const db = window.RECIPE_DATABASE;
 
-  // Category selection
-  let availableCats = Object.keys(db.categories);
-  if (state.categoryFilter !== 'all' && db.categories[state.categoryFilter]) {
-    availableCats = [state.categoryFilter];
+  // 1. Choose Drink using Weighted Distribution
+  let drinkCandidates = {};
+  if (state.categoryFilter !== 'all') {
+    const cat = db.categories[state.categoryFilter];
+    if (cat) {
+      Object.keys(cat.items).forEach(dName => {
+        drinkCandidates[dName] = FREQUENCY_WEIGHTS.drinks[dName] || 100;
+      });
+    }
+  } else {
+    drinkCandidates = { ...FREQUENCY_WEIGHTS.drinks };
   }
-  const chosenCatName = availableCats[Math.floor(Math.random() * availableCats.length)];
+
+  const chosenDrinkName = weightedChoice(drinkCandidates);
+
+  // Find Category for chosen drink
+  let chosenCatName = '';
+  for (const [cName, cObj] of Object.entries(db.categories)) {
+    if (cObj.items[chosenDrinkName]) {
+      chosenCatName = cName;
+      break;
+    }
+  }
   const cat = db.categories[chosenCatName];
 
-  // Drink selection
-  const drinkNames = Object.keys(cat.items);
-  const chosenDrinkName = drinkNames[Math.floor(Math.random() * drinkNames.length)];
+  // 2. Choose Size using Weights
+  const chosenSize = weightedChoice(FREQUENCY_WEIGHTS.sizes) || 'M';
 
-  // Size
-  const chosenSize = Math.random() < 0.5 ? 'M' : 'L';
+  // 3. Choose Ice using Weights, constrained by Category options
+  const iceCandidates = {};
+  cat.ice_options.forEach(opt => {
+    iceCandidates[opt] = FREQUENCY_WEIGHTS.ice[opt] || 100;
+  });
+  const chosenIce = weightedChoice(iceCandidates) || cat.ice_options[0];
 
-  // Ice
-  const chosenIce = cat.ice_options[Math.floor(Math.random() * cat.ice_options.length)];
+  // 4. Choose Sugar using Weights, constrained by Category options
+  const sugarCandidates = {};
+  cat.sugar_options.forEach(opt => {
+    sugarCandidates[opt] = FREQUENCY_WEIGHTS.sugar[opt] || 100;
+  });
+  const chosenSugar = weightedChoice(sugarCandidates) || cat.sugar_options[0];
 
-  // Sugar
-  const chosenSugar = cat.sugar_options[Math.floor(Math.random() * cat.sugar_options.length)];
-
-  // Topping
+  // 5. Choose Topping using Weights and Topping Filter
   let chosenTopping = '공백';
   if (state.toppingFilter === 'with') {
-    const nonBlank = TOPPING_OPTIONS.slice(1);
-    chosenTopping = nonBlank[Math.floor(Math.random() * nonBlank.length)];
+    const nonBlankToppings = { ...FREQUENCY_WEIGHTS.toppings };
+    delete nonBlankToppings['공백'];
+    chosenTopping = weightedChoice(nonBlankToppings);
   } else if (state.toppingFilter === 'without') {
     chosenTopping = '공백';
   } else {
-    if (Math.random() < 0.5) {
-      const nonBlank = TOPPING_OPTIONS.slice(1);
-      chosenTopping = nonBlank[Math.floor(Math.random() * nonBlank.length)];
-    } else {
-      chosenTopping = '공백';
-    }
+    chosenTopping = weightedChoice(FREQUENCY_WEIGHTS.toppings);
   }
 
   const q = calculateRecipe(chosenCatName, chosenDrinkName, chosenSize, chosenIce, chosenSugar, chosenTopping);
 
-  // Metadata matching photo
-  q.orderNo = Math.floor(Math.random() * 90) + 1; // 1 ~ 99
+  // 5-digit store order number (matching media_1791044325110.png e.g. 11234)
+  q.orderNo = Math.floor(Math.random() * 89999) + 10000;
   const now = new Date();
   q.timestamp = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   const totalItems = Math.floor(Math.random() * 3) + 1;
@@ -323,31 +432,31 @@ function renderSticker(q) {
 
   // Auto adjust font size if title is long
   if (q.drinkName.length > 15) {
-    titleEl.style.fontSize = '1.22rem';
+    titleEl.style.fontSize = '1.20rem';
     titleEl.style.lineHeight = '1.2';
   } else if (q.drinkName.length > 10) {
-    titleEl.style.fontSize = '1.34rem';
+    titleEl.style.fontSize = '1.30rem';
     titleEl.style.lineHeight = '1.22';
   } else {
-    titleEl.style.fontSize = '1.45rem';
+    titleEl.style.fontSize = '1.35rem';
     titleEl.style.lineHeight = '1.25';
   }
 
-  // Specs
+  // Specs (matching media_1791044325110.png)
   document.getElementById('stSize').textContent = q.size;
-  document.getElementById('stIce').textContent = q.ice;
   document.getElementById('stSugar').textContent = `당도 ${q.sugar}`;
+  document.getElementById('stIce').textContent = q.ice;
 
   const toppingEl = document.getElementById('stTopping');
   if (q.topping && q.topping !== '공백' && q.topping !== '없음') {
-    toppingEl.textContent = q.topping;
+    toppingEl.textContent = `토핑 ${q.topping}`;
     toppingEl.style.display = 'block';
   } else {
     toppingEl.textContent = '';
     toppingEl.style.display = 'none';
   }
 
-  // Bottom
+  // 5-digit Order Number
   document.getElementById('stOrderNo').textContent = q.orderNo;
   document.getElementById('stTimestamp').textContent = q.timestamp;
   document.getElementById('stSeq').textContent = q.seq;
