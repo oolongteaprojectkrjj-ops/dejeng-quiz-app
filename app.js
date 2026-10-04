@@ -1829,7 +1829,7 @@ const SECTIONS = {
   "클래식 밀크티": [
     { id: "sec:milk_basic", name: "기본 밀크티 (블랙/그린/라이트/다크)", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "without" },
     { id: "sec:milk_hojicha", name: "호지차 밀크티", menus: ["호지차 밀크티"] },
-    { id: "sec:milk_topping", name: "펄밀크티 (토핑 필수/감량)", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "with" }
+    { id: "sec:milk_topping", name: "밀크티+토핑", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "with" }
   ],
   "신선한 우유": [
     { id: "sec:latte_basic", name: "기본 라떼 4종", menus: ["블랙티 라떼", "그린티 라떼", "라이트 로스티드 우롱티 라떼", "다크 로스티드 우롱티 라떼"] },
@@ -2294,31 +2294,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     selectMenu.disabled = false;
 
-    // Sub-sections of the selected category
+    // Directly append the section items as flat options (no optgroups, no individual menus)
     if (SECTIONS[catVal]) {
-      const secGroup = document.createElement('optgroup');
-      secGroup.label = '세로 섹션';
       SECTIONS[catVal].forEach(sec => {
         const opt = document.createElement('option');
         opt.value = sec.id;
         opt.textContent = sec.name;
-        secGroup.appendChild(opt);
+        selectMenu.appendChild(opt);
       });
-      selectMenu.appendChild(secGroup);
-
-      // Single drinks of the selected category
-      const filtered = b.filter(item => item.category === catVal);
-      if (filtered.length > 0) {
-        const menuGroup = document.createElement('optgroup');
-        menuGroup.label = '개별 메뉴';
-        filtered.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item.nameKo;
-          opt.textContent = item.nameKo;
-          menuGroup.appendChild(opt);
-        });
-        selectMenu.appendChild(menuGroup);
-      }
     }
     selectMenu.value = 'all';
   }
