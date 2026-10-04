@@ -1821,30 +1821,30 @@ function z(quiz, fieldId) {
 // --- 2.1 Section Presets (Spreadsheet Vertical Category Sections) ---
 const SECTIONS = {
   "오리지널 티": [
-    { id: "sec:rooibos", name: "🫖 루이보스 집중", menus: ["루이보스"] },
-    { id: "sec:black", name: "☕ 블랙티 집중", menus: ["블랙티"] },
-    { id: "sec:green_roasted", name: "🍵 그린 / 라이트 / 다크 우롱티", menus: ["그린티", "라이트 로스티드 우롱티", "다크 로스티드 우롱티"] },
-    { id: "sec:spring", name: "🌿 스프링 우롱티 집중", menus: ["스프링 우롱티"] }
+    { id: "sec:rooibos", name: "루이보스", menus: ["루이보스"] },
+    { id: "sec:black", name: "블랙티", menus: ["블랙티"] },
+    { id: "sec:green_roasted", name: "그린 / 라이트 / 다크 우롱티", menus: ["그린티", "라이트 로스티드 우롱티", "다크 로스티드 우롱티"] },
+    { id: "sec:spring", name: "스프링 우롱티", menus: ["스프링 우롱티"] }
   ],
   "클래식 밀크티": [
-    { id: "sec:milk_basic", name: "🥛 기본 밀크티 (블랙/그린/라이트/다크)", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "without" },
-    { id: "sec:milk_hojicha", name: "🍂 호지차 밀크티 집중", menus: ["호지차 밀크티"] },
-    { id: "sec:milk_topping", name: "🧋 펄밀크티 (토핑 필수/감량 레시피)", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "with" }
+    { id: "sec:milk_basic", name: "기본 밀크티 (블랙/그린/라이트/다크)", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "without" },
+    { id: "sec:milk_hojicha", name: "호지차 밀크티", menus: ["호지차 밀크티"] },
+    { id: "sec:milk_topping", name: "펄밀크티 (토핑 필수/감량)", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "with" }
   ],
   "신선한 우유": [
-    { id: "sec:latte_basic", name: "🥛 기본 라떼 4종 (블랙/그린/라이트/다크)", menus: ["블랙티 라떼", "그린티 라떼", "라이트 로스티드 우롱티 라떼", "다크 로스티드 우롱티 라떼"] },
-    { id: "sec:latte_hojicha", name: "🍂 호지차 라떼 집중", menus: ["호지차 라떼"] }
+    { id: "sec:latte_basic", name: "기본 라떼 4종", menus: ["블랙티 라떼", "그린티 라떼", "라이트 로스티드 우롱티 라떼", "다크 로스티드 우롱티 라떼"] },
+    { id: "sec:latte_hojicha", name: "호지차 라떼", menus: ["호지차 라떼"] }
   ],
   "치즈 밀크폼": [
-    { id: "sec:cheese_black", name: "🧀 치즈 블랙티 집중", menus: ["치즈 밀크폼 블랙티"] },
-    { id: "sec:cheese_teas", name: "🧀 치즈 우롱 4종 (그린/스프링/라이트/다크)", menus: ["치즈 밀크폼 그린티", "치즈 밀크폼 스프링 우롱티", "치즈 밀크폼 라이트 로스티드 우롱티", "치즈 밀크폼 다크 로스티드 우롱티"] },
-    { id: "sec:cheese_choco", name: "🍫 치즈 초코 집중", menus: ["치즈 밀크폼 초코"] },
-    { id: "sec:cheese_hojicha", name: "🍂 치즈 호지차 집중", menus: ["치즈 밀크폼 호지차"] }
+    { id: "sec:cheese_black", name: "치즈 블랙티", menus: ["치즈 밀크폼 블랙티"] },
+    { id: "sec:cheese_teas", name: "치즈 우롱 4종 (그린/스프링/라이트/다크)", menus: ["치즈 밀크폼 그린티", "치즈 밀크폼 스프링 우롱티", "치즈 밀크폼 라이트 로스티드 우롱티", "치즈 밀크폼 다크 로스티드 우롱티"] },
+    { id: "sec:cheese_choco", name: "치즈 초코", menus: ["치즈 밀크폼 초코"] },
+    { id: "sec:cheese_hojicha", name: "치즈 호지차", menus: ["치즈 밀크폼 호지차"] }
   ],
   "더블 과일티": [
-    { id: "sec:fruit_grape", name: "🍊 자몽 시트러스 우롱티", menus: ["자몽 시트러스 우롱티"] },
-    { id: "sec:fruit_orange", name: "🍊 오렌지 스프링 우롱티", menus: ["오렌지 스프링 우롱티"] },
-    { id: "sec:fruit_lemon", name: "🍋 레몬 스프링 우롱티", menus: ["레몬 스프링 우롱티"] }
+    { id: "sec:fruit_grape", name: "자몽 시트러스 우롱티", menus: ["자몽 시트러스 우롱티"] },
+    { id: "sec:fruit_orange", name: "오렌지 스프링 우롱티", menus: ["오렌지 스프링 우롱티"] },
+    { id: "sec:fruit_lemon", name: "레몬 스프링 우롱티", menus: ["레몬 스프링 우롱티"] }
   ]
 };
 
@@ -2248,33 +2248,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectTemp = document.getElementById('selectTemp');
   const selectTopping = document.getElementById('selectTopping');
 
-  // Populate categories and sections in selectCategory
+  // 1. Category Dropdown
   selectCat.innerHTML = '';
   const allCatOpt = document.createElement('option');
   allCatOpt.value = 'all';
-  allCatOpt.textContent = '🎯 [ 전체 카테고리 랜덤 ]';
+  allCatOpt.textContent = '전체';
   selectCat.appendChild(allCatOpt);
 
   const categories = ['오리지널 티', '클래식 밀크티', '신선한 우유', '치즈 밀크폼', '더블 과일티'];
   categories.forEach(cat => {
-    const grp = document.createElement('optgroup');
-    grp.label = `📂 ${cat}`;
-
-    const catOpt = document.createElement('option');
-    catOpt.value = cat;
-    catOpt.textContent = `▶ ${cat} 전체 혼합`;
-    grp.appendChild(catOpt);
-
-    if (SECTIONS[cat]) {
-      SECTIONS[cat].forEach(sec => {
-        const secOpt = document.createElement('option');
-        secOpt.value = sec.id;
-        secOpt.textContent = `  ↳ ${sec.name}`;
-        grp.appendChild(secOpt);
-      });
-    }
-    selectCat.appendChild(grp);
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    selectCat.appendChild(opt);
   });
+  selectCat.value = state.selectedCategory || 'all';
 
   function syncTempOptions(catVal) {
     if (!selectTemp) return;
@@ -2282,7 +2270,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const optHot = selectTemp.querySelector('option[value="hot"]');
     if (optHot) {
       optHot.disabled = isColdOnly;
-      optHot.textContent = isColdOnly ? '🔥 HOT 불가 (ICE전용)' : '🔥 HOT ONLY';
+      optHot.textContent = isColdOnly ? 'HOT 불가 (ICE 전용)' : 'HOT';
     }
     if (isColdOnly && state.tempFilter === 'hot') {
       state.tempFilter = 'ice';
@@ -2292,17 +2280,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateMenuOptions(catVal) {
     selectMenu.innerHTML = '';
-    
-    // Default option
+
     const defOpt = document.createElement('option');
     defOpt.value = 'all';
-    defOpt.textContent = (catVal === 'all') ? '👉 [ 메뉴/섹션 전체 혼합 ]' : `👉 [ ${catVal} 전체 혼합 ]`;
+    defOpt.textContent = '전체';
     selectMenu.appendChild(defOpt);
 
-    // If specific category is selected
-    if (catVal !== 'all' && SECTIONS[catVal]) {
+    if (catVal === 'all') {
+      selectMenu.disabled = true;
+      selectMenu.value = 'all';
+      return;
+    }
+
+    selectMenu.disabled = false;
+
+    // Sub-sections of the selected category
+    if (SECTIONS[catVal]) {
       const secGroup = document.createElement('optgroup');
-      secGroup.label = '📋 시트 세로 섹션 선택 (집중 훈련)';
+      secGroup.label = '세로 섹션';
       SECTIONS[catVal].forEach(sec => {
         const opt = document.createElement('option');
         opt.value = sec.id;
@@ -2311,83 +2306,46 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       selectMenu.appendChild(secGroup);
 
-      const menuGroup = document.createElement('optgroup');
-      menuGroup.label = '🥤 단일 메뉴 개별 선택';
+      // Single drinks of the selected category
       const filtered = b.filter(item => item.category === catVal);
-      filtered.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item.nameKo;
-        opt.textContent = item.isOriginal ? `# ${item.nameKo}` : item.nameKo;
-        menuGroup.appendChild(opt);
-      });
-      selectMenu.appendChild(menuGroup);
-    } else {
-      // If 'all' is selected: provide fast section picker across all categories!
-      for (const [categoryName, secList] of Object.entries(SECTIONS)) {
-        const secGroup = document.createElement('optgroup');
-        secGroup.label = `📋 [${categoryName}] 섹션 집중`;
-        secList.forEach(sec => {
+      if (filtered.length > 0) {
+        const menuGroup = document.createElement('optgroup');
+        menuGroup.label = '개별 메뉴';
+        filtered.forEach(item => {
           const opt = document.createElement('option');
-          opt.value = sec.id;
-          opt.textContent = sec.name;
-          secGroup.appendChild(opt);
+          opt.value = item.nameKo;
+          opt.textContent = item.nameKo;
+          menuGroup.appendChild(opt);
         });
-        selectMenu.appendChild(secGroup);
+        selectMenu.appendChild(menuGroup);
       }
     }
-    selectMenu.disabled = false;
+    selectMenu.value = 'all';
   }
 
   selectCat.addEventListener('change', (e) => {
     const val = e.target.value;
-    if (val.startsWith('sec:')) {
-      let parentCat = 'all';
-      for (const [cName, sList] of Object.entries(SECTIONS)) {
-        if (sList.some(s => s.id === val)) {
-          parentCat = cName;
-          break;
-        }
-      }
-      state.selectedCategory = parentCat;
-      state.selectedMenu = val;
-      syncTempOptions(parentCat);
-      updateMenuOptions(parentCat);
-      selectMenu.value = val;
-      generateQuiz(parentCat, val);
-    } else {
-      state.selectedCategory = val;
-      state.selectedMenu = 'all';
-      syncTempOptions(val);
-      updateMenuOptions(val);
-      generateQuiz(val, 'all');
-    }
+    state.selectedCategory = val;
+    state.selectedMenu = 'all';
+    syncTempOptions(val);
+    updateMenuOptions(val);
+    generateQuiz(val, 'all');
   });
 
   selectMenu.addEventListener('change', (e) => {
     const val = e.target.value;
     state.selectedMenu = val;
 
-    // If section selected, auto-sync category and selectCat
-    if (val.startsWith('sec:')) {
-      for (const [catName, secList] of Object.entries(SECTIONS)) {
-        if (secList.some(s => s.id === val)) {
-          if (state.selectedCategory !== catName) {
-            state.selectedCategory = catName;
-            syncTempOptions(catName);
-            updateMenuOptions(catName);
-            selectMenu.value = val;
-          }
-          selectCat.value = val;
-          break;
-        }
-      }
-      generateQuiz(state.selectedCategory, val);
-    } else {
-      if (val === 'all') {
-        selectCat.value = state.selectedCategory;
-      }
-      generateQuiz(state.selectedCategory, val);
+    // Sequential feedback on topping for specific sections
+    if (val === 'sec:milk_topping') {
+      state.toppingFilter = 'with';
+      if (selectTopping) selectTopping.value = 'with';
+    } else if (val === 'sec:milk_basic') {
+      state.toppingFilter = 'without';
+      if (selectTopping) selectTopping.value = 'without';
     }
+
+    generateQuiz(state.selectedCategory, val);
   });
 
   if (selectTemp) {

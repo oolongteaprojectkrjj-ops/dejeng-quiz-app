@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1791131988">
+  <link rel="stylesheet" href="style.css?v=1791135075">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
@@ -25,30 +25,47 @@
     <div class="flex-1 overflow-y-auto px-4 pt-2.5 pb-2">
       <div class="max-w-md mx-auto pb-2">
         
-        <!-- Filter Controls (Category, Menu, Temperature, Topping) -->
+        <!-- Filter Controls (Sequential: Category -> Submenu -> Temp -> Topping) -->
         <div class="flex flex-col gap-2 mb-2.5 animate-in fade-in relative z-20">
-          <!-- Row 1: Category & Menu Dropdowns (Height Enlaraged) -->
+          <!-- Row 1: Category & Submenu Dropdowns -->
           <div class="grid grid-cols-2 gap-2">
-            <select id="selectCategory" class="filter-select w-full" title="카테고리 선택">
-              <option value="all">👉 전체 랜덤 출제</option>
-            </select>
-            <select id="selectMenu" disabled class="filter-select w-full" title="메뉴 선택">
-              <option value="all">[ 메뉴 전체 혼합 ]</option>
-            </select>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1 ml-0.5">카테고리</label>
+              <select id="selectCategory" class="filter-select w-full" title="카테고리 선택">
+                <option value="all">전체</option>
+                <option value="오리지널 티">오리지널 티</option>
+                <option value="클래식 밀크티">클래식 밀크티</option>
+                <option value="신선한 우유">신선한 우유</option>
+                <option value="치즈 밀크폼">치즈 밀크폼</option>
+                <option value="더블 과일티">더블 과일티</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1 ml-0.5">세부메뉴</label>
+              <select id="selectMenu" disabled class="filter-select w-full" title="세부메뉴 선택">
+                <option value="all">전체</option>
+              </select>
+            </div>
           </div>
 
           <!-- Row 2: Temperature & Topping Combination Filters -->
           <div class="grid grid-cols-2 gap-2">
-            <select id="selectTemp" class="filter-select w-full" title="온도 선택">
-              <option value="all">🌡️ 전체 온도</option>
-              <option value="ice">🧊 ICE ONLY</option>
-              <option value="hot">🔥 HOT ONLY</option>
-            </select>
-            <select id="selectTopping" class="filter-select w-full" title="토핑 선택">
-              <option value="all">🧋 토핑 전체</option>
-              <option value="with">⭕ 토핑 필수 (있음)</option>
-              <option value="without">❌ 토핑 없음</option>
-            </select>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1 ml-0.5">온도</label>
+              <select id="selectTemp" class="filter-select w-full" title="온도 선택">
+                <option value="all">전체</option>
+                <option value="ice">ICE</option>
+                <option value="hot">HOT</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1 ml-0.5">토핑</label>
+              <select id="selectTopping" class="filter-select w-full" title="토핑 선택">
+                <option value="all">랜덤</option>
+                <option value="with">토핑 O</option>
+                <option value="without">토핑 X</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -121,6 +138,6 @@
 
   </div>
 
-  <script src="app.js?v=1791131988"></script>
+  <script src="app.js?v=1791135075"></script>
 </body>
 </html>
