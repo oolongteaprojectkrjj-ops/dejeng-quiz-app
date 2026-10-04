@@ -243,6 +243,8 @@ function L(userAns, targetAns) {
 const state = {
   selectedCategory: "all",
   selectedMenu: "all",
+  tempFilter: "all",     // 'all' | 'ice' | 'hot'
+  toppingFilter: "all",  // 'all' | 'with' | 'without'
   currentQuiz: null,
   answers: {},
   activeFieldId: "ice",
@@ -252,15 +254,32 @@ const state = {
   orderNumber: 1
 };
 
-function generateQuiz(categoryFilter = "all", menuFilter = "all") {
-  let chosenCategory = "all" !== categoryFilter ? categoryFilter : w([
-    { value: "클래식 밀크티", weight: 30 },
-    { value: "치즈 밀크폼", weight: 25 },
-    { value: "더블 과일티", weight: 20 },
-    { value: "오리지널 티", weight: 15 },
-    { value: "신선한 우유", weight: 10 }
-  ]);
+function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = state.selectedMenu) {
+  state.selectedCategory = categoryFilter;
+  state.selectedMenu = menuFilter;
 
+  // 1. Category Selection
+  let chosenCategory;
+  if ("all" !== categoryFilter) {
+    chosenCategory = categoryFilter;
+  } else if (state.tempFilter === "hot") {
+    // 치즈 밀크폼 & 더블 과일티는 HOT 불가 -> HOT 가능한 카테고리만 가중치 추첨
+    chosenCategory = w([
+      { value: "클래식 밀크티", weight: 45 },
+      { value: "오리지널 티", weight: 35 },
+      { value: "신선한 우유", weight: 20 }
+    ]);
+  } else {
+    chosenCategory = w([
+      { value: "클래식 밀크티", weight: 30 },
+      { value: "치즈 밀크폼", weight: 25 },
+      { value: "더블 과일티", weight: 20 },
+      { value: "오리지널 티", weight: 15 },
+      { value: "신선한 우유", weight: 10 }
+    ]);
+  }
+
+  // 2. Menu Selection
   let catCandidates = b.filter(item => item.category === chosenCategory);
   let chosenMenu = catCandidates[0] || b[0];
 
@@ -282,7 +301,10 @@ function generateQuiz(categoryFilter = "all", menuFilter = "all") {
     }));
   }
 
+  // 3. Size Selection
   let size = Math.random() < 0.5 ? "M" : "L";
+
+  // 4. Sugar Selection
   let sugar = w([
     { value: "50%", weight: 37.5 },
     { value: "30%", weight: 37.5 },
@@ -291,29 +313,72 @@ function generateQuiz(categoryFilter = "all", menuFilter = "all") {
     { value: "0%", weight: 5 }
   ]);
 
+  // 5. Topping Selection (respecting toppingFilter)
   let topping = "없음";
-  if (Math.random() < 0.3) {
-    let topList = ["블랙 펄", "골든 버블", "우롱티 젤리"];
+  const topList = ["블랙 펄", "골든 버블", "우롱티 젤리"];
+  if (state.toppingFilter === "with") {
     topping = topList[Math.floor(Math.random() * topList.length)];
+  } else if (state.toppingFilter === "without") {
+    topping = "없음";
+  } else {
+    // all: 30% 확률로 토핑 포함
+    if (Math.random() < 0.3) {
+      topping = topList[Math.floor(Math.random() * topList.length)];
+    } else {
+      topping = "없음";
+    }
   }
 
-  let ice = ("치즈 밀크폼" === chosenCategory) ? "얼음 보통"
-          : ("더블 과일티" === chosenCategory) ? w([
-              { value: "얼음 보통", weight: 45 },
-              { value: "얼음 적게", weight: 35 },
-              { value: "얼음 없이", weight: 13 },
-              { value: "얼음 많이", weight: 5 },
-              { value: "상온", weight: 2 }
-            ])
-          : w([
-              { value: "얼음 보통", weight: 40 },
-              { value: "얼음 적게", weight: 30 },
-              { value: "얼음 없이", weight: 14 },
-              { value: "상온", weight: 2 },
-              { value: "얼음 많이", weight: 5 },
-              { value: "따뜻하게", weight: 4.5 },
-              { value: "뜨겁게", weight: 4.5 }
-            ]);
+  // 6. Ice / Temperature Selection (respecting tempFilter)
+  const isColdOnlyCat = ("치즈 밀크폼" === chosenCategory || "더블 과일티" === chosenCategory);
+  let ice;
+
+  if (state.tempFilter === "hot" && !isColdOnlyCat) {
+    ice = Math.random() < 0.5 ? "뜨겁게" : "따뜻하게";
+  } else if (state.tempFilter === "ice" || isColdOnlyCat) {
+    if ("치즈 밀크폼" === chosenCategory) {
+      ice = "얼음 보통";
+    } else if ("더블 과일티" === chosenCategory) {
+      ice = w([
+        { value: "얼음 보통", weight: 45 },
+        { value: "얼음 적게", weight: 35 },
+        { value: "얼음 없이", weight: 13 },
+        { value: "얼음 많이", weight: 5 },
+        { value: "상온", weight: 2 }
+      ]);
+    } else {
+      ice = w([
+        { value: "얼음 보통", weight: 44 },
+        { value: "얼음 적게", weight: 33 },
+        { value: "얼음 없이", weight: 15 },
+        { value: "얼음 많이", weight: 6 },
+        { value: "상온", weight: 2 }
+      ]);
+    }
+  } else {
+    // tempFilter === "all"
+    if ("치즈 밀크폼" === chosenCategory) {
+      ice = "얼음 보통";
+    } else if ("더블 과일티" === chosenCategory) {
+      ice = w([
+        { value: "얼음 보통", weight: 45 },
+        { value: "얼음 적게", weight: 35 },
+        { value: "얼음 없이", weight: 13 },
+        { value: "얼음 많이", weight: 5 },
+        { value: "상온", weight: 2 }
+      ]);
+    } else {
+      ice = w([
+        { value: "얼음 보통", weight: 40 },
+        { value: "얼음 적게", weight: 30 },
+        { value: "얼음 없이", weight: 14 },
+        { value: "상온", weight: 2 },
+        { value: "얼음 많이", weight: 5 },
+        { value: "따뜻하게", weight: 4.5 },
+        { value: "뜨겁게", weight: 4.5 }
+      ]);
+    }
+  }
 
   const now = new Date();
   const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -462,7 +527,12 @@ function renderInputFields() {
   const q = state.currentQuiz;
   const fields = k(q);
 
+  // Set gap dynamically so height matches sticker card (200px)
+  container.className = fields.length >= 5 ? 'flex flex-col gap-1.5' : 'flex flex-col gap-2';
   container.innerHTML = '';
+
+  const pyClass = fields.length >= 5 ? 'py-1.5' : 'py-2 sm:py-2.5';
+
   fields.forEach(fld => {
     const isActive = (state.activeFieldId === fld.id);
     const targetVal = z(q, fld.id);
@@ -482,7 +552,7 @@ function renderInputFields() {
 
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = `px-3 py-2.5 rounded-xl border-2 text-left transition-all relative overflow-hidden flex items-center justify-between w-full ${borderClass}`;
+    btn.className = `px-3 ${pyClass} rounded-xl border-2 text-left transition-all relative overflow-hidden flex items-center justify-between w-full ${borderClass}`;
     btn.onclick = () => {
       if (state.isSubmitted || state.activeFieldId === fld.id) return;
       state.activeFieldId = fld.id;
@@ -515,6 +585,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Category & Menu Select Dropdowns
   const selectCat = document.getElementById('selectCategory');
   const selectMenu = document.getElementById('selectMenu');
+  const selectTemp = document.getElementById('selectTemp');
+  const selectTopping = document.getElementById('selectTopping');
 
   // Populate categories
   const categories = Array.from(new Set(b.map(item => item.category)));
@@ -524,6 +596,20 @@ document.addEventListener('DOMContentLoaded', () => {
     opt.textContent = `${cat} 집중 훈련`;
     selectCat.appendChild(opt);
   });
+
+  function syncTempOptions(catVal) {
+    if (!selectTemp) return;
+    const isColdOnly = (catVal === '치즈 밀크폼' || catVal === '더블 과일티');
+    const optHot = selectTemp.querySelector('option[value="hot"]');
+    if (optHot) {
+      optHot.disabled = isColdOnly;
+      optHot.textContent = isColdOnly ? '🔥 HOT 불가 (ICE전용)' : '🔥 HOT ONLY';
+    }
+    if (isColdOnly && state.tempFilter === 'hot') {
+      state.tempFilter = 'ice';
+      selectTemp.value = 'ice';
+    }
+  }
 
   function updateMenuOptions(catVal) {
     selectMenu.innerHTML = '<option value="all">[ 메뉴 전체 혼합 ]</option>';
@@ -541,6 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const val = e.target.value;
     state.selectedCategory = val;
     state.selectedMenu = 'all';
+    syncTempOptions(val);
     updateMenuOptions(val);
     generateQuiz(val, 'all');
   });
@@ -550,6 +637,22 @@ document.addEventListener('DOMContentLoaded', () => {
     state.selectedMenu = val;
     generateQuiz(state.selectedCategory, val);
   });
+
+  if (selectTemp) {
+    selectTemp.addEventListener('change', (e) => {
+      const val = e.target.value;
+      state.tempFilter = val;
+      generateQuiz(state.selectedCategory, state.selectedMenu);
+    });
+  }
+
+  if (selectTopping) {
+    selectTopping.addEventListener('change', (e) => {
+      const val = e.target.value;
+      state.toppingFilter = val;
+      generateQuiz(state.selectedCategory, state.selectedMenu);
+    });
+  }
 
   // Action Button (정답 확인 / 다음 문제)
   const btnAction = document.getElementById('btnAction');
