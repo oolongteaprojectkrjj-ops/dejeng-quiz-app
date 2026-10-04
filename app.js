@@ -2281,32 +2281,7 @@ function compileDatabase(sheets) {
 
 async function syncLiveSheetData() {
   try {
-    // 1. Check if manager explicitly updated from Google Sheet [🚀 퀴즈 앱 링크 업데이트]
-    try {
-      const pubUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent("배포_레시피")}&_t=${Date.now()}`;
-      const pubRes = await fetch(pubUrl, { cache: "no-store" });
-      if (pubRes.ok) {
-        const pubText = await pubRes.text();
-        const pubParsed = parseCSVLine(pubText);
-        if (pubParsed.length > 0 && pubParsed[0][0]) {
-          const content = pubParsed[0][0].trim();
-          const timestamp = (pubParsed[0][1] || "").trim();
-          if (content.startsWith("{") && content.includes("original") && content.includes("milk")) {
-            const pubDB = JSON.parse(content);
-            if (pubDB && pubDB.original && pubDB.milk) {
-              j = pubDB;
-              try { localStorage.setItem('dejeng_live_recipes', JSON.stringify(pubDB)); } catch(e) {}
-              console.log(`[Quiz Sync] Successfully loaded published recipes from Google Sheets (${timestamp || 'latest'})`);
-              return;
-            }
-          }
-        }
-      }
-    } catch(e) {
-      console.warn("배포_레시피 check skipped:", e);
-    }
-
-    // 2. Direct Live Sheet Compile Fallback
+    // Direct Live Google Sheets Sync (Real-time, zero Apps Script setup required!)
     const entries = Object.entries(SHEET_GIDS);
     const fetchPromises = entries.map(([name, gid]) => {
       const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}&_t=${Date.now()}`;
@@ -2324,14 +2299,20 @@ async function syncLiveSheetData() {
 
     const liveDB = compileDatabase(sheetData);
     if (liveDB && liveDB.original && liveDB.milk && liveDB.latte) {
+      const isChanged = JSON.stringify(j) !== JSON.stringify(liveDB);
       j = liveDB;
       try {
         localStorage.setItem('dejeng_live_recipes', JSON.stringify(liveDB));
       } catch (e) {}
-      console.log("[Quiz Sync] Successfully compiled live recipes directly from Google Sheets tabs.");
+      console.log("[Quiz Sync] Real-time live recipes loaded directly from Google Sheets.");
+
+      // If data changed while user is looking at initial question, keep answer calculation fresh
+      if (isChanged && !state.isSubmitted && state.currentQuiz) {
+        renderInputFields();
+      }
       return;
     }
   } catch (err) {
-    console.warn("Live Google Sheets background sync failed, using cached/default recipe:", err);
+    console.warn("Live Google Sheets sync fallback to cache/default:", err);
   }
 }
