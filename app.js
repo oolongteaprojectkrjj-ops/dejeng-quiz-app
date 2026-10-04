@@ -589,6 +589,120 @@ let j = {
         "tea": 450
       }
     },
+    "black_topping_M": {
+      "보통": {
+        "ice": 1.8,
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "creamer": 2.5,
+        "tea": 130
+      },
+      "적게": {
+        "ice": 1.5,
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "creamer": 2.5,
+        "tea": 160
+      },
+      "매우적게": {
+        "ice": 1.2,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 180
+      },
+      "없이": {
+        "ice": 1.2,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 200
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 280
+      }
+    },
+    "black_topping_L": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 180
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 210
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 4.5,
+        "tea": 260
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 4.5,
+        "tea": 280
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 4.5,
+        "tea": 360
+      }
+    },
     "hojicha_M": {
       "보통": {
         "ice": 2.5,
@@ -711,120 +825,6 @@ let j = {
         "hojicha": 1.5,
         "creamer": 5,
         "hotwater": 300
-      }
-    },
-    "black_topping_M": {
-      "보통": {
-        "ice": 1.8,
-        "syrup": [
-          25,
-          15,
-          10,
-          5
-        ],
-        "creamer": 2.5,
-        "tea": 130
-      },
-      "적게": {
-        "ice": 1.5,
-        "syrup": [
-          25,
-          15,
-          10,
-          5
-        ],
-        "creamer": 2.5,
-        "tea": 160
-      },
-      "매우적게": {
-        "ice": 1.2,
-        "syrup": [
-          30,
-          20,
-          15,
-          10
-        ],
-        "creamer": 3.5,
-        "tea": 180
-      },
-      "없이": {
-        "ice": 1.2,
-        "syrup": [
-          30,
-          20,
-          15,
-          10
-        ],
-        "creamer": 3.5,
-        "tea": 200
-      },
-      "뜨겁게": {
-        "ice": "x",
-        "syrup": [
-          30,
-          20,
-          15,
-          10
-        ],
-        "creamer": 3.5,
-        "tea": 280
-      }
-    },
-    "black_topping_L": {
-      "보통": {
-        "ice": 2.2,
-        "syrup": [
-          30,
-          20,
-          15,
-          10
-        ],
-        "creamer": 3.5,
-        "tea": 180
-      },
-      "적게": {
-        "ice": 1.8,
-        "syrup": [
-          30,
-          20,
-          15,
-          10
-        ],
-        "creamer": 3.5,
-        "tea": 210
-      },
-      "매우적게": {
-        "ice": 1.5,
-        "syrup": [
-          40,
-          25,
-          15,
-          10
-        ],
-        "creamer": 4.5,
-        "tea": 260
-      },
-      "없이": {
-        "ice": 1.5,
-        "syrup": [
-          40,
-          25,
-          15,
-          10
-        ],
-        "creamer": 4.5,
-        "tea": 280
-      },
-      "뜨겁게": {
-        "ice": "x",
-        "syrup": [
-          40,
-          25,
-          15,
-          10
-        ],
-        "creamer": 4.5,
-        "tea": 360
       }
     }
   },
@@ -1482,24 +1482,50 @@ let j = {
   },
   "fieldOrders": {
     "original": {
-      "ice": "얼음, 시럽, 티",
-      "hot": "시럽, 티"
+      "default": {
+        "ice": "얼음, 시럽, 티",
+        "hot": "시럽, 티"
+      }
     },
     "fruit": {
-      "ice": "얼음, 시럽, 주스, 티",
-      "hot": ""
+      "default": {
+        "ice": "얼음, 시럽, 주스, 티",
+        "hot": ""
+      }
     },
     "milk": {
-      "ice": "크리머, 시럽, 티, 얼음",
-      "hot": "크리머, 시럽, 티"
+      "default": {
+        "ice": "크리머, 시럽, 티, 얼음",
+        "hot": "크리머, 시럽, 티"
+      },
+      "hojicha": {
+        "ice": "온수, 호지차, 크리머, 시럽, 얼음",
+        "hot": "온수, 호지차, 크리머, 시럽"
+      }
     },
     "latte": {
-      "ice": "얼음, 시럽, 티, 우유",
-      "hot": "시럽, 티, 우유"
+      "default": {
+        "ice": "얼음, 시럽, 티, 우유",
+        "hot": "시럽, 티, 우유"
+      },
+      "hojicha": {
+        "ice": "얼음, 시럽, 온수, 호지차, 우유",
+        "hot": "온수, 호지차, 시럽, 우유"
+      }
     },
     "cheese": {
-      "ice": "티, 얼음, 시럽",
-      "hot": ""
+      "default": {
+        "ice": "티, 얼음, 시럽",
+        "hot": ""
+      },
+      "choco": {
+        "ice": "온수, 초코, 얼음, 시럽",
+        "hot": ""
+      },
+      "hojicha": {
+        "ice": "온수, 호지차, 얼음, 시럽",
+        "hot": ""
+      }
     }
   }
 };
@@ -1516,11 +1542,25 @@ function w(arr) {
 }
 
 const defaultFieldOrders = {
-  original: { ice: "얼음, 시럽, 티", hot: "시럽, 티" },
-  fruit: { ice: "얼음, 시럽, 주스, 티", hot: "" },
-  milk: { ice: "크리머, 시럽, 티, 얼음", hot: "크리머, 시럽, 티" },
-  latte: { ice: "얼음, 시럽, 티, 우유", hot: "시럽, 티, 우유" },
-  cheese: { ice: "티, 얼음, 시럽", hot: "" }
+  original: {
+    default: { ice: "얼음, 시럽, 티", hot: "시럽, 티" }
+  },
+  fruit: {
+    default: { ice: "얼음, 시럽, 주스, 티", hot: "" }
+  },
+  milk: {
+    default: { ice: "크리머, 시럽, 티, 얼음", hot: "크리머, 시럽, 티" },
+    hojicha: { ice: "온수, 호지차, 크리머, 시럽, 얼음", hot: "온수, 호지차, 크리머, 시럽" }
+  },
+  latte: {
+    default: { ice: "얼음, 시럽, 티, 우유", hot: "시럽, 티, 우유" },
+    hojicha: { ice: "얼음, 시럽, 온수, 호지차, 우유", hot: "온수, 호지차, 시럽, 우유" }
+  },
+  cheese: {
+    default: { ice: "티, 얼음, 시럽", hot: "" },
+    choco: { ice: "온수, 초코, 얼음, 시럽", hot: "" },
+    hojicha: { ice: "온수, 호지차, 얼음, 시럽", hot: "" }
+  }
 };
 
 const keywordMap = {
@@ -1533,6 +1573,7 @@ const keywordMap = {
   "호지차": "hojicha",
   "온수": "hotwater",
   "뜨거운물": "hotwater",
+  "뜨거운 물": "hotwater",
   "초코": "choco"
 };
 
@@ -1555,7 +1596,12 @@ function k(quiz) {
   else if (cat === "더블 과일티" || cat === "과일티") catKey = "fruit";
   else if (cat === "치즈 밀크폼") catKey = "cheese";
 
-  const orders = j?.fieldOrders?.[catKey] || defaultFieldOrders[catKey] || {};
+  const catOrders = j?.fieldOrders?.[catKey] || defaultFieldOrders[catKey] || {};
+  let subKey = "default";
+  if (name.includes("호지차")) subKey = "hojicha";
+  else if (name.includes("초코")) subKey = "choco";
+
+  const orders = catOrders[subKey] || catOrders["default"] || catOrders;
   const orderStr = isHot ? (orders.hot || "") : (orders.ice || "");
   const tokens = parseOrderTokens(orderStr);
 
@@ -1663,6 +1709,10 @@ function k(quiz) {
         result.push(avail[token]);
         used.add(token);
       }
+      if (token === "hojicha" && avail.creamer && !tokens.includes("creamer") && !used.has("creamer")) {
+        result.push(avail.creamer);
+        used.add("creamer");
+      }
     }
   }
 
@@ -1767,6 +1817,37 @@ function z(quiz, fieldId) {
   return val.toString();
 }
 
+
+// --- 2.1 Section Presets (Spreadsheet Vertical Category Sections) ---
+const SECTIONS = {
+  "오리지널 티": [
+    { id: "sec:rooibos", name: "🫖 루이보스 집중", menus: ["루이보스"] },
+    { id: "sec:black", name: "☕ 블랙티 집중", menus: ["블랙티"] },
+    { id: "sec:green_roasted", name: "🍵 그린 / 라이트 / 다크 우롱티", menus: ["그린티", "라이트 로스티드 우롱티", "다크 로스티드 우롱티"] },
+    { id: "sec:spring", name: "🌿 스프링 우롱티 집중", menus: ["스프링 우롱티"] }
+  ],
+  "클래식 밀크티": [
+    { id: "sec:milk_basic", name: "🥛 기본 밀크티 (블랙/그린/라이트/다크)", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "without" },
+    { id: "sec:milk_hojicha", name: "🍂 호지차 밀크티 집중", menus: ["호지차 밀크티"] },
+    { id: "sec:milk_topping", name: "🧋 펄밀크티 (토핑 필수/감량 레시피)", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "with" }
+  ],
+  "신선한 우유": [
+    { id: "sec:latte_basic", name: "🥛 기본 라떼 4종 (블랙/그린/라이트/다크)", menus: ["블랙티 라떼", "그린티 라떼", "라이트 로스티드 우롱티 라떼", "다크 로스티드 우롱티 라떼"] },
+    { id: "sec:latte_hojicha", name: "🍂 호지차 라떼 집중", menus: ["호지차 라떼"] }
+  ],
+  "치즈 밀크폼": [
+    { id: "sec:cheese_black", name: "🧀 치즈 블랙티 집중", menus: ["치즈 밀크폼 블랙티"] },
+    { id: "sec:cheese_teas", name: "🧀 치즈 우롱 4종 (그린/스프링/라이트/다크)", menus: ["치즈 밀크폼 그린티", "치즈 밀크폼 스프링 우롱티", "치즈 밀크폼 라이트 로스티드 우롱티", "치즈 밀크폼 다크 로스티드 우롱티"] },
+    { id: "sec:cheese_choco", name: "🍫 치즈 초코 집중", menus: ["치즈 밀크폼 초코"] },
+    { id: "sec:cheese_hojicha", name: "🍂 치즈 호지차 집중", menus: ["치즈 밀크폼 호지차"] }
+  ],
+  "더블 과일티": [
+    { id: "sec:fruit_grape", name: "🍊 자몽 시트러스 우롱티", menus: ["자몽 시트러스 우롱티"] },
+    { id: "sec:fruit_orange", name: "🍊 오렌지 스프링 우롱티", menus: ["오렌지 스프링 우롱티"] },
+    { id: "sec:fruit_lemon", name: "🍋 레몬 스프링 우롱티", menus: ["레몬 스프링 우롱티"] }
+  ]
+};
+
 function L(userAns, targetAns) {
   let a = "" === (userAns || "").trim() ? "0" : (userAns || "").trim();
   let s = "" === (targetAns || "").trim() ? "0" : (targetAns || "").trim();
@@ -1795,28 +1876,53 @@ function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = stat
   state.selectedCategory = categoryFilter;
   state.selectedMenu = menuFilter;
 
-  // 1. Category Selection (exact weights from sheet 확률분포도)
-  let chosenCategory;
-  if ("all" !== categoryFilter) {
-    chosenCategory = categoryFilter;
-  } else if (state.tempFilter === "hot") {
-    // 치즈 밀크폼 & 더블 과일티는 HOT 불가 -> HOT 가능한 카테고리만 가중치 추첨
-    chosenCategory = w([
-      { value: "클래식 밀크티", weight: 55 },
-      { value: "오리지널 티", weight: 30 },
-      { value: "신선한 우유", weight: 15 }
-    ]);
-  } else {
-    chosenCategory = w([
-      { value: "클래식 밀크티", weight: 46 },
-      { value: "치즈 밀크폼", weight: 23 },
-      { value: "더블 과일티", weight: 15 },
-      { value: "오리지널 티", weight: 10 },
-      { value: "신선한 우유", weight: 6 }
-    ]);
+  let forceTopping = null;
+  let chosenCategory = categoryFilter;
+
+  // 1. Check if section preset is selected
+  if (menuFilter && menuFilter.startsWith("sec:")) {
+    let foundSec = null;
+    let foundCat = null;
+    for (const [catName, secList] of Object.entries(SECTIONS)) {
+      const match = secList.find(s => s.id === menuFilter);
+      if (match) {
+        foundSec = match;
+        foundCat = catName;
+        break;
+      }
+    }
+    if (foundSec) {
+      chosenCategory = foundCat;
+      state.selectedCategory = foundCat;
+      const targetItems = b.filter(item => item.category === chosenCategory && foundSec.menus.includes(item.nameKo));
+      let chosenItem = targetItems[Math.floor(Math.random() * targetItems.length)] || b[0];
+      if (foundSec.forceTopping) {
+        forceTopping = foundSec.forceTopping;
+      }
+      return createQuizInstance(chosenCategory, chosenItem, forceTopping);
+    }
   }
 
-  // 2. Menu Selection
+  // 2. Category Selection (exact weights from sheet 확률분포도)
+  if ("all" === categoryFilter) {
+    if (state.tempFilter === "hot") {
+      chosenCategory = w([
+        { value: "클래식 밀크티", weight: 55 },
+        { value: "오리지널 티", weight: 30 },
+        { value: "신선한 우유", weight: 15 }
+      ]);
+    } else {
+      chosenCategory = w([
+        { value: "클래식 밀크티", weight: 46 },
+        { value: "치즈 밀크폼", weight: 23 },
+        { value: "더블 과일티", weight: 15 },
+        { value: "오리지널 티", weight: 10 },
+        { value: "신선한 우유", weight: 6 }
+      ]);
+    }
+  }
+
+  // 3. Menu Selection
   let catCandidates = b.filter(item => item.category === chosenCategory);
   let chosenMenu = catCandidates[0] || b[0];
 
@@ -1824,7 +1930,6 @@ function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = stat
     chosenMenu = b.find(item => item.nameKo === menuFilter) || chosenMenu;
     chosenCategory = chosenMenu.category;
   } else if ("더블 과일티" === chosenCategory) {
-    // 과일티 비중: 레몬(71.7%), 자몽(23.5%), 오렌지(4.8%)
     chosenMenu = w([
       { value: catCandidates.find(m => m.nameKo.includes("레몬")) || catCandidates[0], weight: 72 },
       { value: catCandidates.find(m => m.nameKo.includes("자몽")) || catCandidates[0], weight: 23 },
@@ -1842,6 +1947,11 @@ function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = stat
       return { value: item, weight: wt };
     }));
   }
+
+  return createQuizInstance(chosenCategory, chosenMenu, forceTopping);
+}
+
+function createQuizInstance(chosenCategory, chosenMenu, forceTopping = null) {
 
   // 3. Size Selection (시트 비중: M 57%, L 43%)
   let size = Math.random() < 0.57 ? "M" : "L";
@@ -1862,7 +1972,11 @@ function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = stat
     { value: "우롱티 젤리", weight: 28 },
     { value: "골든 버블", weight: 24 }
   ];
-  if (state.toppingFilter === "with") {
+  if (forceTopping === "with") {
+    topping = w(topList);
+  } else if (forceTopping === "without") {
+    topping = "없음";
+  } else if (state.toppingFilter === "with") {
     topping = w(topList);
   } else if (state.toppingFilter === "without") {
     topping = "없음";
@@ -1944,6 +2058,7 @@ function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = stat
   state.isAllCorrect = false;
 
   renderUI();
+  return quiz;
 }
 
 function handleKeypad(key) {
@@ -2133,13 +2248,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectTemp = document.getElementById('selectTemp');
   const selectTopping = document.getElementById('selectTopping');
 
-  // Populate categories
-  const categories = Array.from(new Set(b.map(item => item.category)));
+  // Populate categories and sections in selectCategory
+  selectCat.innerHTML = '';
+  const allCatOpt = document.createElement('option');
+  allCatOpt.value = 'all';
+  allCatOpt.textContent = '🎯 [ 전체 카테고리 랜덤 ]';
+  selectCat.appendChild(allCatOpt);
+
+  const categories = ['오리지널 티', '클래식 밀크티', '신선한 우유', '치즈 밀크폼', '더블 과일티'];
   categories.forEach(cat => {
-    const opt = document.createElement('option');
-    opt.value = cat;
-    opt.textContent = `${cat} 집중 훈련`;
-    selectCat.appendChild(opt);
+    const grp = document.createElement('optgroup');
+    grp.label = `📂 ${cat}`;
+
+    const catOpt = document.createElement('option');
+    catOpt.value = cat;
+    catOpt.textContent = `▶ ${cat} 전체 혼합`;
+    grp.appendChild(catOpt);
+
+    if (SECTIONS[cat]) {
+      SECTIONS[cat].forEach(sec => {
+        const secOpt = document.createElement('option');
+        secOpt.value = sec.id;
+        secOpt.textContent = `  ↳ ${sec.name}`;
+        grp.appendChild(secOpt);
+      });
+    }
+    selectCat.appendChild(grp);
   });
 
   function syncTempOptions(catVal) {
@@ -2157,30 +2291,103 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateMenuOptions(catVal) {
-    selectMenu.innerHTML = '<option value="all">[ 메뉴 전체 혼합 ]</option>';
-    selectMenu.disabled = (catVal === 'all');
-    const filtered = b.filter(item => catVal === 'all' || item.category === catVal);
-    filtered.forEach(item => {
-      const opt = document.createElement('option');
-      opt.value = item.nameKo;
-      opt.textContent = item.isOriginal ? `# ${item.nameKo}` : item.nameKo;
-      selectMenu.appendChild(opt);
-    });
+    selectMenu.innerHTML = '';
+    
+    // Default option
+    const defOpt = document.createElement('option');
+    defOpt.value = 'all';
+    defOpt.textContent = (catVal === 'all') ? '👉 [ 메뉴/섹션 전체 혼합 ]' : `👉 [ ${catVal} 전체 혼합 ]`;
+    selectMenu.appendChild(defOpt);
+
+    // If specific category is selected
+    if (catVal !== 'all' && SECTIONS[catVal]) {
+      const secGroup = document.createElement('optgroup');
+      secGroup.label = '📋 시트 세로 섹션 선택 (집중 훈련)';
+      SECTIONS[catVal].forEach(sec => {
+        const opt = document.createElement('option');
+        opt.value = sec.id;
+        opt.textContent = sec.name;
+        secGroup.appendChild(opt);
+      });
+      selectMenu.appendChild(secGroup);
+
+      const menuGroup = document.createElement('optgroup');
+      menuGroup.label = '🥤 단일 메뉴 개별 선택';
+      const filtered = b.filter(item => item.category === catVal);
+      filtered.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.nameKo;
+        opt.textContent = item.isOriginal ? `# ${item.nameKo}` : item.nameKo;
+        menuGroup.appendChild(opt);
+      });
+      selectMenu.appendChild(menuGroup);
+    } else {
+      // If 'all' is selected: provide fast section picker across all categories!
+      for (const [categoryName, secList] of Object.entries(SECTIONS)) {
+        const secGroup = document.createElement('optgroup');
+        secGroup.label = `📋 [${categoryName}] 섹션 집중`;
+        secList.forEach(sec => {
+          const opt = document.createElement('option');
+          opt.value = sec.id;
+          opt.textContent = sec.name;
+          secGroup.appendChild(opt);
+        });
+        selectMenu.appendChild(secGroup);
+      }
+    }
+    selectMenu.disabled = false;
   }
 
   selectCat.addEventListener('change', (e) => {
     const val = e.target.value;
-    state.selectedCategory = val;
-    state.selectedMenu = 'all';
-    syncTempOptions(val);
-    updateMenuOptions(val);
-    generateQuiz(val, 'all');
+    if (val.startsWith('sec:')) {
+      let parentCat = 'all';
+      for (const [cName, sList] of Object.entries(SECTIONS)) {
+        if (sList.some(s => s.id === val)) {
+          parentCat = cName;
+          break;
+        }
+      }
+      state.selectedCategory = parentCat;
+      state.selectedMenu = val;
+      syncTempOptions(parentCat);
+      updateMenuOptions(parentCat);
+      selectMenu.value = val;
+      generateQuiz(parentCat, val);
+    } else {
+      state.selectedCategory = val;
+      state.selectedMenu = 'all';
+      syncTempOptions(val);
+      updateMenuOptions(val);
+      generateQuiz(val, 'all');
+    }
   });
 
   selectMenu.addEventListener('change', (e) => {
     const val = e.target.value;
     state.selectedMenu = val;
-    generateQuiz(state.selectedCategory, val);
+
+    // If section selected, auto-sync category and selectCat
+    if (val.startsWith('sec:')) {
+      for (const [catName, secList] of Object.entries(SECTIONS)) {
+        if (secList.some(s => s.id === val)) {
+          if (state.selectedCategory !== catName) {
+            state.selectedCategory = catName;
+            syncTempOptions(catName);
+            updateMenuOptions(catName);
+            selectMenu.value = val;
+          }
+          selectCat.value = val;
+          break;
+        }
+      }
+      generateQuiz(state.selectedCategory, val);
+    } else {
+      if (val === 'all') {
+        selectCat.value = state.selectedCategory;
+      }
+      generateQuiz(state.selectedCategory, val);
+    }
   });
 
   if (selectTemp) {
@@ -2413,10 +2620,10 @@ function compileDatabase(sheets) {
   }
   milk["black_M"] = extMilkStandard(3);
   milk["black_L"] = extMilkStandard(7);
-  milk["hojicha_M"] = extMilkHojicha(11);
-  milk["hojicha_L"] = extMilkHojicha(16);
-  milk["black_topping_M"] = extMilkStandard(22);
-  milk["black_topping_L"] = extMilkStandard(26);
+  milk["black_topping_M"] = extMilkStandard(12);
+  milk["black_topping_L"] = extMilkStandard(16);
+  milk["hojicha_M"] = extMilkHojicha(22);
+  milk["hojicha_L"] = extMilkHojicha(27);
 
   // 3. Latte
   const latte = {};
@@ -2454,8 +2661,8 @@ function compileDatabase(sheets) {
   }
   latte["black_M"] = extLatteStandard(3);
   latte["black_L"] = extLatteStandard(7);
-  latte["hojicha_M"] = extLatteHojicha(12);
-  latte["hojicha_L"] = extLatteHojicha(17);
+  latte["hojicha_M"] = extLatteHojicha(13);
+  latte["hojicha_L"] = extLatteHojicha(18);
 
   // 4. Fruit
   const fruit = {};
@@ -2538,10 +2745,10 @@ function compileDatabase(sheets) {
     green_L: { ice: parseNum(cheeseRows[15][3]), syrup: parseSyrup(cheeseRows[16][3]), tea: parseNum(cheeseRows[17][3]) },
     spring_M: { ice: parseNum(cheeseRows[11][3]), syrup: parseSyrup(cheeseRows[12][3]), tea: parseNum(cheeseRows[14][3]) },
     spring_L: { ice: parseNum(cheeseRows[15][3]), syrup: parseSyrup(cheeseRows[16][3]), tea: parseNum(cheeseRows[18][3]) },
-    choco_M: { ice: parseNum(cheeseRows[19][3]), syrup: parseSyrup(cheeseRows[20][3]), choco: parseNum(cheeseRows[21][3]), hotwater: parseNum(cheeseRows[22][3]) },
-    choco_L: { ice: parseNum(cheeseRows[23][3]), syrup: parseSyrup(cheeseRows[24][3]), choco: parseNum(cheeseRows[25][3]), hotwater: parseNum(cheeseRows[26][3]) },
-    hojicha_M: { ice: parseNum(cheeseRows[27][3]), syrup: parseSyrup(cheeseRows[28][3]), hojicha: parseNum(cheeseRows[29][3]), creamer: parseNum(cheeseRows[30][3]), hotwater: parseNum(cheeseRows[31][3]) },
-    hojicha_L: { ice: parseNum(cheeseRows[32][3]), syrup: parseSyrup(cheeseRows[33][3]), hojicha: parseNum(cheeseRows[34][3]), creamer: parseNum(cheeseRows[35][3]), hotwater: parseNum(cheeseRows[36][3]) }
+    choco_M: { ice: parseNum(cheeseRows[21][3]), syrup: parseSyrup(cheeseRows[22][3]), choco: parseNum(cheeseRows[23][3]), hotwater: parseNum(cheeseRows[24][3]) },
+    choco_L: { ice: parseNum(cheeseRows[25][3]), syrup: parseSyrup(cheeseRows[26][3]), choco: parseNum(cheeseRows[27][3]), hotwater: parseNum(cheeseRows[28][3]) },
+    hojicha_M: { ice: parseNum(cheeseRows[31][3]), syrup: parseSyrup(cheeseRows[32][3]), hojicha: parseNum(cheeseRows[33][3]), creamer: parseNum(cheeseRows[34][3]), hotwater: parseNum(cheeseRows[35][3]) },
+    hojicha_L: { ice: parseNum(cheeseRows[36][3]), syrup: parseSyrup(cheeseRows[37][3]), hojicha: parseNum(cheeseRows[38][3]), creamer: parseNum(cheeseRows[39][3]), hotwater: parseNum(cheeseRows[40][3]) }
   };
 
   function extractRow1Orders(row) {
@@ -2572,11 +2779,21 @@ function compileDatabase(sheets) {
   }
 
   const fieldOrders = {
-    original: extractRow1Orders(origRows[0]),
-    fruit: extractRow1Orders(fruitRows[0]),
-    milk: extractRow1Orders(milkRows[0]),
-    latte: extractRow1Orders(latteRows[0]),
-    cheese: extractRow1Orders(cheeseRows[0])
+    original: { default: extractRow1Orders(origRows[0]) },
+    fruit: { default: extractRow1Orders(fruitRows[0]) },
+    milk: {
+      default: extractRow1Orders(milkRows[0]),
+      hojicha: extractRow1Orders(milkRows[20])
+    },
+    latte: {
+      default: extractRow1Orders(latteRows[0]),
+      hojicha: extractRow1Orders(latteRows[11])
+    },
+    cheese: {
+      default: extractRow1Orders(cheeseRows[0]),
+      choco: extractRow1Orders(cheeseRows[19]),
+      hojicha: extractRow1Orders(cheeseRows[29])
+    }
   };
 
   return { original, milk, latte, fruit, cheese, fieldOrders };

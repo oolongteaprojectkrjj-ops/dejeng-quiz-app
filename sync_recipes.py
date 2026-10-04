@@ -152,10 +152,10 @@ def compile_database(sheets):
     milk = {
         "black_M": ext_milk_std(3),
         "black_L": ext_milk_std(7),
-        "hojicha_M": ext_milk_hoji(11),
-        "hojicha_L": ext_milk_hoji(16),
-        "black_topping_M": ext_milk_std(22),
-        "black_topping_L": ext_milk_std(26),
+        "black_topping_M": ext_milk_std(12),
+        "black_topping_L": ext_milk_std(16),
+        "hojicha_M": ext_milk_hoji(22),
+        "hojicha_L": ext_milk_hoji(27),
     }
 
     # 3. Latte
@@ -212,8 +212,8 @@ def compile_database(sheets):
     latte = {
         "black_M": ext_latte_std(3),
         "black_L": ext_latte_std(7),
-        "hojicha_M": ext_latte_hoji(12),
-        "hojicha_L": ext_latte_hoji(17)
+        "hojicha_M": ext_latte_hoji(13),
+        "hojicha_L": ext_latte_hoji(18)
     }
 
     # 4. Fruit
@@ -310,10 +310,10 @@ def compile_database(sheets):
         "green_L": {"ice": parse_num(cheese_rows[15][3]), "syrup": parse_syrup(cheese_rows[16][3]), "tea": parse_num(cheese_rows[17][3])},
         "spring_M": {"ice": parse_num(cheese_rows[11][3]), "syrup": parse_syrup(cheese_rows[12][3]), "tea": parse_num(cheese_rows[14][3])},
         "spring_L": {"ice": parse_num(cheese_rows[15][3]), "syrup": parse_syrup(cheese_rows[16][3]), "tea": parse_num(cheese_rows[18][3])},
-        "choco_M": {"ice": parse_num(cheese_rows[19][3]), "syrup": parse_syrup(cheese_rows[20][3]), "choco": parse_num(cheese_rows[21][3]), "hotwater": parse_num(cheese_rows[22][3])},
-        "choco_L": {"ice": parse_num(cheese_rows[23][3]), "syrup": parse_syrup(cheese_rows[24][3]), "choco": parse_num(cheese_rows[25][3]), "hotwater": parse_num(cheese_rows[26][3])},
-        "hojicha_M": {"ice": parse_num(cheese_rows[27][3]), "syrup": parse_syrup(cheese_rows[28][3]), "hojicha": parse_num(cheese_rows[29][3]), "creamer": parse_num(cheese_rows[30][3]), "hotwater": parse_num(cheese_rows[31][3])},
-        "hojicha_L": {"ice": parse_num(cheese_rows[32][3]), "syrup": parse_syrup(cheese_rows[33][3]), "hojicha": parse_num(cheese_rows[34][3]), "creamer": parse_num(cheese_rows[35][3]), "hotwater": parse_num(cheese_rows[36][3])}
+        "choco_M": {"ice": parse_num(cheese_rows[21][3]), "syrup": parse_syrup(cheese_rows[22][3]), "choco": parse_num(cheese_rows[23][3]), "hotwater": parse_num(cheese_rows[24][3])},
+        "choco_L": {"ice": parse_num(cheese_rows[25][3]), "syrup": parse_syrup(cheese_rows[26][3]), "choco": parse_num(cheese_rows[27][3]), "hotwater": parse_num(cheese_rows[28][3])},
+        "hojicha_M": {"ice": parse_num(cheese_rows[31][3]), "syrup": parse_syrup(cheese_rows[32][3]), "hojicha": parse_num(cheese_rows[33][3]), "creamer": parse_num(cheese_rows[34][3]), "hotwater": parse_num(cheese_rows[35][3])},
+        "hojicha_L": {"ice": parse_num(cheese_rows[36][3]), "syrup": parse_syrup(cheese_rows[37][3]), "hojicha": parse_num(cheese_rows[38][3]), "creamer": parse_num(cheese_rows[39][3]), "hotwater": parse_num(cheese_rows[40][3])}
     }
 
     def extract_row1_orders(row):
@@ -337,11 +337,25 @@ def compile_database(sheets):
         return {"ice": ice, "hot": hot}
 
     field_orders = {
-        "original": extract_row1_orders(orig_rows[0]),
-        "fruit": extract_row1_orders(fruit_rows[0]),
-        "milk": extract_row1_orders(milk_rows[0]),
-        "latte": extract_row1_orders(latte_rows[0]),
-        "cheese": extract_row1_orders(cheese_rows[0])
+        "original": {
+            "default": extract_row1_orders(orig_rows[0])
+        },
+        "fruit": {
+            "default": extract_row1_orders(fruit_rows[0])
+        },
+        "milk": {
+            "default": extract_row1_orders(milk_rows[0]),
+            "hojicha": extract_row1_orders(milk_rows[20])
+        },
+        "latte": {
+            "default": extract_row1_orders(latte_rows[0]),
+            "hojicha": extract_row1_orders(latte_rows[11])
+        },
+        "cheese": {
+            "default": extract_row1_orders(cheese_rows[0]),
+            "choco": extract_row1_orders(cheese_rows[19]),
+            "hojicha": extract_row1_orders(cheese_rows[29])
+        }
     }
 
     return {"original": original, "milk": milk, "latte": latte, "fruit": fruit, "cheese": cheese, "fieldOrders": field_orders}
