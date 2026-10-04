@@ -1700,7 +1700,7 @@ function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = stat
   // 5. Topping Selection (respecting toppingFilter, 시트 비중: 블랙펄 48%, 우롱티젤리 28%, 골든버블 24%)
   let topping = "없음";
   const topList = [
-    { value: "블랙 펄", weight: 48 },
+    { value: "블랙펄", weight: 48 },
     { value: "우롱티 젤리", weight: 28 },
     { value: "골든 버블", weight: 24 }
   ];
