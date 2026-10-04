@@ -1877,7 +1877,7 @@ function renderSticker(q) {
   const fontStyle = maxLen >= 12 ? 'font-size: 0.62rem;' : (maxLen >= 10 ? 'font-size: 0.66rem;' : '');
 
   const titleHtml = safeLines.map((line, idx) => `<div style="white-space: nowrap; overflow: visible;">${idx === 0 && q.menu.isOriginal ? `# ${line}` : line}</div>`).join('');
-  const toppingHtml = (q.topping && q.topping !== '없음') ? `<div>토핑 ${q.topping}</div>` : '';
+  const toppingHtml = (q.topping && q.topping !== '없음') ? `<div>${q.topping}</div>` : '';
 
   stickerEl.className = 'dejeng-sticker-card shrink-0';
   stickerEl.innerHTML = `
