@@ -1,42 +1,68 @@
 /**
- * 得正 (Dejeng) 퀴즈 앱 - 구글 스프레드시트 연동 스크립트 (Google Apps Script)
+ * 得正 (Dejeng) 퀴즈 앱 - 구글 스프레드시트 -> 퀴즈 앱(링크) 원클릭 업데이트 스크립트
  * 
- * [사용 방법]
- * 1. 스프레드시트 상단 메뉴에서 [확장 프로그램] -> [Apps Script] 클릭
- * 2. 기존 코드를 모두 지우고 이 파일의 내용을 전체 복사하여 붙여넣기
- * 3. 상단 [저장 (디스크 아이콘)] 클릭
- * 4. 스프레드시트 새로고침(F5)을 하면 상단에 [🚀 퀴즈 앱 관리] 메뉴가 생성됩니다.
- * 5. 레시피 수정 후 [🚀 퀴즈 앱 관리] -> [🚀 퀴즈 앱으로 최신 레시피 전송] 클릭!
- *    (또는 시트 내에 사각형 버튼/그림을 삽입한 뒤 '스크립트 할당'에 sendRecipesToQuizApp 입력)
+ * 퀴즈 앱 링크: https://oolongteaprojectkrjj-ops.github.io/dejeng-quiz-app/
+ * 
+ * [최초 1회 설치 방법]
+ * 1. 구글 스프레드시트 상단 메뉴에서 [확장 프로그램] -> [Apps Script] 클릭
+ * 2. 기존 코드가 있다면 모두 지우고, 이 파일의 전체 코드를 복사하여 붙여넣기
+ * 3. 상단 [저장 (디스크 아이콘 💾)] 클릭
+ * 4. 스프레드시트 화면으로 돌아와 새로고침(F5)을 누르면 상단 메뉴바 맨 오른쪽에 [🚀 퀴즈 앱 링크 업데이트] 메뉴가 생성됩니다!
+ * 
+ * [사용 방법 - 시트에서 링크로 업데이트하기]
+ * • 방법 1 (상단 메뉴):
+ *   시트 상단 [🚀 퀴즈 앱 링크 업데이트] -> [🚀 [지금 클릭] 최신 레시피를 퀴즈 앱 링크로 즉시 반영] 클릭!
+ * 
+ * • 방법 2 (시트 안에 전용 버튼 만들기):
+ *   1) 시트 상단 메뉴 [삽입] -> [그림] 클릭
+ *   2) 도형(둥근 사각형)을 그리고 "🚀 퀴즈 앱 링크로 업데이트" 입력 후 [저장 후 닫기]
+ *   3) 생성된 버튼 우측 상단 점 3개(⋮) 클릭 -> [스크립트 할당] 선택
+ *   4) sendRecipesToQuizApp 입력 후 확인!
+ *   -> 이제 시트에서 해당 버튼을 누르기만 하면 링크로 즉시 최신 레시피가 업데이트됩니다!
  */
+
+const QUIZ_APP_URL = "https://oolongteaprojectkrjj-ops.github.io/dejeng-quiz-app/";
 
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu('🚀 퀴즈 앱 반영하기')
-    .addItem('🚀 현재 시트 레시피를 퀴즈 앱에 즉시 반영', 'sendRecipesToQuizApp')
+    .createMenu('🚀 퀴즈 앱 링크 업데이트')
+    .addItem('🚀 [지금 클릭] 최신 레시피를 퀴즈 앱 링크로 즉시 반영', 'sendRecipesToQuizApp')
+    .addSeparator()
+    .addItem('🔗 퀴즈 앱 링크 열기', 'openQuizAppLink')
+    .addItem('📌 시트 안에 원클릭 [업데이트 버튼] 만들기 안내', 'showButtonHelp')
     .addToUi();
 }
 
+/**
+ * 시트의 모든 레시피를 읽어 파싱한 뒤 배포 데이터로 변환하여 퀴즈 앱 링크로 업데이트합니다.
+ */
 function sendRecipesToQuizApp() {
   const ui = SpreadsheetApp.getUi();
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
   try {
-    // 1. 필요한 모든 시트 데이터 읽기
+    // 1. 필요한 모든 5개 시트 데이터 읽기
     const sheetNames = ["오리지널 티", "밀크티", "라떼", "과일티", "치즈 밀크폼"];
     const sheetsData = {};
 
     for (let name of sheetNames) {
       const sheet = ss.getSheetByName(name);
       if (!sheet) {
-        ui.alert('⚠️ 오류 발생', `"${name}" 시트를 찾을 수 없습니다. 시트 이름을 확인해 주세요.`, ui.ButtonSet.OK);
+        ui.alert(
+          '⚠️ 시트 확인 필요',
+          `"${name}" 시트를 찾을 수 없습니다.\n시트 탭 이름이 정확한지 확인해 주세요.`,
+          ui.ButtonSet.OK
+        );
         return;
       }
       sheetsData[name] = sheet.getDataRange().getValues();
     }
 
-    // 2. 레시피 데이터 파싱 및 검증
+    // 2. 레시피 데이터 파싱 및 정밀 검증
     const compiledData = compileDatabase(sheetsData);
+    if (!compiledData || !compiledData.original || !compiledData.milk) {
+      throw new Error("레시피 데이터를 파싱하는 중 유효한 데이터를 추출하지 못했습니다.");
+    }
 
     // 3. '배포_레시피' 탭 생성 또는 선택
     let pubSheet = ss.getSheetByName("배포_레시피");
@@ -44,23 +70,82 @@ function sendRecipesToQuizApp() {
       pubSheet = ss.insertSheet("배포_레시피");
     }
 
-    // 4. 배포 데이터 저장 (A1: JSON 문자열, B1: 전송 일시)
+    // 4. 배포 데이터 저장
     const nowStr = Utilities.formatDate(new Date(), "Asia/Seoul", "yyyy-MM-dd HH:mm:ss");
+    
+    // A1: JSON 문자열 (웹앱이 읽어들이는 데이터 소스)
+    // B1: 업데이트 타임스탬프
+    // C1: 퀴즈 웹앱 URL
     pubSheet.getRange("A1").setValue(JSON.stringify(compiledData));
     pubSheet.getRange("B1").setValue(nowStr);
+    pubSheet.getRange("C1").setValue(QUIZ_APP_URL);
 
-    // 5. 완료 알림
+    // 사용자가 '배포_레시피' 시트를 볼 때도 상태를 알기 쉽도록 안내 정보 기록
+    pubSheet.getRange("A3").setValue("✅ 상태");
+    pubSheet.getRange("B3").setValue("퀴즈 앱 링크 정상 반영 완료");
+    pubSheet.getRange("A4").setValue("🕒 마지막 업데이트");
+    pubSheet.getRange("B4").setValue(nowStr);
+    pubSheet.getRange("A5").setValue("🔗 퀴즈 앱 링크");
+    pubSheet.getRange("B5").setValue(QUIZ_APP_URL);
+    pubSheet.getRange("A6").setValue("📋 반영 항목");
+    pubSheet.getRange("B6").setValue("오리지널 티 (6종), 밀크티 (6종), 라떼 (4종), 과일티 (6종), 치즈 밀크폼 (8종)");
+
+    // 5. 완료 알림 팝업 (링크 포함)
     ui.alert(
-      '🎉 퀴즈 앱 전송 완료',
-      `최신 레시피 데이터가 퀴즈 앱으로 성공적으로 전송(배포)되었습니다!\n\n` +
-      `• 전송 일시: ${nowStr}\n` +
-      `• 이제 퀴즈 앱에서 수정한 레시피로 즉시 출제됩니다.`,
+      '🎉 퀴즈 앱 링크 업데이트 완료!',
+      `스프레드시트의 최신 레시피가 퀴즈 앱 링크에 성공적으로 반영되었습니다!\n\n` +
+      `• 반영 일시: ${nowStr}\n` +
+      `• 반영 항목: 오리지널 티, 밀크티, 라떼, 과일티, 치즈 밀크폼\n\n` +
+      `🔗 퀴즈 앱 링크:\n${QUIZ_APP_URL}\n\n` +
+      `💡 이제 위 링크에 접속하면 방금 수정한 레시피로 즉시 문제가 출제됩니다!`,
       ui.ButtonSet.OK
     );
 
   } catch (err) {
-    ui.alert('❌ 전송 실패', `오류가 발생했습니다:\n${err.message}`, ui.ButtonSet.OK);
+    ui.alert('❌ 업데이트 실패', `오류가 발생했습니다:\n${err.message}`, ui.ButtonSet.OK);
   }
+}
+
+/**
+ * 퀴즈 앱 링크 바로 열기 안내 모달
+ */
+function openQuizAppLink() {
+  const htmlOutput = HtmlService.createHtmlOutput(`
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 15px; text-align: center;">
+      <h3 style="margin-top:0; color: #1e293b;">🚀 得正(Dejeng) 퀴즈 앱 바로가기</h3>
+      <p style="color: #64748b; font-size: 13px; line-height: 1.6;">
+        스프레드시트에서 업데이트한 최신 레시피가 링크에 즉시 적용됩니다.
+      </p>
+      <div style="margin: 20px 0;">
+        <a href="${QUIZ_APP_URL}" target="_blank" style="display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          👉 퀴즈 앱 링크 새 탭으로 열기
+        </a>
+      </div>
+      <p style="color: #94a3b8; font-size: 11px; word-break: break-all;">
+        ${QUIZ_APP_URL}
+      </p>
+    </div>
+  `).setWidth(380).setHeight(220);
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, '퀴즈 앱 링크 열기');
+}
+
+/**
+ * 시트 안에 클릭 버튼을 만드는 방법 안내
+ */
+function showButtonHelp() {
+  const ui = SpreadsheetApp.getUi();
+  ui.alert(
+    '📌 시트에 원클릭 업데이트 버튼 만드는 방법',
+    `스프레드시트 화면에 예쁜 버튼을 만들어 클릭 한 번으로 업데이트할 수 있습니다:\n\n` +
+    `1. 상단 메뉴 [삽입] -> [그림(Drawing)] 클릭\n` +
+    `2. 도형 도구에서 둥근 모서리 사각형을 그리고 "🚀 퀴즈 앱 링크로 업데이트" 텍스트 입력\n` +
+    `3. 초록색이나 파란색 배경을 지정한 후 우측 상단 [저장 후 닫기] 클릭\n` +
+    `4. 시트에 생성된 버튼을 클릭하고, 우측 상단 점 3개(⋮)를 눌러 [스크립트 할당] 선택\n` +
+    `5. 입력창에 아래 함수 이름을 정확히 입력:\n` +
+    `   sendRecipesToQuizApp\n\n` +
+    `이제 시트에서 해당 버튼을 누르기만 하면 퀴즈 앱 링크로 즉시 업데이트됩니다!`,
+    ui.ButtonSet.OK
+  );
 }
 
 // 웹 앱(GET 요청) 배포 지원

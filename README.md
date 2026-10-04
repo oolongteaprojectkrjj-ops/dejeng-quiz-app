@@ -15,4 +15,12 @@
 - **공식 레시피 원본 및 쇼튼표 팝업 제공**
 
 ## 📱 사용 환경
+- 웹앱 바로가기 링크: [https://oolongteaprojectkrjj-ops.github.io/dejeng-quiz-app/](https://oolongteaprojectkrjj-ops.github.io/dejeng-quiz-app/)
 - 스마트폰(iOS Safari, Android Chrome, 카카오톡 인앱 브라우저) 및 데스크톱 모든 브라우저 지원
+
+## 📊 스프레드시트에서 퀴즈 앱(링크)으로 업데이트하는 방법
+1. 구글 스프레드시트 상단 메뉴 [확장 프로그램] -> [Apps Script]로 이동
+2. `google_apps_script.js` 파일의 코드를 복사하여 붙여넣고 [저장 (💾)]
+3. 스프레드시트 새로고침(F5) 후 상단에 생성된 `[🚀 퀴즈 앱 링크 업데이트]` -> `[🚀 [지금 클릭] 최신 레시피를 퀴즈 앱 링크로 즉시 반영]` 클릭
+4. 시트 내에 버튼을 삽입한 뒤 스크립트(`sendRecipesToQuizApp`)를 할당하여 원클릭으로도 업데이트 가능합니다.
+5. 이제 퀴즈 앱 링크에 접속하면 수정된 최신 레시피가 자동으로 출제됩니다.

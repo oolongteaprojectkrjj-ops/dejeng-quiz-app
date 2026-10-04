@@ -1989,13 +1989,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Sync Badge click listener to manually refresh live Google Sheet recipes
-  const syncBadge = document.getElementById('syncBadge');
-  if (syncBadge) {
-    syncBadge.addEventListener('click', () => {
-      syncLiveSheetData(true);
-    });
-  }
 
   // Load cached recipes from localStorage if available
   try {
@@ -2286,20 +2279,9 @@ function compileDatabase(sheets) {
   return { original, milk, latte, fruit, cheese };
 }
 
-async function syncLiveSheetData(showToast = false) {
-  const badge = document.getElementById("syncBadge");
-  const badgeText = document.getElementById("syncText");
-  const badgeDot = document.getElementById("syncDot");
-
-  if (badgeDot) {
-    badgeDot.className = "w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping";
-  }
-  if (badgeText) {
-    badgeText.textContent = "시트 동기화 중...";
-  }
-
+async function syncLiveSheetData() {
   try {
-    // 1. Check if manager explicitly published via [🚀 퀴즈 앱 반영하기] in Google Sheet
+    // 1. Check if manager explicitly updated from Google Sheet [🚀 퀴즈 앱 링크 업데이트]
     try {
       const pubUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent("배포_레시피")}&_t=${Date.now()}`;
       const pubRes = await fetch(pubUrl, { cache: "no-store" });
@@ -2314,15 +2296,7 @@ async function syncLiveSheetData(showToast = false) {
             if (pubDB && pubDB.original && pubDB.milk) {
               j = pubDB;
               try { localStorage.setItem('dejeng_live_recipes', JSON.stringify(pubDB)); } catch(e) {}
-              const timeShort = timestamp ? timestamp.split(" ")[1]?.slice(0, 5) : "";
-              if (badge && badgeText && badgeDot) {
-                badgeDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400";
-                badgeText.textContent = timeShort ? `시트 반영본 (${timeShort})` : "시트 반영본";
-                badge.title = `시트 상단 [🚀 퀴즈 앱 반영하기]를 통해 반영된 버전입니다.\n(반영 일시: ${timestamp || '최신'})\n클릭하여 새로고침`;
-              }
-              if (showToast) {
-                alert(`✅ 시트에서 반영된 최신 레시피를 적용했습니다!\n(반영 일시: ${timestamp || '최신'})`);
-              }
+              console.log(`[Quiz Sync] Successfully loaded published recipes from Google Sheets (${timestamp || 'latest'})`);
               return;
             }
           }
@@ -2354,31 +2328,10 @@ async function syncLiveSheetData(showToast = false) {
       try {
         localStorage.setItem('dejeng_live_recipes', JSON.stringify(liveDB));
       } catch (e) {}
-
-      const now = new Date();
-      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-      if (badge && badgeText && badgeDot) {
-        badgeDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400";
-        badgeText.textContent = `시트 연동됨 (${timeStr})`;
-        badge.title = `구글 시트의 최신 레시피가 실시간 동기화되었습니다.\n(동기화 시각: ${timeStr})\n클릭하여 다시 동기화`;
-      }
-      if (showToast) {
-        alert(`✅ 구글 시트의 최신 레시피를 실시간으로 불러왔습니다!\n(동기화 시각: ${timeStr})\n오리지널티, 밀크티, 라떼, 과일티, 치즈밀크폼 반영 완료`);
-      }
+      console.log("[Quiz Sync] Successfully compiled live recipes directly from Google Sheets tabs.");
       return;
     }
   } catch (err) {
-    console.warn("Live Google Sheets sync failed, using cached/default recipe:", err);
-  }
-
-  // Fallback
-  if (badge && badgeText && badgeDot) {
-    badgeDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
-    badgeText.textContent = "기본 레시피";
-    badge.title = "구글 시트 연동 실패 시 기본 레시피가 사용됩니다. 클릭하여 재시도";
-  }
-  if (showToast) {
-    alert("구글 시트 연결을 확인하지 못했습니다. 기존 저장된 레시피를 사용합니다.");
+    console.warn("Live Google Sheets background sync failed, using cached/default recipe:", err);
   }
 }
