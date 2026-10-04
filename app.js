@@ -2121,6 +2121,17 @@ function renderUI() {
   // Render Input Fields
   renderInputFields();
 
+  // Shorten prompt banner for M size + topping
+  const shortenPrompt = document.getElementById('shortenPromptContainer');
+  if (shortenPrompt) {
+    const isMWithTopping = (q.size === "M" && q.topping && q.topping !== "없음");
+    if (isMWithTopping) {
+      shortenPrompt.classList.remove('hidden');
+    } else {
+      shortenPrompt.classList.add('hidden');
+    }
+  }
+
   // Render Bottom Status & Action Button
   const statusDot = document.getElementById('statusDot');
   const statusText = document.getElementById('statusText');
@@ -2243,8 +2254,117 @@ function renderInputFields() {
   });
 }
 
+function populateShortenGrids(q) {
+  // 1. Ice Grid
+  const iceGrid = document.getElementById('iceShortenGrid');
+  if (iceGrid) {
+    const icePairs = [
+      [0.8, 0.5], [1.0, 0.5], [1.2, 0.8], [1.5, 1.0], [1.8, 1.2], [2.2, 1.5], [2.5, 2.2]
+    ];
+    iceGrid.innerHTML = icePairs.map(([base, red]) => `
+      <div class="shorten-chip">
+        <span style="color:#cbd5e1; font-weight:600;">${base}</span>
+        <span style="color:#38bdf8; font-weight:800;">→ ${red}</span>
+      </div>
+    `).join('');
+  }
+
+  // 2. Powder Grid
+  const powderGrid = document.getElementById('powderShortenGrid');
+  if (powderGrid) {
+    const powderPairs = [
+      [0.5, 0.5], [0.8, 0.5], [1.0, 0.8], [1.2, 1.0], [2.5, 2.0], [3.0, 2.5], [3.5, 2.5], [4.0, 3.0]
+    ];
+    powderGrid.innerHTML = powderPairs.map(([base, red]) => `
+      <div class="shorten-chip">
+        <span style="color:#cbd5e1; font-weight:600;">${base}</span>
+        <span style="color:#fbbf24; font-weight:800;">→ ${red}</span>
+      </div>
+    `).join('');
+  }
+
+  // 3. Liquid Grid
+  const liquidGrid = document.getElementById('liquidShortenGrid');
+  if (liquidGrid) {
+    const liquidPairs = [
+      [5, 5], [10, 10], [15, 10], [20, 15], [25, 20], [30, 25], [35, 25], [40, 30],
+      [45, 35], [50, 40], [55, 40], [60, 45], [65, 50], [70, 55], [75, 55], [80, 60],
+      [85, 65], [90, 70], [95, 70], [100, 75], [110, 85], [120, 90], [130, 100], [140, 105],
+      [150, 115], [160, 120], [170, 130], [180, 135], [190, 145], [200, 150], [210, 160], [220, 165],
+      [230, 175], [240, 180], [250, 190], [260, 195], [270, 205], [280, 210], [290, 220], [300, 225],
+      [310, 235], [320, 240], [330, 250], [340, 255], [350, 265], [400, 300]
+    ];
+    liquidGrid.innerHTML = liquidPairs.map(([base, red]) => `
+      <div class="shorten-chip">
+        <span style="color:#cbd5e1; font-weight:600;">${base}</span>
+        <span style="color:#34d399; font-weight:800;">→ ${red}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function openShortenModal() {
+  populateShortenGrids(state.currentQuiz);
+  const modal = document.getElementById('shortenModal');
+  if (!modal) return;
+  modal.classList.add('active');
+}
+
+function closeShortenModal() {
+  const modal = document.getElementById('shortenModal');
+  if (!modal) return;
+  modal.classList.remove('active');
+}
+
 // --- 5. Boot & Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
+  // Shorten Modal Handlers
+  const btnHeaderShorten = document.getElementById('btnHeaderShorten');
+  if (btnHeaderShorten) {
+    btnHeaderShorten.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openShortenModal();
+    });
+  }
+
+  const btnProblemShorten = document.getElementById('btnProblemShorten');
+  if (btnProblemShorten) {
+    btnProblemShorten.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openShortenModal();
+    });
+  }
+
+  const btnCloseShortenModal = document.getElementById('btnCloseShortenModal');
+  if (btnCloseShortenModal) {
+    btnCloseShortenModal.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeShortenModal();
+    });
+  }
+
+  const btnFooterCloseShorten = document.getElementById('btnFooterCloseShorten');
+  if (btnFooterCloseShorten) {
+    btnFooterCloseShorten.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeShortenModal();
+    });
+  }
+
+  const shortenModal = document.getElementById('shortenModal');
+  if (shortenModal) {
+    // Touch/click ANYWHERE to dismiss
+    shortenModal.addEventListener('click', () => {
+      closeShortenModal();
+    });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeShortenModal();
+    }
+  });
+
   // Category & Menu Select Dropdowns
   const selectCat = document.getElementById('selectCategory');
   const selectMenu = document.getElementById('selectMenu');
