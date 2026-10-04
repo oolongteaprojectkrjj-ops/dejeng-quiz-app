@@ -1400,8 +1400,10 @@ function k(quiz) {
       if (e.menu.nameKo.includes("호지차")) {
         return [{ id: "hotwater", name: "온수" }, { id: "hojicha", name: "호지차" }, { id: "creamer", name: "크리머" }, { id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }];
       }
-      let t = [{ id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }, { id: "tea", name: "티" }];
+      let t = [{ id: "tea", name: "티" }];
       if (e.menu.nameKo.includes("블랙")) t.push({ id: "hotwater", name: "온수" });
+      t.push({ id: "ice", name: "얼음" });
+      t.push({ id: "syrup", name: "시럽" });
       return t;
     }
     return [];
