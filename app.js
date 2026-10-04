@@ -44,45 +44,1313 @@ const v = { .5: .5, .8: .5, 1: .8, 1.2: 1, 2.5: 2, 3: 2.5, 3.5: 2.5, 4: 3 };
 const y = { .8: .5, 1: .5, 1.2: .8, 1.5: 1, 1.8: 1.2, 2.2: 1.5, 2.5: 2.2 };
 
 const j = {
-  original: {
-    black_M: { 많이: { ice: 2.2, syrup: [40, 25, 15, 10], tea: 110, hotwater: 50 }, 보통: { ice: 1.8, syrup: [40, 25, 15, 10], tea: 150, hotwater: 70 }, 적게: { ice: 1.5, syrup: [50, 30, 20, 10], tea: 180, hotwater: 80 }, 없이: { ice: 1.5, syrup: [50, 30, 20, 10], tea: 190, hotwater: 90 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], tea: 260, hotwater: 250 } },
-    black_L: { 많이: { ice: 2.5, syrup: [50, 30, 20, 10], tea: 150, hotwater: 70 }, 보통: { ice: 2.2, syrup: [50, 30, 20, 10], tea: 190, hotwater: 90 }, 적게: { ice: 1.8, syrup: [60, 40, 25, 15], tea: 250, hotwater: 100 }, 없이: { ice: 1.8, syrup: [60, 40, 25, 15], tea: 260, hotwater: 120 }, 뜨겁게: { ice: "x", syrup: [60, 40, 25, 15], tea: 320, hotwater: 320 } },
-    green_M: { 많이: { ice: 2.2, syrup: [40, 25, 15, 10], tea: 170 }, 보통: { ice: 1.8, syrup: [40, 25, 15, 10], tea: 220 }, 적게: { ice: 1.5, syrup: [50, 30, 20, 10], tea: 260 }, 없이: { ice: 1.5, syrup: [50, 30, 20, 10], tea: 280 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], tea: 350 } },
-    green_L: { 많이: { ice: 2.5, syrup: [50, 30, 20, 10], tea: 220 }, 보통: { ice: 2.2, syrup: [50, 30, 20, 10], tea: 280 }, 적게: { ice: 1.8, syrup: [60, 40, 25, 15], tea: 360 }, 없이: { ice: 1.8, syrup: [60, 40, 25, 15], tea: 380 }, 뜨겁게: { ice: "x", syrup: [60, 40, 25, 15], tea: 450 } },
-    spring_M: { 많이: { ice: 1.8, syrup: [40, 25, 15, 10], tea: 250 }, 보통: { ice: 1.5, syrup: [40, 25, 15, 10], tea: 280 }, 적게: { ice: 1.2, syrup: [50, 30, 20, 10], tea: 340 }, 없이: { ice: 1.2, syrup: [50, 30, 20, 10], tea: 340 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], tea: 400 } },
-    spring_L: { 많이: { ice: 2.2, syrup: [50, 30, 20, 10], tea: 300 }, 보통: { ice: 1.8, syrup: [50, 30, 20, 10], tea: 340 }, 적게: { ice: 1.5, syrup: [60, 40, 25, 15], tea: 440 }, 없이: { ice: 1.5, syrup: [60, 40, 25, 15], tea: 440 }, 뜨겁게: { ice: "x", syrup: [60, 40, 25, 15], tea: 500 } }
+  "original": {
+    "black_M": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "tea": 110,
+        "hotwater": 50
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "tea": 150,
+        "hotwater": 70
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 180,
+        "hotwater": 80
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 190,
+        "hotwater": 90
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 260,
+        "hotwater": 250
+      }
+    },
+    "black_L": {
+      "보통": {
+        "ice": 2.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 150,
+        "hotwater": 70
+      },
+      "적게": {
+        "ice": 2.2,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 190,
+        "hotwater": 90
+      },
+      "매우적게": {
+        "ice": 1.8,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 250,
+        "hotwater": 100
+      },
+      "없이": {
+        "ice": 1.8,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 260,
+        "hotwater": 120
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 320,
+        "hotwater": 320
+      }
+    },
+    "green_M": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "tea": 170
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "tea": 220
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 260
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 280
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 350
+      }
+    },
+    "green_L": {
+      "보통": {
+        "ice": 2.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 220
+      },
+      "적게": {
+        "ice": 2.2,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 280
+      },
+      "매우적게": {
+        "ice": 1.8,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 360
+      },
+      "없이": {
+        "ice": 1.8,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 380
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 450
+      }
+    },
+    "spring_M": {
+      "보통": {
+        "ice": 1.8,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "tea": 250
+      },
+      "적게": {
+        "ice": 1.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "tea": 280
+      },
+      "매우적게": {
+        "ice": 1.2,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 340
+      },
+      "없이": {
+        "ice": 1.2,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 340
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 400
+      }
+    },
+    "spring_L": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 300
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 340
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 440
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 440
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 500
+      }
+    }
   },
-  milk: {
-    black_M: { 많이: { ice: 2.2, syrup: [40, 25, 15, 10], creamer: 3, tea: 170 }, 보통: { ice: 1.8, syrup: [40, 25, 15, 10], creamer: 3, tea: 220 }, 적게: { ice: 1.5, syrup: [50, 30, 20, 10], creamer: 4, tea: 260 }, 없이: { ice: 1.5, syrup: [50, 30, 20, 10], creamer: 4, tea: 280 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], creamer: 4, tea: 350 } },
-    black_L: { 많이: { ice: 2.5, syrup: [50, 30, 20, 10], creamer: 4, tea: 220 }, 보통: { ice: 2.2, syrup: [50, 30, 20, 10], creamer: 4, tea: 280 }, 적게: { ice: 1.8, syrup: [60, 40, 25, 15], creamer: 5, tea: 360 }, 없이: { ice: 1.8, syrup: [60, 40, 25, 15], creamer: 5, tea: 380 }, 뜨겁게: { ice: "x", syrup: [60, 40, 25, 15], creamer: 5, tea: 450 } },
-    black_topping_M: { 많이: { ice: 1.8, syrup: [25, 15, 10, 5], creamer: 2.5, tea: 130 }, 보통: { ice: 1.5, syrup: [25, 15, 10, 5], creamer: 2.5, tea: 160 }, 적게: { ice: 1.2, syrup: [30, 20, 15, 10], creamer: 3.5, tea: 180 }, 없이: { ice: 1.2, syrup: [30, 20, 15, 10], creamer: 3.5, tea: 200 }, 뜨겁게: { ice: "x", syrup: [30, 20, 15, 10], creamer: 3.5, tea: 280 } },
-    black_topping_L: { 많이: { ice: 2.2, syrup: [30, 20, 15, 10], creamer: 3.5, tea: 180 }, 보통: { ice: 1.8, syrup: [30, 20, 15, 10], creamer: 3.5, tea: 210 }, 적게: { ice: 1.5, syrup: [40, 25, 15, 10], creamer: 4.5, tea: 260 }, 없이: { ice: 1.5, syrup: [40, 25, 15, 10], creamer: 4.5, tea: 280 }, 뜨겁게: { ice: "x", syrup: [40, 25, 15, 10], creamer: 4.5, tea: 360 } },
-    hojicha_M: { 많이: { ice: 2.5, syrup: [50, 30, 20, 10], hojicha: 1, creamer: 3, hotwater: 150 }, 보통: { ice: 2.2, syrup: [50, 30, 20, 10], hojicha: 1, creamer: 3, hotwater: 180 }, 적게: { ice: 1.8, syrup: [60, 40, 25, 15], hojicha: 1.2, creamer: 4, hotwater: 200 }, 없이: { ice: 1.8, syrup: [60, 40, 25, 15], hojicha: 1.2, creamer: 4, hotwater: 220 }, 뜨겁게: { ice: "x", syrup: [60, 40, 25, 15], hojicha: 1.2, creamer: 4, hotwater: 250 } },
-    hojicha_L: { 많이: { ice: 3, syrup: [60, 40, 25, 15], hojicha: 1.2, creamer: 4, hotwater: 200 }, 보통: { ice: 2.5, syrup: [60, 40, 25, 15], hojicha: 1.2, creamer: 4, hotwater: 230 }, 적게: { ice: 2.2, syrup: [70, 45, 30, 15], hojicha: 1.5, creamer: 5, hotwater: 250 }, 없이: { ice: 2.2, syrup: [70, 45, 30, 15], hojicha: 1.5, creamer: 5, hotwater: 270 }, 뜨겁게: { ice: "x", syrup: [70, 45, 30, 15], hojicha: 1.5, creamer: 5, hotwater: 300 } }
+  "milk": {
+    "black_M": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 3,
+        "tea": 170
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 3,
+        "tea": 220
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "creamer": 4,
+        "tea": 260
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "creamer": 4,
+        "tea": 280
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "creamer": 4,
+        "tea": 350
+      }
+    },
+    "black_L": {
+      "보통": {
+        "ice": 2.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "creamer": 4,
+        "tea": 220
+      },
+      "적게": {
+        "ice": 2.2,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "creamer": 4,
+        "tea": 280
+      },
+      "매우적게": {
+        "ice": 1.8,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "creamer": 5,
+        "tea": 360
+      },
+      "없이": {
+        "ice": 1.8,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "creamer": 5,
+        "tea": 380
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "creamer": 5,
+        "tea": 450
+      }
+    },
+    "black_topping_M": {
+      "보통": {
+        "ice": 1.8,
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "creamer": 2.5,
+        "tea": 130
+      },
+      "적게": {
+        "ice": 1.5,
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "creamer": 2.5,
+        "tea": 160
+      },
+      "매우적게": {
+        "ice": 1.2,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 180
+      },
+      "없이": {
+        "ice": 1.2,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 200
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 280
+      }
+    },
+    "black_topping_L": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 180
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 210
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 4.5,
+        "tea": 260
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 4.5,
+        "tea": 280
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 4.5,
+        "tea": 360
+      }
+    },
+    "hojicha_M": {
+      "보통": {
+        "ice": 2.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "hojicha": 1,
+        "creamer": 3,
+        "hotwater": 150
+      },
+      "적게": {
+        "ice": 2.2,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "hojicha": 1,
+        "creamer": 3,
+        "hotwater": 180
+      },
+      "매우적게": {
+        "ice": 1.8,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "hojicha": 1.2,
+        "creamer": 4,
+        "hotwater": 200
+      },
+      "없이": {
+        "ice": 1.8,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "hojicha": 1.2,
+        "creamer": 4,
+        "hotwater": 220
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "hojicha": 1.2,
+        "creamer": 4,
+        "hotwater": 250
+      }
+    },
+    "hojicha_L": {
+      "보통": {
+        "ice": 3,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "hojicha": 1.2,
+        "creamer": 4,
+        "hotwater": 200
+      },
+      "적게": {
+        "ice": 2.5,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "hojicha": 1.2,
+        "creamer": 4,
+        "hotwater": 230
+      },
+      "매우적게": {
+        "ice": 2.2,
+        "syrup": [
+          70,
+          45,
+          30,
+          15
+        ],
+        "hojicha": 1.5,
+        "creamer": 5,
+        "hotwater": 250
+      },
+      "없이": {
+        "ice": 2.2,
+        "syrup": [
+          70,
+          45,
+          30,
+          15
+        ],
+        "hojicha": 1.5,
+        "creamer": 5,
+        "hotwater": 270
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          70,
+          45,
+          30,
+          15
+        ],
+        "hojicha": 1.5,
+        "creamer": 5,
+        "hotwater": 300
+      }
+    }
   },
-  latte: {
-    black_M: { 많이: { ice: .8, syrup: [40, 25, 15, 10], tea: 150, milk: 100 }, 보통: { ice: .8, syrup: [40, 25, 15, 10], tea: 170, milk: 130 }, 적게: { ice: .8, syrup: [50, 30, 20, 10], tea: 180, milk: 150 }, 없이: { ice: .8, syrup: [50, 30, 20, 10], tea: 200, milk: 170 }, 뜨겁게: { ice: "x", syrup: [40, 25, 15, 10], tea: 250, milk: 200 } },
-    black_L: { 많이: { ice: 1, syrup: [50, 30, 20, 10], tea: 200, milk: 150 }, 보통: { ice: 1, syrup: [50, 30, 20, 10], tea: 220, milk: 180 }, 적게: { ice: 1, syrup: [60, 40, 25, 15], tea: 230, milk: 200 }, 없이: { ice: 1, syrup: [60, 40, 25, 15], tea: 250, milk: 220 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], tea: 300, milk: 250 } },
-    hojicha_M: { 많이: { ice: .5, syrup: [40, 25, 15, 10], hojicha: 1, hotwater: 80, milk: 200 }, 보통: { ice: .5, syrup: [40, 25, 15, 10], hojicha: 1, hotwater: 100, milk: 220 }, 적게: { ice: .5, syrup: [50, 30, 20, 10], hojicha: 1.2, hotwater: 100, milk: 250 }, 없이: { ice: .5, syrup: [50, 30, 20, 10], hojicha: 1.2, hotwater: 120, milk: 270 }, 뜨겁게: { ice: "x", syrup: [40, 25, 15, 10], hojicha: 1.2, hotwater: 120, milk: 330 } },
-    hojicha_L: { 많이: { ice: .8, syrup: [50, 30, 20, 10], hojicha: 1.2, hotwater: 90, milk: 290 }, 보통: { ice: .8, syrup: [50, 30, 20, 10], hojicha: 1.2, hotwater: 120, milk: 310 }, 적게: { ice: .8, syrup: [60, 40, 25, 15], hojicha: 1.5, hotwater: 130, milk: 340 }, 없이: { ice: .8, syrup: [60, 40, 25, 15], hojicha: 1.5, hotwater: 150, milk: 360 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], hojicha: 1.5, hotwater: 150, milk: 400 } }
+  "latte": {
+    "black_M": {
+      "보통": {
+        "ice": 0.8,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "tea": 150,
+        "milk": 100
+      },
+      "적게": {
+        "ice": 0.8,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "tea": 170,
+        "milk": 130
+      },
+      "매우적게": {
+        "ice": 0.8,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 180,
+        "milk": 150
+      },
+      "없이": {
+        "ice": 0.8,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 200,
+        "milk": 170
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "tea": 250,
+        "milk": 200
+      }
+    },
+    "black_L": {
+      "보통": {
+        "ice": 1,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 200,
+        "milk": 150
+      },
+      "적게": {
+        "ice": 1,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 220,
+        "milk": 180
+      },
+      "매우적게": {
+        "ice": 1,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 230,
+        "milk": 200
+      },
+      "없이": {
+        "ice": 1,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "tea": 250,
+        "milk": 220
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "tea": 300,
+        "milk": 250
+      }
+    },
+    "hojicha_M": {
+      "보통": {
+        "ice": 0.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "hojicha": 1,
+        "hotwater": 80,
+        "milk": 200
+      },
+      "적게": {
+        "ice": 0.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "hojicha": 1,
+        "hotwater": 100,
+        "milk": 220
+      },
+      "매우적게": {
+        "ice": 0.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "hojicha": 1.2,
+        "hotwater": 100,
+        "milk": 250
+      },
+      "없이": {
+        "ice": 0.5,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "hojicha": 1.2,
+        "hotwater": 120,
+        "milk": 270
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "hojicha": 1.2,
+        "hotwater": 120,
+        "milk": 330
+      }
+    },
+    "hojicha_L": {
+      "보통": {
+        "ice": 0.8,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "hojicha": 1.2,
+        "hotwater": 90,
+        "milk": 290
+      },
+      "적게": {
+        "ice": 0.8,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "hojicha": 1.2,
+        "hotwater": 120,
+        "milk": 310
+      },
+      "매우적게": {
+        "ice": 0.8,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "hojicha": 1.5,
+        "hotwater": 130,
+        "milk": 340
+      },
+      "없이": {
+        "ice": 0.8,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "hojicha": 1.5,
+        "hotwater": 150,
+        "milk": 360
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "hojicha": 1.5,
+        "hotwater": 150,
+        "milk": 400
+      }
+    }
   },
-  fruit: {
-    grapefruit_M: { 많이: { ice: 2.2, syrup: [30, 20, 15, 10], grapefruit: 10, pomelo: 30, dark: 140 }, 보통: { ice: 1.8, syrup: [30, 20, 15, 10], grapefruit: 10, pomelo: 35, dark: 210 }, 적게: { ice: 1.5, syrup: [40, 25, 15, 10], grapefruit: 20, pomelo: 45, dark: 250 }, 없이: { ice: 1.5, syrup: [40, 25, 15, 10], grapefruit: 20, pomelo: 45, dark: 270 } },
-    grapefruit_L: { 많이: { ice: 2.5, syrup: [40, 25, 15, 10], grapefruit: 20, pomelo: 35, dark: 200 }, 보통: { ice: 2.2, syrup: [40, 25, 15, 10], grapefruit: 20, pomelo: 40, dark: 240 }, 적게: { ice: 1.8, syrup: [50, 30, 20, 10], grapefruit: 30, pomelo: 50, dark: 310 }, 없이: { ice: 1.8, syrup: [50, 30, 20, 10], grapefruit: 30, pomelo: 50, dark: 330 } },
-    orange_M: { 많이: { ice: 2.2, syrup: [50, 30, 20, 10], orange: 80, spring: 120, dark: 40 }, 보통: { ice: 1.8, syrup: [50, 30, 20, 10], orange: 90, spring: 170, dark: 40 }, 적게: { ice: 1.5, syrup: [60, 40, 25, 15], orange: 110, spring: 190, dark: 60 }, 없이: { ice: 1.5, syrup: [60, 40, 25, 15], orange: 110, spring: 210, dark: 60 } },
-    orange_L: { 많이: { ice: 2.5, syrup: [60, 40, 25, 15], orange: 100, spring: 170, dark: 50 }, 보통: { ice: 2.2, syrup: [60, 40, 25, 15], orange: 110, spring: 210, dark: 50 }, 적게: { ice: 1.8, syrup: [70, 45, 30, 15], orange: 140, spring: 240, dark: 70 }, 없이: { ice: 1.8, syrup: [70, 45, 30, 15], orange: 140, spring: 260, dark: 70 } },
-    lemon_M: { 많이: { ice: 2.2, syrup: [55, 45, 35, 20], lemon: 25, spring: 80, dark: 100 }, 보통: { ice: 1.8, syrup: [55, 45, 35, 20], lemon: 25, spring: 90, dark: 120 }, 적게: { ice: 1.5, syrup: [65, 55, 45, 25], lemon: 35, spring: 100, dark: 140 }, 없이: { ice: 1.5, syrup: [65, 55, 45, 25], lemon: 35, spring: 120, dark: 160 } },
-    lemon_L: { 많이: { ice: 2.5, syrup: [65, 55, 45, 25], lemon: 35, spring: 100, dark: 120 }, 보통: { ice: 2.2, syrup: [65, 55, 45, 25], lemon: 35, spring: 120, dark: 150 }, 적게: { ice: 1.8, syrup: [75, 65, 55, 30], lemon: 45, spring: 140, dark: 180 }, 없이: { ice: 1.8, syrup: [75, 65, 55, 30], lemon: 45, spring: 160, dark: 200 } }
+  "fruit": {
+    "grapefruit_M": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "grapefruit": 10,
+        "pomelo": 30,
+        "dark": 140
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "grapefruit": 10,
+        "pomelo": 35,
+        "dark": 210
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "grapefruit": 20,
+        "pomelo": 45,
+        "dark": 250
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "grapefruit": 20,
+        "pomelo": 45,
+        "dark": 270
+      }
+    },
+    "grapefruit_L": {
+      "보통": {
+        "ice": 2.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "grapefruit": 20,
+        "pomelo": 35,
+        "dark": 200
+      },
+      "적게": {
+        "ice": 2.2,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "grapefruit": 20,
+        "pomelo": 40,
+        "dark": 240
+      },
+      "매우적게": {
+        "ice": 1.8,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "grapefruit": 30,
+        "pomelo": 50,
+        "dark": 310
+      },
+      "없이": {
+        "ice": 1.8,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "grapefruit": 30,
+        "pomelo": 50,
+        "dark": 330
+      }
+    },
+    "orange_M": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "orange": 80,
+        "spring": 120,
+        "dark": 40
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          50,
+          30,
+          20,
+          10
+        ],
+        "orange": 90,
+        "spring": 170,
+        "dark": 40
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "orange": 110,
+        "spring": 190,
+        "dark": 60
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "orange": 110,
+        "spring": 210,
+        "dark": 60
+      }
+    },
+    "orange_L": {
+      "보통": {
+        "ice": 2.5,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "orange": 100,
+        "spring": 170,
+        "dark": 50
+      },
+      "적게": {
+        "ice": 2.2,
+        "syrup": [
+          60,
+          40,
+          25,
+          15
+        ],
+        "orange": 110,
+        "spring": 210,
+        "dark": 50
+      },
+      "매우적게": {
+        "ice": 1.8,
+        "syrup": [
+          70,
+          45,
+          30,
+          15
+        ],
+        "orange": 140,
+        "spring": 240,
+        "dark": 70
+      },
+      "없이": {
+        "ice": 1.8,
+        "syrup": [
+          70,
+          45,
+          30,
+          15
+        ],
+        "orange": 140,
+        "spring": 260,
+        "dark": 70
+      }
+    },
+    "lemon_M": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          55,
+          45,
+          35,
+          20
+        ],
+        "lemon": 25,
+        "spring": 80,
+        "dark": 100
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          55,
+          45,
+          35,
+          20
+        ],
+        "lemon": 25,
+        "spring": 90,
+        "dark": 120
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          65,
+          55,
+          45,
+          25
+        ],
+        "lemon": 35,
+        "spring": 100,
+        "dark": 140
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          65,
+          55,
+          45,
+          25
+        ],
+        "lemon": 35,
+        "spring": 120,
+        "dark": 160
+      }
+    },
+    "lemon_L": {
+      "보통": {
+        "ice": 2.5,
+        "syrup": [
+          65,
+          55,
+          45,
+          25
+        ],
+        "lemon": 35,
+        "spring": 100,
+        "dark": 120
+      },
+      "적게": {
+        "ice": 2.2,
+        "syrup": [
+          65,
+          55,
+          45,
+          25
+        ],
+        "lemon": 35,
+        "spring": 120,
+        "dark": 150
+      },
+      "매우적게": {
+        "ice": 1.8,
+        "syrup": [
+          75,
+          65,
+          55,
+          30
+        ],
+        "lemon": 45,
+        "spring": 140,
+        "dark": 180
+      },
+      "없이": {
+        "ice": 1.8,
+        "syrup": [
+          75,
+          65,
+          55,
+          30
+        ],
+        "lemon": 45,
+        "spring": 160,
+        "dark": 200
+      }
+    }
   },
-  cheese: {
-    black_M: { ice: 1.5, syrup: [30, 20, 15, 10], tea: 150, hotwater: 50 },
-    black_L: { ice: 2, syrup: [40, 25, 15, 10], tea: 180, hotwater: 70 },
-    green_M: { ice: 1.5, syrup: [30, 20, 15, 10], tea: 200 },
-    green_L: { ice: 2, syrup: [40, 25, 15, 10], tea: 250 },
-    spring_M: { ice: 1.5, syrup: [30, 20, 15, 10], tea: 220 },
-    spring_L: { ice: 2, syrup: [40, 25, 15, 10], tea: 300 },
-    hojicha_M: { ice: 1.5, syrup: [40, 25, 15, 10], hojicha: .5, creamer: .5, hotwater: 180 },
-    hojicha_L: { ice: 2, syrup: [50, 30, 20, 10], hojicha: .8, creamer: .8, hotwater: 230 }
+  "cheese": {
+    "black_M": {
+      "ice": 1.5,
+      "syrup": [
+        30,
+        20,
+        15,
+        10
+      ],
+      "tea": 150,
+      "hotwater": 50
+    },
+    "black_L": {
+      "ice": 2,
+      "syrup": [
+        40,
+        25,
+        15,
+        10
+      ],
+      "tea": 180,
+      "hotwater": 70
+    },
+    "green_M": {
+      "ice": 1.5,
+      "syrup": [
+        30,
+        20,
+        15,
+        10
+      ],
+      "tea": 200
+    },
+    "green_L": {
+      "ice": 2,
+      "syrup": [
+        40,
+        25,
+        15,
+        10
+      ],
+      "tea": 250
+    },
+    "spring_M": {
+      "ice": 1.5,
+      "syrup": [
+        30,
+        20,
+        15,
+        10
+      ],
+      "tea": 220
+    },
+    "spring_L": {
+      "ice": 2,
+      "syrup": [
+        40,
+        25,
+        15,
+        10
+      ],
+      "tea": 300
+    },
+    "hojicha_M": {
+      "ice": 1.5,
+      "syrup": [
+        40,
+        25,
+        15,
+        10
+      ],
+      "hojicha": 0.5,
+      "creamer": 0.5,
+      "hotwater": 180
+    },
+    "hojicha_L": {
+      "ice": 2,
+      "syrup": [
+        50,
+        30,
+        20,
+        10
+      ],
+      "hojicha": 0.8,
+      "creamer": 0.8,
+      "hotwater": 230
+    }
   }
 };
 
@@ -153,11 +1421,12 @@ function N(name) {
 }
 
 function _(ice) {
-  return "얼음 많이" === ice ? "많이"
-       : "얼음 적게" === ice ? "적게"
-       : ("얼음 없이" === ice || "상온" === ice) ? "없이"
-       : ("뜨겁게" === ice || "따뜻하게" === ice) ? "뜨겁게"
-       : "보통";
+  if (ice === "얼음 보통" || ice === "얼음 많이") return "보통";
+  if (ice === "얼음 적게") return "적게";
+  if (ice === "얼음 매우 적게" || ice === "얼음 매우적게" || ice === "매우적게") return "매우적게";
+  if (ice === "얼음 없이" || ice === "상온") return "없이";
+  if (ice === "뜨겁게" || ice === "따뜻하게") return "뜨겁게";
+  return "보통";
 }
 
 function z(quiz, fieldId) {
@@ -258,24 +1527,24 @@ function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = stat
   state.selectedCategory = categoryFilter;
   state.selectedMenu = menuFilter;
 
-  // 1. Category Selection
+  // 1. Category Selection (exact weights from sheet 확률분포도)
   let chosenCategory;
   if ("all" !== categoryFilter) {
     chosenCategory = categoryFilter;
   } else if (state.tempFilter === "hot") {
     // 치즈 밀크폼 & 더블 과일티는 HOT 불가 -> HOT 가능한 카테고리만 가중치 추첨
     chosenCategory = w([
-      { value: "클래식 밀크티", weight: 45 },
-      { value: "오리지널 티", weight: 35 },
-      { value: "신선한 우유", weight: 20 }
+      { value: "클래식 밀크티", weight: 55 },
+      { value: "오리지널 티", weight: 30 },
+      { value: "신선한 우유", weight: 15 }
     ]);
   } else {
     chosenCategory = w([
-      { value: "클래식 밀크티", weight: 30 },
-      { value: "치즈 밀크폼", weight: 25 },
-      { value: "더블 과일티", weight: 20 },
-      { value: "오리지널 티", weight: 15 },
-      { value: "신선한 우유", weight: 10 }
+      { value: "클래식 밀크티", weight: 46 },
+      { value: "치즈 밀크폼", weight: 23 },
+      { value: "더블 과일티", weight: 15 },
+      { value: "오리지널 티", weight: 10 },
+      { value: "신선한 우유", weight: 6 }
     ]);
   }
 
@@ -287,95 +1556,97 @@ function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = stat
     chosenMenu = b.find(item => item.nameKo === menuFilter) || chosenMenu;
     chosenCategory = chosenMenu.category;
   } else if ("더블 과일티" === chosenCategory) {
-    chosenMenu = catCandidates[Math.floor(Math.random() * catCandidates.length)];
+    // 과일티 비중: 레몬(71.7%), 자몽(23.5%), 오렌지(4.8%)
+    chosenMenu = w([
+      { value: catCandidates.find(m => m.nameKo.includes("레몬")) || catCandidates[0], weight: 72 },
+      { value: catCandidates.find(m => m.nameKo.includes("자몽")) || catCandidates[0], weight: 23 },
+      { value: catCandidates.find(m => m.nameKo.includes("오렌지")) || catCandidates[0], weight: 5 }
+    ]);
   } else {
     chosenMenu = w(catCandidates.map(item => {
       let wt = 10;
-      if (item.nameKo.includes("다크")) wt = 40;
+      if (item.nameKo.includes("다크")) wt = 45;
       else if (item.nameKo.includes("스프링")) wt = 30;
-      else if (item.nameKo.includes("그린")) wt = 15;
-      else if (item.nameKo.includes("블랙")) wt = 8;
-      else if (item.nameKo.includes("라이트")) wt = 7;
-      else if (item.nameKo.includes("호지차")) wt = 10;
+      else if (item.nameKo.includes("라이트")) wt = 12;
+      else if (item.nameKo.includes("블랙")) wt = 10;
+      else if (item.nameKo.includes("그린")) wt = 8;
+      else if (item.nameKo.includes("호지차")) wt = 6;
       return { value: item, weight: wt };
     }));
   }
 
-  // 3. Size Selection
-  let size = Math.random() < 0.5 ? "M" : "L";
+  // 3. Size Selection (시트 비중: M 57%, L 43%)
+  let size = Math.random() < 0.57 ? "M" : "L";
 
-  // 4. Sugar Selection
+  // 4. Sugar Selection (시트 비중: 30% 46.5%, 50% 23.6%, 0% 12.7%, 10% 12.5%, 100% 4.7%)
   let sugar = w([
-    { value: "50%", weight: 37.5 },
-    { value: "30%", weight: 37.5 },
-    { value: "10%", weight: 15 },
-    { value: "100%", weight: 5 },
-    { value: "0%", weight: 5 }
+    { value: "30%", weight: 46.5 },
+    { value: "50%", weight: 23.6 },
+    { value: "0%", weight: 12.7 },
+    { value: "10%", weight: 12.5 },
+    { value: "100%", weight: 4.7 }
   ]);
 
-  // 5. Topping Selection (respecting toppingFilter)
+  // 5. Topping Selection (respecting toppingFilter, 시트 비중: 블랙펄 48%, 우롱티젤리 28%, 골든버블 24%)
   let topping = "없음";
-  const topList = ["블랙 펄", "골든 버블", "우롱티 젤리"];
+  const topList = [
+    { value: "블랙 펄", weight: 48 },
+    { value: "우롱티 젤리", weight: 28 },
+    { value: "골든 버블", weight: 24 }
+  ];
   if (state.toppingFilter === "with") {
-    topping = topList[Math.floor(Math.random() * topList.length)];
+    topping = w(topList);
   } else if (state.toppingFilter === "without") {
     topping = "없음";
   } else {
-    // all: 30% 확률로 토핑 포함
-    if (Math.random() < 0.3) {
-      topping = topList[Math.floor(Math.random() * topList.length)];
+    // all: 시트 토핑 주문율 44%
+    if (Math.random() < 0.44) {
+      topping = w(topList);
     } else {
       topping = "없음";
     }
   }
 
-  // 6. Ice / Temperature Selection (respecting tempFilter)
+  // 6. Ice / Temperature Selection (respecting tempFilter, 시트 정정 반영: 얼음 매우 적게 포함)
   const isColdOnlyCat = ("치즈 밀크폼" === chosenCategory || "더블 과일티" === chosenCategory);
   let ice;
 
   if (state.tempFilter === "hot" && !isColdOnlyCat) {
-    ice = Math.random() < 0.5 ? "뜨겁게" : "따뜻하게";
+    ice = Math.random() < 0.8 ? "따뜻하게" : "뜨겁게";
   } else if (state.tempFilter === "ice" || isColdOnlyCat) {
     if ("치즈 밀크폼" === chosenCategory) {
       ice = "얼음 보통";
-    } else if ("더블 과일티" === chosenCategory) {
-      ice = w([
-        { value: "얼음 보통", weight: 45 },
-        { value: "얼음 적게", weight: 35 },
-        { value: "얼음 없이", weight: 13 },
-        { value: "얼음 많이", weight: 5 },
-        { value: "상온", weight: 2 }
-      ]);
     } else {
       ice = w([
-        { value: "얼음 보통", weight: 44 },
-        { value: "얼음 적게", weight: 33 },
-        { value: "얼음 없이", weight: 15 },
-        { value: "얼음 많이", weight: 6 },
-        { value: "상온", weight: 2 }
+        { value: "얼음 적게", weight: 45 },
+        { value: "얼음 보통", weight: 43 },
+        { value: "얼음 매우 적게", weight: 5.5 },
+        { value: "얼음 없이", weight: 5.5 },
+        { value: "상온", weight: 1 }
       ]);
     }
   } else {
-    // tempFilter === "all"
+    // tempFilter === "all" (시트 확률분포도 비중 반영)
     if ("치즈 밀크폼" === chosenCategory) {
       ice = "얼음 보통";
     } else if ("더블 과일티" === chosenCategory) {
       ice = w([
-        { value: "얼음 보통", weight: 45 },
-        { value: "얼음 적게", weight: 35 },
-        { value: "얼음 없이", weight: 13 },
-        { value: "얼음 많이", weight: 5 },
-        { value: "상온", weight: 2 }
+        { value: "얼음 적게", weight: 45 },
+        { value: "얼음 보통", weight: 43 },
+        { value: "얼음 매우 적게", weight: 5.5 },
+        { value: "얼음 없이", weight: 5.5 },
+        { value: "상온", weight: 1 }
       ]);
     } else {
       ice = w([
-        { value: "얼음 보통", weight: 40 },
-        { value: "얼음 적게", weight: 30 },
-        { value: "얼음 없이", weight: 14 },
-        { value: "상온", weight: 2 },
-        { value: "얼음 많이", weight: 5 },
-        { value: "따뜻하게", weight: 4.5 },
-        { value: "뜨겁게", weight: 4.5 }
+        { value: "얼음 적게", weight: 43.3 },
+        { value: "얼음 보통", weight: 42.6 },
+        { value: "얼음 매우 적게", weight: 5.0 },
+        { value: "얼음 없이", weight: 5.6 },
+        { value: "따뜻하게", weight: 2.0 },
+        { value: "뜨겁게", weight: 0.5 },
+        { value: "상온", weight: 0.5 },
+        { value: "얼음 많이", weight: 0.5 }
       ]);
     }
   }
