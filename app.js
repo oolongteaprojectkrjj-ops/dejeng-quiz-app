@@ -28,6 +28,8 @@ const b = [
   { id: "C6", category: "치즈 밀크폼", nameKo: "치즈 밀크폼 블랙티", nameEn: "Cheese Milk Foam Black Tea", lines: ["치즈 밀크폼", "블랙티"], isOriginal: false },
   { id: "F1", category: "더블 과일티", nameKo: "레몬 스프링 우롱티", nameEn: "Lemon Spring Oolong Tea", lines: ["레몬 스프링", "우롱티"], isOriginal: false },
   { id: "F2", category: "더블 과일티", nameKo: "오렌지 스프링 우롱티", nameEn: "Orange Spring Oolong Tea", lines: ["오렌지 스프링", "우롱티"], isOriginal: false },
+  { id: "O6", category: "오리지널 티", nameKo: "루이보스", nameEn: "Rooibos", lines: ["루이보스"], isOriginal: true },
+  { id: "C7", category: "치즈 밀크폼", nameKo: "치즈 밀크폼 초코", nameEn: "Cheese Milk Foam Chocolate", lines: ["치즈 밀크폼", "초코"], isOriginal: false },
   { id: "F3", category: "더블 과일티", nameKo: "자몽 시트러스 우롱티", nameEn: "Grapefruit Citrus Oolong Tea", lines: ["자몽 시트러스", "우롱티"], isOriginal: false }
 ];
 
@@ -45,6 +47,110 @@ const y = { .8: .5, 1: .5, 1.2: .8, 1.5: 1, 1.8: 1.2, 2.2: 1.5, 2.5: 2.2 };
 
 let j = {
   "original": {
+    "rooibos_M": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          20,
+          15,
+          10,
+          5
+        ],
+        "tea": 170
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          20,
+          15,
+          10,
+          5
+        ],
+        "tea": 220
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "tea": 260
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "tea": 280
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "tea": 350
+      }
+    },
+    "rooibos_L": {
+      "보통": {
+        "ice": 2.5,
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "tea": 220
+      },
+      "적게": {
+        "ice": 2.2,
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "tea": 280
+      },
+      "매우적게": {
+        "ice": 1.8,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "tea": 360
+      },
+      "없이": {
+        "ice": 1.8,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "tea": 380
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "tea": 450
+      }
+    },
     "black_M": {
       "보통": {
         "ice": 2.2,
@@ -483,120 +589,6 @@ let j = {
         "tea": 450
       }
     },
-    "black_topping_M": {
-      "보통": {
-        "ice": 1.8,
-        "syrup": [
-          25,
-          15,
-          10,
-          5
-        ],
-        "creamer": 2.5,
-        "tea": 130
-      },
-      "적게": {
-        "ice": 1.5,
-        "syrup": [
-          25,
-          15,
-          10,
-          5
-        ],
-        "creamer": 2.5,
-        "tea": 160
-      },
-      "매우적게": {
-        "ice": 1.2,
-        "syrup": [
-          30,
-          20,
-          15,
-          10
-        ],
-        "creamer": 3.5,
-        "tea": 180
-      },
-      "없이": {
-        "ice": 1.2,
-        "syrup": [
-          30,
-          20,
-          15,
-          10
-        ],
-        "creamer": 3.5,
-        "tea": 200
-      },
-      "뜨겁게": {
-        "ice": "x",
-        "syrup": [
-          30,
-          20,
-          15,
-          10
-        ],
-        "creamer": 3.5,
-        "tea": 280
-      }
-    },
-    "black_topping_L": {
-      "보통": {
-        "ice": 2.2,
-        "syrup": [
-          30,
-          20,
-          15,
-          10
-        ],
-        "creamer": 3.5,
-        "tea": 180
-      },
-      "적게": {
-        "ice": 1.8,
-        "syrup": [
-          30,
-          20,
-          15,
-          10
-        ],
-        "creamer": 3.5,
-        "tea": 210
-      },
-      "매우적게": {
-        "ice": 1.5,
-        "syrup": [
-          40,
-          25,
-          15,
-          10
-        ],
-        "creamer": 4.5,
-        "tea": 260
-      },
-      "없이": {
-        "ice": 1.5,
-        "syrup": [
-          40,
-          25,
-          15,
-          10
-        ],
-        "creamer": 4.5,
-        "tea": 280
-      },
-      "뜨겁게": {
-        "ice": "x",
-        "syrup": [
-          40,
-          25,
-          15,
-          10
-        ],
-        "creamer": 4.5,
-        "tea": 360
-      }
-    },
     "hojicha_M": {
       "보통": {
         "ice": 2.5,
@@ -719,6 +711,120 @@ let j = {
         "hojicha": 1.5,
         "creamer": 5,
         "hotwater": 300
+      }
+    },
+    "black_topping_M": {
+      "보통": {
+        "ice": 1.8,
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "creamer": 2.5,
+        "tea": 130
+      },
+      "적게": {
+        "ice": 1.5,
+        "syrup": [
+          25,
+          15,
+          10,
+          5
+        ],
+        "creamer": 2.5,
+        "tea": 160
+      },
+      "매우적게": {
+        "ice": 1.2,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 180
+      },
+      "없이": {
+        "ice": 1.2,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 200
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 280
+      }
+    },
+    "black_topping_L": {
+      "보통": {
+        "ice": 2.2,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 180
+      },
+      "적게": {
+        "ice": 1.8,
+        "syrup": [
+          30,
+          20,
+          15,
+          10
+        ],
+        "creamer": 3.5,
+        "tea": 210
+      },
+      "매우적게": {
+        "ice": 1.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 4.5,
+        "tea": 260
+      },
+      "없이": {
+        "ice": 1.5,
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 4.5,
+        "tea": 280
+      },
+      "뜨겁게": {
+        "ice": "x",
+        "syrup": [
+          40,
+          25,
+          15,
+          10
+        ],
+        "creamer": 4.5,
+        "tea": 360
       }
     }
   },
@@ -1327,6 +1433,28 @@ let j = {
       ],
       "tea": 300
     },
+    "choco_M": {
+      "ice": 1.5,
+      "syrup": [
+        15,
+        10,
+        5,
+        5
+      ],
+      "choco": 3.5,
+      "hotwater": 200
+    },
+    "choco_L": {
+      "ice": 2,
+      "syrup": [
+        25,
+        15,
+        10,
+        5
+      ],
+      "choco": 4.5,
+      "hotwater": 250
+    },
     "hojicha_M": {
       "ice": 1.5,
       "syrup": [
@@ -1350,6 +1478,28 @@ let j = {
       "hojicha": 0.8,
       "creamer": 0.8,
       "hotwater": 230
+    }
+  },
+  "fieldOrders": {
+    "original": {
+      "ice": "얼음, 시럽, 티",
+      "hot": "시럽, 티"
+    },
+    "fruit": {
+      "ice": "얼음, 시럽, 주스, 티",
+      "hot": ""
+    },
+    "milk": {
+      "ice": "크리머, 시럽, 티, 얼음",
+      "hot": "크리머, 시럽, 티"
+    },
+    "latte": {
+      "ice": "얼음, 시럽, 티, 우유",
+      "hot": "시럽, 티, 우유"
+    },
+    "cheese": {
+      "ice": "티, 얼음, 시럽",
+      "hot": ""
     }
   }
 };
@@ -1382,7 +1532,8 @@ const keywordMap = {
   "주스": "juice",
   "호지차": "hojicha",
   "온수": "hotwater",
-  "뜨거운물": "hotwater"
+  "뜨거운물": "hotwater",
+  "초코": "choco"
 };
 
 function parseOrderTokens(str) {
@@ -1457,7 +1608,12 @@ function k(quiz) {
       avail.dark = { id: "dark", name: "다크" };
     }
   } else if (catKey === "cheese") {
-    if (name.includes("호지차")) {
+    if (name.includes("초코")) {
+      avail.ice = { id: "ice", name: "얼음" };
+      avail.syrup = { id: "syrup", name: "시럽" };
+      avail.choco = { id: "choco", name: "초코" };
+      avail.hotwater = { id: "hotwater", name: "온수" };
+    } else if (name.includes("호지차")) {
       avail.hotwater = { id: "hotwater", name: "온수" };
       avail.hojicha = { id: "hojicha", name: "호지차" };
       avail.creamer = { id: "creamer", name: "크리머" };
@@ -1498,7 +1654,7 @@ function k(quiz) {
           used.add(tKey);
         }
       }
-      if (avail.hotwater && !used.has("hotwater") && !name.includes("호지차")) {
+      if (avail.hotwater && !used.has("hotwater") && !name.includes("호지차") && !name.includes("초코")) {
         result.push(avail.hotwater);
         used.add("hotwater");
       }
@@ -1521,7 +1677,9 @@ function k(quiz) {
 }
 
 function N(name) {
-  return name.includes("블랙") ? "black"
+  return name.includes("루이보스") ? "rooibos"
+       : name.includes("초코") ? "choco"
+       : name.includes("블랙") ? "black"
        : name.includes("자몽") ? "grapefruit"
        : name.includes("오렌지") ? "orange"
        : name.includes("레몬") ? "lemon"
@@ -2104,18 +2262,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // Load cached recipes from localStorage if available
+  // Purge any stale cached recipes from localStorage
   try {
-    const cached = localStorage.getItem('dejeng_live_recipes');
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      if (parsed && parsed.original && parsed.milk && parsed.latte) {
-        j = parsed;
-      }
-    }
-  } catch (e) {
-    console.warn("Could not read localStorage cache:", e);
-  }
+    localStorage.removeItem('dejeng_live_recipes');
+  } catch (e) {}
 
   // Initial load
   updateMenuOptions('all');
@@ -2218,6 +2368,8 @@ function compileDatabase(sheets) {
     });
     return res;
   }
+  original["rooibos_M"] = extOrig(3, false);
+  original["rooibos_L"] = extOrig(6, false);
   original["black_M"] = extOrig(9, true);
   original["black_L"] = extOrig(13, true);
   original["green_M"] = extOrig(17, false);
@@ -2386,6 +2538,8 @@ function compileDatabase(sheets) {
     green_L: { ice: parseNum(cheeseRows[15][3]), syrup: parseSyrup(cheeseRows[16][3]), tea: parseNum(cheeseRows[17][3]) },
     spring_M: { ice: parseNum(cheeseRows[11][3]), syrup: parseSyrup(cheeseRows[12][3]), tea: parseNum(cheeseRows[14][3]) },
     spring_L: { ice: parseNum(cheeseRows[15][3]), syrup: parseSyrup(cheeseRows[16][3]), tea: parseNum(cheeseRows[18][3]) },
+    choco_M: { ice: parseNum(cheeseRows[19][3]), syrup: parseSyrup(cheeseRows[20][3]), choco: parseNum(cheeseRows[21][3]), hotwater: parseNum(cheeseRows[22][3]) },
+    choco_L: { ice: parseNum(cheeseRows[23][3]), syrup: parseSyrup(cheeseRows[24][3]), choco: parseNum(cheeseRows[25][3]), hotwater: parseNum(cheeseRows[26][3]) },
     hojicha_M: { ice: parseNum(cheeseRows[27][3]), syrup: parseSyrup(cheeseRows[28][3]), hojicha: parseNum(cheeseRows[29][3]), creamer: parseNum(cheeseRows[30][3]), hotwater: parseNum(cheeseRows[31][3]) },
     hojicha_L: { ice: parseNum(cheeseRows[32][3]), syrup: parseSyrup(cheeseRows[33][3]), hojicha: parseNum(cheeseRows[34][3]), creamer: parseNum(cheeseRows[35][3]), hotwater: parseNum(cheeseRows[36][3]) }
   };
@@ -2430,38 +2584,20 @@ function compileDatabase(sheets) {
 
 async function syncLiveSheetData() {
   try {
-    // Direct Live Google Sheets Sync (Real-time, zero Apps Script setup required!)
-    const entries = Object.entries(SHEET_GIDS);
-    const fetchPromises = entries.map(([name, gid]) => {
-      const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}&_t=${Date.now()}`;
-      return fetch(url, { cache: "no-store" }).then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status} for ${name}`);
-        return res.text();
-      });
-    });
-
-    const csvTexts = await Promise.all(fetchPromises);
-    const sheetData = {};
-    entries.forEach(([name], idx) => {
-      sheetData[name] = parseCSVLine(csvTexts[idx]);
-    });
-
-    const liveDB = compileDatabase(sheetData);
-    if (liveDB && liveDB.original && liveDB.milk && liveDB.latte) {
-      const isChanged = JSON.stringify(j) !== JSON.stringify(liveDB);
-      j = liveDB;
-      try {
-        localStorage.setItem('dejeng_live_recipes', JSON.stringify(liveDB));
-      } catch (e) {}
-      console.log("[Quiz Sync] Real-time live recipes loaded directly from Google Sheets.");
-
-      // If data changed while user is looking at initial question, keep answer calculation fresh
-      if (isChanged && !state.isSubmitted && state.currentQuiz) {
-        renderInputFields();
+    const res = await fetch(`sync_database.json?_t=${Date.now()}`, { cache: "no-store" });
+    if (res.ok) {
+      const liveDB = await res.json();
+      if (liveDB && liveDB.original && liveDB.milk && liveDB.latte) {
+        const isChanged = JSON.stringify(j) !== JSON.stringify(liveDB);
+        j = liveDB;
+        console.log("[Quiz Sync] Live recipes verified from sync_database.json.");
+        if (isChanged && !state.isSubmitted && state.currentQuiz) {
+          renderInputFields();
+        }
       }
-      return;
     }
   } catch (err) {
-    console.warn("Live Google Sheets sync fallback to cache/default:", err);
+    console.warn("syncLiveSheetData notice:", err);
   }
 }
+
