@@ -2306,11 +2306,50 @@ document.addEventListener('DOMContentLoaded', () => {
     selectMenu.value = 'all';
   }
 
+  function syncToppingOptions(menuVal) {
+    if (!selectTopping) return;
+    const optAll = selectTopping.querySelector('option[value="all"]');
+    const optWith = selectTopping.querySelector('option[value="with"]');
+    const optWithout = selectTopping.querySelector('option[value="without"]');
+
+    if (menuVal === 'sec:milk_topping') {
+      state.toppingFilter = 'with';
+      selectTopping.value = 'with';
+      if (optAll) optAll.disabled = true;
+      if (optWithout) optWithout.disabled = true;
+      if (optWith) {
+        optWith.disabled = false;
+        optWith.textContent = '토핑 O (필수)';
+      }
+    } else if (menuVal === 'sec:milk_basic') {
+      state.toppingFilter = 'without';
+      selectTopping.value = 'without';
+      if (optAll) optAll.disabled = true;
+      if (optWith) optWith.disabled = true;
+      if (optWithout) {
+        optWithout.disabled = false;
+        optWithout.textContent = '토핑 X (없음)';
+      }
+    } else {
+      if (optAll) optAll.disabled = false;
+      if (optWith) {
+        optWith.disabled = false;
+        optWith.textContent = '토핑 O';
+      }
+      if (optWithout) {
+        optWithout.disabled = false;
+        optWithout.textContent = '토핑 X';
+      }
+      state.toppingFilter = selectTopping.value;
+    }
+  }
+
   selectCat.addEventListener('change', (e) => {
     const val = e.target.value;
     state.selectedCategory = val;
     state.selectedMenu = 'all';
     syncTempOptions(val);
+    syncToppingOptions('all');
     updateMenuOptions(val);
     generateQuiz(val, 'all');
   });
@@ -2318,16 +2357,7 @@ document.addEventListener('DOMContentLoaded', () => {
   selectMenu.addEventListener('change', (e) => {
     const val = e.target.value;
     state.selectedMenu = val;
-
-    // Sequential feedback on topping for specific sections
-    if (val === 'sec:milk_topping') {
-      state.toppingFilter = 'with';
-      if (selectTopping) selectTopping.value = 'with';
-    } else if (val === 'sec:milk_basic') {
-      state.toppingFilter = 'without';
-      if (selectTopping) selectTopping.value = 'without';
-    }
-
+    syncToppingOptions(val);
     generateQuiz(state.selectedCategory, val);
   });
 
@@ -2417,6 +2447,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initial load
   updateMenuOptions('all');
+  syncToppingOptions('all');
   generateQuiz('all', 'all');
 
   // Immediately fetch latest live recipes from Google Sheets in background
