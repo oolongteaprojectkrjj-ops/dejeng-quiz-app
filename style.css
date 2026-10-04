@@ -363,7 +363,7 @@ body {
   display: none !important;
 }
 
-/* Shorten Form Modal Popup */
+/* Shorten Form Modal Popup - Store Printout Exact Visual */
 .shorten-modal-overlay {
   display: none !important;
   position: fixed !important;
@@ -376,10 +376,10 @@ body {
   z-index: 99999 !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 16px !important;
-  background-color: rgba(0, 0, 0, 0.85) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  padding: 8px !important;
+  background-color: rgba(0, 0, 0, 0.75) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
   cursor: pointer !important;
   user-select: none !important;
 }
@@ -389,53 +389,91 @@ body {
 }
 
 .shorten-modal-card {
-  background-color: #0f172a !important;
-  border: 1px solid rgba(245, 158, 11, 0.35) !important;
-  border-radius: 16px !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8) !important;
-  max-width: 480px !important;
+  background-color: #ffffff !important;
+  border-radius: 4px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75) !important;
+  max-width: 520px !important;
   width: 100% !important;
-  max-height: 85vh !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-  position: relative !important;
+  max-height: 94vh !important;
+  overflow: auto !important;
+  padding: 6px !important;
   cursor: pointer !important;
 }
 
-.shorten-grid-liquid {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 4px !important;
-}
-
-@media (min-width: 420px) {
-  .shorten-grid-liquid {
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  }
-}
-
-.shorten-grid-2col {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 4px !important;
-}
-
-.shorten-chip {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  background-color: rgba(15, 23, 42, 0.7) !important;
-  padding: 4px 6px !important;
-  border-radius: 6px !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  font-family: 'Outfit', monospace !important;
+/* Exact Sheet Table Styling matching store printout */
+.shorten-sheet-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  font-family: Arial, Helvetica, "맑은 고딕", "Malgun Gothic", sans-serif !important;
   font-size: 11px !important;
+  border: 1px solid #000000 !important;
+  table-layout: fixed !important;
+  margin: 0 auto !important;
 }
 
-.shorten-chip.highlight {
-  background-color: rgba(245, 158, 11, 0.25) !important;
-  border-color: rgba(245, 158, 11, 0.8) !important;
+.shorten-sheet-table th,
+.shorten-sheet-table td {
+  border: 1px solid #000000 !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding: 2.5px 1px !important;
+  line-height: 1.2 !important;
+  font-weight: 500 !important;
+}
+
+.shorten-sheet-table .sheet-title {
+  font-size: 13.5px !important;
+  font-weight: 900 !important;
+  padding: 5px 2px !important;
+  text-decoration: underline !important;
+  color: #000000 !important;
+  letter-spacing: -0.2px !important;
+}
+
+.shorten-sheet-table .sheet-section-header {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  padding: 3.5px 1px !important;
+  color: #000000 !important;
+}
+
+.shorten-sheet-table .red-val td {
+  color: #c00000 !important;
+  font-weight: 600 !important;
+}
+
+.shorten-sheet-table .gray-cell {
+  background-color: #bfbfbf !important;
+}
+
+.shorten-sheet-table .empty-row td {
+  height: 10px !important;
+}
+
+@media (min-width: 440px) {
+  .shorten-modal-card {
+    padding: 10px !important;
+  }
+  .shorten-sheet-table {
+    font-size: 12px !important;
+  }
+  .shorten-sheet-table th,
+  .shorten-sheet-table td {
+    padding: 3.5px 2px !important;
+  }
+  .shorten-sheet-table .sheet-title {
+    font-size: 15px !important;
+    padding: 6px 4px !important;
+  }
+  .shorten-sheet-table .sheet-section-header {
+    font-size: 13px !important;
+    padding: 4px !important;
+  }
+  .shorten-sheet-table .empty-row td {
+    height: 12px !important;
+  }
 }
 
 
