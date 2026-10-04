@@ -1870,13 +1870,19 @@ function renderSticker(q) {
   const stickerEl = document.getElementById('dejengSticker');
   if (!stickerEl) return;
 
-  const titleHtml = q.menu.lines.map((line, idx) => `<div>${idx === 0 && q.menu.isOriginal ? `# ${line}` : line}</div>`).join('');
+  // Enforce strictly max 2 lines and prevent any line wrapping
+  const rawLines = q.menu.lines || [q.menu.nameKo];
+  const safeLines = rawLines.slice(0, 2);
+  const maxLen = Math.max(...safeLines.map(l => l.length));
+  const fontStyle = maxLen >= 12 ? 'font-size: 0.62rem;' : (maxLen >= 10 ? 'font-size: 0.66rem;' : '');
+
+  const titleHtml = safeLines.map((line, idx) => `<div style="white-space: nowrap; overflow: visible;">${idx === 0 && q.menu.isOriginal ? `# ${line}` : line}</div>`).join('');
   const toppingHtml = (q.topping && q.topping !== '없음') ? `<div>토핑 ${q.topping}</div>` : '';
 
   stickerEl.className = 'dejeng-sticker-card shrink-0';
   stickerEl.innerHTML = `
     <!-- Dynamic Drink Name Overlay -->
-    <div class="st-real-title">
+    <div class="st-real-title" style="${fontStyle}">
       ${titleHtml}
     </div>
 

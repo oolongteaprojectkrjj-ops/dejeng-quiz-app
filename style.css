@@ -47,16 +47,21 @@ body {
 
 .st-real-title {
   position: absolute;
-  top: 31%;
+  top: 29.5%;
   left: 7.5%;
-  max-width: 52%;
+  max-width: 90%;
   font-family: 'Noto Sans KR', sans-serif !important;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
-  line-height: 1.22;
+  line-height: 1.25;
   color: #111111;
-  word-break: keep-all;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.4px;
+  z-index: 2;
+}
+
+.st-real-title div {
+  white-space: nowrap !important;
+  overflow: visible !important;
 }
 
 .st-real-specs {
