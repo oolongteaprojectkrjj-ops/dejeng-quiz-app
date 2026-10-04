@@ -87,8 +87,7 @@ function sendRecipesToQuizApp() {
     pubSheet.getRange("B4").setValue(nowStr);
     pubSheet.getRange("A5").setValue("🔗 퀴즈 앱 링크");
     pubSheet.getRange("B5").setValue(QUIZ_APP_URL);
-    pubSheet.getRange("A6").setValue("📋 반영 항목");
-    pubSheet.getRange("B6").setValue("오리지널 티 (6종), 밀크티 (6종), 라떼 (4종), 과일티 (6종), 치즈 밀크폼 (8종)");
+    pubSheet.getRange("B6").setValue("오리지널 티, 밀크티, 라떼, 과일티, 치즈 밀크폼 전 메뉴");
 
     // 5. 완료 알림 팝업 (링크 포함)
     ui.alert(
