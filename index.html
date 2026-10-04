@@ -91,9 +91,6 @@
               <h2 class="quiz-main-title">✍️ 직접 제조 레시피 입력하기</h2>
               <span class="quiz-subtitle">시트 순서대로 용량을 맞춰보세요</span>
             </div>
-            <button id="btnToggleKeypad" class="btn btn-sm btn-outline-gold mobile-keypad-toggle-btn" title="가상 번호패드 열기/닫기">
-              🔢 번호패드
-            </button>
           </div>
 
           <!-- Manufacturing Sequence Hint Box -->
@@ -138,42 +135,6 @@
         </div>
       </section>
     </main>
-
-    <!-- Mobile-Optimized On-Screen Number Pad (Includes '.' and control keys) -->
-    <div id="mobileNumberPad" class="mobile-number-pad">
-      <div class="pad-header">
-        <div class="pad-active-target">
-          <span class="pad-target-icon">✏️</span>
-          <span id="padTargetName" class="pad-target-label">입력할 칸을 선택하세요</span>
-        </div>
-        <div class="pad-header-actions">
-          <button id="btnPadPrev" class="pad-nav-btn" type="button" title="이전 항목">◀ 이전</button>
-          <button id="btnPadNext" class="pad-nav-btn" type="button" title="다음 항목">다음 ▶</button>
-          <button id="btnPadClose" class="pad-close-btn" type="button" title="키패드 닫기">✕</button>
-        </div>
-      </div>
-      <div class="pad-grid">
-        <button class="pad-key" type="button" data-key="1">1</button>
-        <button class="pad-key" type="button" data-key="2">2</button>
-        <button class="pad-key" type="button" data-key="3">3</button>
-
-        <button class="pad-key" type="button" data-key="4">4</button>
-        <button class="pad-key" type="button" data-key="5">5</button>
-        <button class="pad-key" type="button" data-key="6">6</button>
-
-        <button class="pad-key" type="button" data-key="7">7</button>
-        <button class="pad-key" type="button" data-key="8">8</button>
-        <button class="pad-key" type="button" data-key="9">9</button>
-
-        <button class="pad-key pad-key-dot" type="button" data-key=".">.</button>
-        <button class="pad-key" type="button" data-key="0">0</button>
-        <button class="pad-key pad-key-backspace" type="button" data-key="backspace">⌫</button>
-      </div>
-      <div class="pad-footer">
-        <button id="btnPadClear" class="pad-action-btn pad-btn-clear" type="button">전체삭제</button>
-        <button id="btnPadGrade" class="pad-action-btn pad-btn-submit" type="button">✓ 채점하기</button>
-      </div>
-    </div>
   </div>
 
   <!-- Reference Modal -->

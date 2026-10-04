@@ -595,7 +595,7 @@ function renderQuizForm(q) {
 }
 
 /**
- * Set Active Input for Virtual Number Pad
+ * Set Active Input
  */
 function setActiveInput(idx) {
   state.activeInputIdx = idx;
@@ -605,117 +605,6 @@ function setActiveInput(idx) {
   const activeRow = document.getElementById(`quizStepRow_${idx}`);
   if (activeRow) {
     activeRow.classList.add('is-active-step');
-  }
-
-  // Update Pad Target Name
-  const targetStep = state.currentQuestion.steps[idx];
-  const padLabel = document.getElementById('padTargetName');
-  if (padLabel && targetStep) {
-    padLabel.textContent = `${idx + 1}. ${targetStep.name}`;
-  }
-
-  // Ensure pad is visible on mobile
-  const padEl = document.getElementById('mobileNumberPad');
-  if (padEl && padEl.classList.contains('is-collapsed')) {
-    padEl.classList.remove('is-collapsed');
-  }
-}
-
-/**
- * Setup Mobile On-Screen Number Pad
- */
-function setupNumberPad() {
-  const pad = document.getElementById('mobileNumberPad');
-  if (!pad) return;
-
-  // Number & Dot Keys
-  pad.querySelectorAll('.pad-key').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const key = btn.dataset.key;
-      handlePadInput(key);
-    });
-  });
-
-  // Action Buttons
-  document.getElementById('btnPadClear').addEventListener('click', (e) => {
-    e.preventDefault();
-    handlePadInput('clear');
-  });
-
-  document.getElementById('btnPadPrev').addEventListener('click', (e) => {
-    e.preventDefault();
-    navInput(-1);
-  });
-
-  document.getElementById('btnPadNext').addEventListener('click', (e) => {
-    e.preventDefault();
-    navInput(1);
-  });
-
-  document.getElementById('btnPadClose').addEventListener('click', (e) => {
-    e.preventDefault();
-    pad.classList.add('is-collapsed');
-  });
-
-  document.getElementById('btnToggleKeypad').addEventListener('click', () => {
-    pad.classList.toggle('is-collapsed');
-    if (!pad.classList.contains('is-collapsed') && state.stepInputs.length > 0) {
-      const activeObj = state.stepInputs.find(item => item.idx === state.activeInputIdx) || state.stepInputs[0];
-      if (activeObj) activeObj.inputEl.focus();
-    }
-  });
-
-  document.getElementById('btnPadGrade').addEventListener('click', (e) => {
-    e.preventDefault();
-    gradeQuiz();
-  });
-}
-
-/**
- * Handle Virtual Keypad Actions
- */
-function handlePadInput(action) {
-  const currentObj = state.stepInputs.find(item => item.idx === state.activeInputIdx);
-  if (!currentObj) return;
-
-  const input = currentObj.inputEl;
-  let val = input.value;
-
-  if (action === 'clear') {
-    input.value = '';
-  } else if (action === 'backspace') {
-    input.value = val.slice(0, -1);
-  } else if (action === '.') {
-    if (val === '') {
-      input.value = '0.';
-    } else if (!val.includes('.')) {
-      input.value = val + '.';
-    }
-  } else {
-    // Digits 0-9
-    input.value = val + action;
-  }
-
-  // Trigger input event
-  input.dispatchEvent(new Event('input', { bubbles: true }));
-}
-
-/**
- * Navigate to Prev/Next Input
- */
-function navInput(delta) {
-  if (state.stepInputs.length === 0) return;
-  const currentPos = state.stepInputs.findIndex(item => item.idx === state.activeInputIdx);
-  let nextPos = currentPos + delta;
-
-  if (nextPos < 0) nextPos = 0;
-  if (nextPos >= state.stepInputs.length) nextPos = state.stepInputs.length - 1;
-
-  const nextObj = state.stepInputs[nextPos];
-  if (nextObj) {
-    nextObj.inputEl.focus();
-    setActiveInput(nextObj.idx);
   }
 }
 
@@ -992,8 +881,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnGradeQuiz').addEventListener('click', gradeQuiz);
   document.getElementById('btnShowAllAnswers').addEventListener('click', showAllAnswers);
 
-  // Mobile Keypad Setup
-  setupNumberPad();
 
   // Desktop Keyboard Shortcuts
   window.addEventListener('keydown', (e) => {
