@@ -312,7 +312,35 @@ def compile_database(sheets):
         "hojicha_L": {"ice": parse_num(cheese_rows[32][3]), "syrup": parse_syrup(cheese_rows[33][3]), "hojicha": parse_num(cheese_rows[34][3]), "creamer": parse_num(cheese_rows[35][3]), "hotwater": parse_num(cheese_rows[36][3])}
     }
 
-    return {"original": original, "milk": milk, "latte": latte, "fruit": fruit, "cheese": cheese}
+    def extract_row1_orders(row):
+        if not row:
+            return {"ice": "", "hot": ""}
+        ice, hot = "", ""
+        for i, cell in enumerate(row):
+            val = cell.strip().lower()
+            if val == "ice":
+                for j in range(i + 1, len(row)):
+                    text = row[j].strip()
+                    if text and "hot" not in text.lower() and "시럽은" not in text:
+                        ice = text
+                        break
+            elif val == "hot":
+                for j in range(i + 1, len(row)):
+                    text = row[j].strip()
+                    if text and "시럽은" not in text:
+                        hot = text
+                        break
+        return {"ice": ice, "hot": hot}
+
+    field_orders = {
+        "original": extract_row1_orders(orig_rows[0]),
+        "fruit": extract_row1_orders(fruit_rows[0]),
+        "milk": extract_row1_orders(milk_rows[0]),
+        "latte": extract_row1_orders(latte_rows[0]),
+        "cheese": extract_row1_orders(cheese_rows[0])
+    }
+
+    return {"original": original, "milk": milk, "latte": latte, "fruit": fruit, "cheese": cheese, "fieldOrders": field_orders}
 
 def main():
     print("Fetching live CSVs from Google Spreadsheet...")

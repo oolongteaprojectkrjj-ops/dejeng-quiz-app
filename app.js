@@ -1365,51 +1365,159 @@ function w(arr) {
   return arr[arr.length - 1].value;
 }
 
-function k(quiz) {
-  let fields = (function(e) {
-    let cat = e.menu.category;
-    if ("오리지널 티" === cat) {
-      let t = [{ id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }, { id: "tea", name: "티" }];
-      if (e.menu.nameKo.includes("블랙")) t.push({ id: "hotwater", name: "온수" });
-      return t;
-    }
-    if ("클래식 밀크티" === cat) {
-      if (e.menu.nameKo.includes("호지차")) {
-        return [{ id: "hotwater", name: "온수" }, { id: "hojicha", name: "호지차" }, { id: "creamer", name: "크리머" }, { id: "syrup", name: "시럽" }, { id: "ice", name: "얼음" }];
-      }
-      return [{ id: "creamer", name: "크리머" }, { id: "syrup", name: "시럽" }, { id: "tea", name: "티" }, { id: "ice", name: "얼음" }];
-    }
-    if ("신선한 우유" === cat) {
-      if (e.menu.nameKo.includes("호지차")) {
-        return [{ id: "hotwater", name: "온수" }, { id: "hojicha", name: "호지차" }, { id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }, { id: "milk", name: "우유" }];
-      }
-      return [{ id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }, { id: "tea", name: "티" }, { id: "milk", name: "우유" }];
-    }
-    if ("더블 과일티" === cat) {
-      let t = [{ id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }];
-      if (e.menu.nameKo.includes("자몽")) {
-        t.push({ id: "grapefruit", name: "자몽" }, { id: "pomelo", name: "포멜로" }, { id: "dark", name: "다크" });
-      } else if (e.menu.nameKo.includes("오렌지")) {
-        t.push({ id: "orange", name: "오렌지" }, { id: "spring", name: "스프링" }, { id: "dark", name: "다크" });
-      } else if (e.menu.nameKo.includes("레몬")) {
-        t.push({ id: "lemon", name: "레몬" }, { id: "spring", name: "스프링" }, { id: "dark", name: "다크" });
-      }
-      return t;
-    }
-    if ("치즈 밀크폼" === cat) {
-      if (e.menu.nameKo.includes("호지차")) {
-        return [{ id: "hotwater", name: "온수" }, { id: "hojicha", name: "호지차" }, { id: "creamer", name: "크리머" }, { id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }];
-      }
-      let t = [{ id: "tea", name: "티" }];
-      if (e.menu.nameKo.includes("블랙")) t.push({ id: "hotwater", name: "온수" });
-      t.push({ id: "ice", name: "얼음" });
-      t.push({ id: "syrup", name: "시럽" });
-      return t;
-    }
-    return [];
-  })(quiz);
+const defaultFieldOrders = {
+  original: { ice: "얼음, 시럽, 티", hot: "시럽, 티" },
+  fruit: { ice: "얼음, 시럽, 주스, 티", hot: "" },
+  milk: { ice: "크리머, 시럽, 티, 얼음", hot: "크리머, 시럽, 티" },
+  latte: { ice: "얼음, 시럽, 티, 우유", hot: "시럽, 티, 우유" },
+  cheese: { ice: "티, 얼음, 시럽", hot: "" }
+};
 
-  return ("뜨겁게" === quiz.ice || "따뜻하게" === quiz.ice) ? fields.filter(fld => "ice" !== fld.id) : fields;
+const keywordMap = {
+  "얼음": "ice",
+  "시럽": "syrup",
+  "크리머": "creamer",
+  "티": "tea",
+  "우유": "milk",
+  "주스": "juice",
+  "호지차": "hojicha",
+  "온수": "hotwater",
+  "뜨거운물": "hotwater"
+};
+
+function parseOrderTokens(str) {
+  if (!str) return [];
+  return str.split(/[,\s→>]+/)
+    .map(s => s.trim())
+    .filter(Boolean)
+    .map(word => keywordMap[word] || word);
+}
+
+function k(quiz) {
+  const isHot = (quiz.ice === "뜨겁게" || quiz.ice === "따뜻하게");
+  const cat = quiz.menu.category;
+  const name = quiz.menu.nameKo;
+
+  let catKey = "original";
+  if (cat === "클래식 밀크티" || cat === "밀크티") catKey = "milk";
+  else if (cat === "신선한 우유" || cat === "라떼") catKey = "latte";
+  else if (cat === "더블 과일티" || cat === "과일티") catKey = "fruit";
+  else if (cat === "치즈 밀크폼") catKey = "cheese";
+
+  const orders = j?.fieldOrders?.[catKey] || defaultFieldOrders[catKey] || {};
+  const orderStr = isHot ? (orders.hot || "") : (orders.ice || "");
+  const tokens = parseOrderTokens(orderStr);
+
+  const avail = {};
+  if (catKey === "original") {
+    avail.ice = { id: "ice", name: "얼음" };
+    avail.syrup = { id: "syrup", name: "시럽" };
+    avail.tea = { id: "tea", name: "티" };
+    if (name.includes("블랙")) avail.hotwater = { id: "hotwater", name: "온수" };
+  } else if (catKey === "milk") {
+    if (name.includes("호지차")) {
+      avail.hotwater = { id: "hotwater", name: "온수" };
+      avail.hojicha = { id: "hojicha", name: "호지차" };
+      avail.creamer = { id: "creamer", name: "크리머" };
+      avail.syrup = { id: "syrup", name: "시럽" };
+      avail.ice = { id: "ice", name: "얼음" };
+    } else {
+      avail.creamer = { id: "creamer", name: "크리머" };
+      avail.syrup = { id: "syrup", name: "시럽" };
+      avail.tea = { id: "tea", name: "티" };
+      avail.ice = { id: "ice", name: "얼음" };
+    }
+  } else if (catKey === "latte") {
+    if (name.includes("호지차")) {
+      avail.hotwater = { id: "hotwater", name: "온수" };
+      avail.hojicha = { id: "hojicha", name: "호지차" };
+      avail.ice = { id: "ice", name: "얼음" };
+      avail.syrup = { id: "syrup", name: "시럽" };
+      avail.milk = { id: "milk", name: "우유" };
+    } else {
+      avail.ice = { id: "ice", name: "얼음" };
+      avail.syrup = { id: "syrup", name: "시럽" };
+      avail.tea = { id: "tea", name: "티" };
+      avail.milk = { id: "milk", name: "우유" };
+    }
+  } else if (catKey === "fruit") {
+    avail.ice = { id: "ice", name: "얼음" };
+    avail.syrup = { id: "syrup", name: "시럽" };
+    if (name.includes("자몽")) {
+      avail.grapefruit = { id: "grapefruit", name: "자몽" };
+      avail.pomelo = { id: "pomelo", name: "포멜로" };
+      avail.dark = { id: "dark", name: "다크" };
+    } else if (name.includes("오렌지")) {
+      avail.orange = { id: "orange", name: "오렌지" };
+      avail.spring = { id: "spring", name: "스프링" };
+      avail.dark = { id: "dark", name: "다크" };
+    } else if (name.includes("레몬")) {
+      avail.lemon = { id: "lemon", name: "레몬" };
+      avail.spring = { id: "spring", name: "스프링" };
+      avail.dark = { id: "dark", name: "다크" };
+    }
+  } else if (catKey === "cheese") {
+    if (name.includes("호지차")) {
+      avail.hotwater = { id: "hotwater", name: "온수" };
+      avail.hojicha = { id: "hojicha", name: "호지차" };
+      avail.creamer = { id: "creamer", name: "크리머" };
+      avail.ice = { id: "ice", name: "얼음" };
+      avail.syrup = { id: "syrup", name: "시럽" };
+    } else {
+      avail.tea = { id: "tea", name: "티" };
+      if (name.includes("블랙")) avail.hotwater = { id: "hotwater", name: "온수" };
+      avail.ice = { id: "ice", name: "얼음" };
+      avail.syrup = { id: "syrup", name: "시럽" };
+    }
+  }
+
+  // If hot, remove ice from avail
+  if (isHot) {
+    delete avail.ice;
+  }
+
+  const result = [];
+  const used = new Set();
+
+  for (const token of tokens) {
+    if (token === "juice") {
+      for (const jKey of ["grapefruit", "pomelo", "orange", "lemon"]) {
+        if (avail[jKey] && !used.has(jKey)) {
+          result.push(avail[jKey]);
+          used.add(jKey);
+        }
+      }
+    } else if (token === "tea") {
+      if (avail.tea && !used.has("tea")) {
+        result.push(avail.tea);
+        used.add("tea");
+      }
+      for (const tKey of ["spring", "dark"]) {
+        if (avail[tKey] && !used.has(tKey)) {
+          result.push(avail[tKey]);
+          used.add(tKey);
+        }
+      }
+      if (avail.hotwater && !used.has("hotwater") && !name.includes("호지차")) {
+        result.push(avail.hotwater);
+        used.add("hotwater");
+      }
+    } else {
+      if (avail[token] && !used.has(token)) {
+        result.push(avail[token]);
+        used.add(token);
+      }
+    }
+  }
+
+  for (const [key, field] of Object.entries(avail)) {
+    if (!used.has(key)) {
+      result.push(field);
+      used.add(key);
+    }
+  }
+
+  return result;
 }
 
 function N(name) {
@@ -2276,7 +2384,42 @@ function compileDatabase(sheets) {
     hojicha_L: { ice: parseNum(cheeseRows[32][3]), syrup: parseSyrup(cheeseRows[33][3]), hojicha: parseNum(cheeseRows[34][3]), creamer: parseNum(cheeseRows[35][3]), hotwater: parseNum(cheeseRows[36][3]) }
   };
 
-  return { original, milk, latte, fruit, cheese };
+  function extractRow1Orders(row) {
+    if (!row || !Array.isArray(row)) return { ice: '', hot: '' };
+    let ice = '';
+    let hot = '';
+    for (let i = 0; i < row.length; i++) {
+      const val = (row[i] || '').trim().toLowerCase();
+      if (val === 'ice') {
+        for (let j = i + 1; j < row.length; j++) {
+          const text = (row[j] || '').trim();
+          if (text && !text.toLowerCase().includes('hot') && !text.includes('시럽은')) {
+            ice = text;
+            break;
+          }
+        }
+      } else if (val === 'hot') {
+        for (let j = i + 1; j < row.length; j++) {
+          const text = (row[j] || '').trim();
+          if (text && !text.includes('시럽은')) {
+            hot = text;
+            break;
+          }
+        }
+      }
+    }
+    return { ice, hot };
+  }
+
+  const fieldOrders = {
+    original: extractRow1Orders(origRows[0]),
+    fruit: extractRow1Orders(fruitRows[0]),
+    milk: extractRow1Orders(milkRows[0]),
+    latte: extractRow1Orders(latteRows[0]),
+    cheese: extractRow1Orders(cheeseRows[0])
+  };
+
+  return { original, milk, latte, fruit, cheese, fieldOrders };
 }
 
 async function syncLiveSheetData() {
