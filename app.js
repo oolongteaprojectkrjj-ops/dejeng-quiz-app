@@ -43,7 +43,7 @@ const f = {
 const v = { .5: .5, .8: .5, 1: .8, 1.2: 1, 2.5: 2, 3: 2.5, 3.5: 2.5, 4: 3 };
 const y = { .8: .5, 1: .5, 1.2: .8, 1.5: 1, 1.8: 1.2, 2.2: 1.5, 2.5: 2.2 };
 
-const j = {
+let j = {
   "original": {
     "black_M": {
       "보통": {
@@ -1172,7 +1172,7 @@ const j = {
           35,
           20
         ],
-        "lemon": 25,
+        "lemon": 30,
         "spring": 80,
         "dark": 100
       },
@@ -1184,7 +1184,7 @@ const j = {
           35,
           20
         ],
-        "lemon": 25,
+        "lemon": 30,
         "spring": 90,
         "dark": 120
       },
@@ -1196,7 +1196,7 @@ const j = {
           45,
           25
         ],
-        "lemon": 35,
+        "lemon": 40,
         "spring": 100,
         "dark": 140
       },
@@ -1208,7 +1208,7 @@ const j = {
           45,
           25
         ],
-        "lemon": 35,
+        "lemon": 40,
         "spring": 120,
         "dark": 160
       }
@@ -1222,7 +1222,7 @@ const j = {
           45,
           25
         ],
-        "lemon": 35,
+        "lemon": 40,
         "spring": 100,
         "dark": 120
       },
@@ -1234,7 +1234,7 @@ const j = {
           45,
           25
         ],
-        "lemon": 35,
+        "lemon": 40,
         "spring": 120,
         "dark": 150
       },
@@ -1246,7 +1246,7 @@ const j = {
           55,
           30
         ],
-        "lemon": 45,
+        "lemon": 50,
         "spring": 140,
         "dark": 180
       },
@@ -1258,7 +1258,7 @@ const j = {
           55,
           30
         ],
-        "lemon": 45,
+        "lemon": 50,
         "spring": 160,
         "dark": 200
       }
@@ -1989,7 +1989,115 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Sync Badge click listener to manually refresh published recipes
+  const syncBadge = document.getElementById('syncBadge');
+  if (syncBadge) {
+    syncBadge.addEventListener('click', () => {
+      loadPublishedRecipes(true);
+    });
+  }
+
   // Initial load
   updateMenuOptions('all');
   generateQuiz('all', 'all');
+
+  // Load published recipes from Google Sheets if available
+  loadPublishedRecipes(false);
 });
+
+// --- 5. Published Recipe Loader (Google Sheets Apps Script Integration) ---
+const SPREADSHEET_ID = "1kIlcPLr0GPp3yZkpoc9xEFrIBkKSvJLFVLHYMLnJmwk";
+
+function parseCSVLine(text) {
+  const lines = [];
+  let row = [];
+  let cell = "";
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    const next = text[i + 1];
+    if (inQuotes) {
+      if (c === "\"" && next === "\"") {
+        cell += "\"";
+        i++;
+      } else if (c === "\"") {
+        inQuotes = false;
+      } else {
+        cell += c;
+      }
+    } else {
+      if (c === "\"") {
+        inQuotes = true;
+      } else if (c === ",") {
+        row.push(cell);
+        cell = "";
+      } else if (c === "\r") {
+      } else if (c === "\n") {
+        row.push(cell);
+        lines.push(row);
+        row = [];
+        cell = "";
+      } else {
+        cell += c;
+      }
+    }
+  }
+  if (cell || row.length > 0) {
+    row.push(cell);
+    lines.push(row);
+  }
+  return lines;
+}
+
+async function loadPublishedRecipes(showToast = false) {
+  const badge = document.getElementById("syncBadge");
+  const badgeText = document.getElementById("syncText");
+  const badgeDot = document.getElementById("syncDot");
+
+  if (badgeDot && showToast) {
+    badgeDot.className = "w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping";
+  }
+
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent("배포_레시피")}&_t=${Date.now()}`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const text = await res.text();
+
+    const parsed = parseCSVLine(text);
+    if (parsed.length > 0 && parsed[0][0]) {
+      const cellContent = parsed[0][0].trim();
+      const timestamp = (parsed[0][1] || "").trim();
+
+      // Check if it is a JSON object containing our recipe keys
+      if (cellContent.startsWith("{") && cellContent.includes("original") && cellContent.includes("milk")) {
+        const publishedJ = JSON.parse(cellContent);
+        if (publishedJ && publishedJ.original && publishedJ.milk && publishedJ.latte) {
+          j = publishedJ;
+          const timeShort = timestamp ? timestamp.split(" ")[1]?.slice(0, 5) : "";
+          if (badge && badgeText && badgeDot) {
+            badgeDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400";
+            badgeText.textContent = timeShort ? `배포본 (${timeShort})` : "배포본 연동됨";
+            badge.title = `스프레드시트에서 전송된 배포 레시피 적용 중\n(전송 일시: ${timestamp || "최신"})\n클릭하여 새로고침`;
+          }
+          if (showToast) {
+            alert(`✅ 스프레드시트에서 전송된 최신 레시피를 적용했습니다!\n(전송 일시: ${timestamp || "최신"})`);
+          }
+          return;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Published recipes not available, using default recipe database:", err);
+  }
+
+  // Fallback to default database
+  if (badge && badgeText && badgeDot) {
+    badgeDot.className = "w-1.5 h-1.5 rounded-full bg-zinc-400";
+    badgeText.textContent = "기본 레시피";
+    badge.title = "스프레드시트에서 [🚀 퀴즈 앱으로 최신 레시피 전송] 버튼을 누르면 배포본이 실시간 반영됩니다.";
+  }
+  if (showToast) {
+    alert("현재 기본 레시피를 사용 중입니다.\n스프레드시트에서 [🚀 퀴즈 앱으로 최신 레시피 전송]을 실행하면 즉시 적용됩니다.");
+  }
+}
