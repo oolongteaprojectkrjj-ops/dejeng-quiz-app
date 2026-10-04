@@ -1823,28 +1823,28 @@ const SECTIONS = {
   "오리지널 티": [
     { id: "sec:rooibos", name: "루이보스", menus: ["루이보스"] },
     { id: "sec:black", name: "블랙티", menus: ["블랙티"] },
-    { id: "sec:green_roasted", name: "그린 / 라이트 / 다크 우롱티", menus: ["그린티", "라이트 로스티드 우롱티", "다크 로스티드 우롱티"] },
-    { id: "sec:spring", name: "스프링 우롱티", menus: ["스프링 우롱티"] }
+    { id: "sec:green_roasted", name: "그린 / 라이트 / 다크", menus: ["그린티", "라이트 로스티드 우롱티", "다크 로스티드 우롱티"] },
+    { id: "sec:spring", name: "스프링", menus: ["스프링 우롱티"] }
   ],
   "클래식 밀크티": [
-    { id: "sec:milk_basic", name: "기본 밀크티 (블랙/그린/라이트/다크)", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "without" },
-    { id: "sec:milk_hojicha", name: "호지차 밀크티", menus: ["호지차 밀크티"] },
-    { id: "sec:milk_topping", name: "밀크티+토핑", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "with" }
+    { id: "sec:milk_basic", name: "블랙/그린/라이트/다크", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "without" },
+    { id: "sec:milk_hojicha", name: "호지차", menus: ["호지차 밀크티"] },
+    { id: "sec:milk_topping", name: "밀크티+펄", menus: ["블랙 밀크티", "그린 밀크티", "라이트 로스티드 우롱 밀크티", "다크 로스티드 우롱 밀크티"], forceTopping: "with" }
   ],
   "신선한 우유": [
-    { id: "sec:latte_basic", name: "기본 라떼 (블랙/그린/라이트/다크)", menus: ["블랙티 라떼", "그린티 라떼", "라이트 로스티드 우롱티 라떼", "다크 로스티드 우롱티 라떼"] },
-    { id: "sec:latte_hojicha", name: "호지차 라떼", menus: ["호지차 라떼"] }
+    { id: "sec:latte_basic", name: "블랙/그린/라이트/다크", menus: ["블랙티 라떼", "그린티 라떼", "라이트 로스티드 우롱티 라떼", "다크 로스티드 우롱티 라떼"] },
+    { id: "sec:latte_hojicha", name: "호지차", menus: ["호지차 라떼"] }
   ],
   "치즈 밀크폼": [
-    { id: "sec:cheese_black", name: "치즈 블랙티", menus: ["치즈 밀크폼 블랙티"] },
-    { id: "sec:cheese_teas", name: "치즈 우롱 (그린/스프링/라이트/다크)", menus: ["치즈 밀크폼 그린티", "치즈 밀크폼 스프링 우롱티", "치즈 밀크폼 라이트 로스티드 우롱티", "치즈 밀크폼 다크 로스티드 우롱티"] },
-    { id: "sec:cheese_choco", name: "치즈 초코", menus: ["치즈 밀크폼 초코"] },
-    { id: "sec:cheese_hojicha", name: "치즈 호지차", menus: ["치즈 밀크폼 호지차"] }
+    { id: "sec:cheese_black", name: "블랙티", menus: ["치즈 밀크폼 블랙티"] },
+    { id: "sec:cheese_teas", name: "그린/스프링/라이트/다크", menus: ["치즈 밀크폼 그린티", "치즈 밀크폼 스프링 우롱티", "치즈 밀크폼 라이트 로스티드 우롱티", "치즈 밀크폼 다크 로스티드 우롱티"] },
+    { id: "sec:cheese_choco", name: "초코", menus: ["치즈 밀크폼 초코"] },
+    { id: "sec:cheese_hojicha", name: "호지차", menus: ["치즈 밀크폼 호지차"] }
   ],
   "더블 과일티": [
-    { id: "sec:fruit_grape", name: "자몽 시트러스 우롱티", menus: ["자몽 시트러스 우롱티"] },
-    { id: "sec:fruit_orange", name: "오렌지 스프링 우롱티", menus: ["오렌지 스프링 우롱티"] },
-    { id: "sec:fruit_lemon", name: "레몬 스프링 우롱티", menus: ["레몬 스프링 우롱티"] }
+    { id: "sec:fruit_lemon", name: "레몬", menus: ["레몬 스프링 우롱티"] },
+    { id: "sec:fruit_orange", name: "오렌지", menus: ["오렌지 스프링 우롱티"] },
+    { id: "sec:fruit_grape", name: "자몽", menus: ["자몽 시트러스 우롱티"] }
   ]
 };
 
