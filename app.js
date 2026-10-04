@@ -2299,6 +2299,40 @@ async function syncLiveSheetData(showToast = false) {
   }
 
   try {
+    // 1. Check if manager explicitly published via [🚀 퀴즈 앱 반영하기] in Google Sheet
+    try {
+      const pubUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent("배포_레시피")}&_t=${Date.now()}`;
+      const pubRes = await fetch(pubUrl, { cache: "no-store" });
+      if (pubRes.ok) {
+        const pubText = await pubRes.text();
+        const pubParsed = parseCSVLine(pubText);
+        if (pubParsed.length > 0 && pubParsed[0][0]) {
+          const content = pubParsed[0][0].trim();
+          const timestamp = (pubParsed[0][1] || "").trim();
+          if (content.startsWith("{") && content.includes("original") && content.includes("milk")) {
+            const pubDB = JSON.parse(content);
+            if (pubDB && pubDB.original && pubDB.milk) {
+              j = pubDB;
+              try { localStorage.setItem('dejeng_live_recipes', JSON.stringify(pubDB)); } catch(e) {}
+              const timeShort = timestamp ? timestamp.split(" ")[1]?.slice(0, 5) : "";
+              if (badge && badgeText && badgeDot) {
+                badgeDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400";
+                badgeText.textContent = timeShort ? `시트 반영본 (${timeShort})` : "시트 반영본";
+                badge.title = `시트 상단 [🚀 퀴즈 앱 반영하기]를 통해 반영된 버전입니다.\n(반영 일시: ${timestamp || '최신'})\n클릭하여 새로고침`;
+              }
+              if (showToast) {
+                alert(`✅ 시트에서 반영된 최신 레시피를 적용했습니다!\n(반영 일시: ${timestamp || '최신'})`);
+              }
+              return;
+            }
+          }
+        }
+      }
+    } catch(e) {
+      console.warn("배포_레시피 check skipped:", e);
+    }
+
+    // 2. Direct Live Sheet Compile Fallback
     const entries = Object.entries(SHEET_GIDS);
     const fetchPromises = entries.map(([name, gid]) => {
       const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}&_t=${Date.now()}`;

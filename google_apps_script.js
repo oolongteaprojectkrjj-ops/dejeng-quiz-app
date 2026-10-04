@@ -12,8 +12,8 @@
 
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu('🚀 퀴즈 앱 관리')
-    .addItem('🚀 퀴즈 앱으로 최신 레시피 전송', 'sendRecipesToQuizApp')
+    .createMenu('🚀 퀴즈 앱 반영하기')
+    .addItem('🚀 현재 시트 레시피를 퀴즈 앱에 즉시 반영', 'sendRecipesToQuizApp')
     .addToUi();
 }
 
