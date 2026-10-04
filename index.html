@@ -1,177 +1,111 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>得正 Oolong Tea Project - 레시피 퀴즈</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>더정 우롱티 프로젝트 - 트레이닝 룸</title>
+  <meta name="description" content="매장 통합 관리 가이드 시스템">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700;900&family=Noto+Serif+KR:wght@700;900&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div class="app-layout">
-    <!-- Header Navigation -->
-    <header class="top-nav">
-      <div class="brand-zone">
-        <span class="brand-kanji">得正</span>
-        <div class="brand-meta">
-          <span class="brand-title">OOLONG TEA PROJECT</span>
-          <span class="brand-desc">레시피 트레이닝 퀴즈</span>
-        </div>
+<body class="antialiased bg-[#111827] text-white">
+  <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
+    
+    <!-- Top Bar Navigation (matching oolongteaproject.vercel.app/training) -->
+    <header class="flex items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4 border-b border-white/5 sticky top-0 bg-[#111827]/90 backdrop-blur-md z-10">
+      <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 transition cursor-pointer" title="더정 우롱티">
+        <span class="font-serif text-sm font-black text-amber-400">得</span>
       </div>
-
-      <!-- Official Category Filter Pills -->
-      <div class="filter-bar">
-        <span class="filter-label">카테고리:</span>
-        <div class="filter-pills" id="categoryFilter">
-          <button class="filter-pill active" data-cat="all">전체</button>
-          <button class="filter-pill" data-cat="오리지널 티">오리지널 티</button>
-          <button class="filter-pill" data-cat="클래식 밀크티">클래식 밀크티</button>
-          <button class="filter-pill" data-cat="신선한 우유">신선한 우유 (라떼)</button>
-          <button class="filter-pill" data-cat="더블 과일티">더블 과일티</button>
-          <button class="filter-pill" data-cat="치즈 밀크폼">치즈 밀크폼</button>
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="top-actions">
-        <div class="filter-pills" id="toppingFilter">
-          <button class="filter-pill active" data-top="all">전체 랜덤</button>
-          <button class="filter-pill" data-top="with">토핑 필수 (쇼튼/L)</button>
-          <button class="filter-pill" data-top="without">토핑 없음</button>
-        </div>
-        <button id="soundToggle" class="btn-icon" title="효과음 켜기/끄기">🔊</button>
-        <button id="btnOpenReference" class="btn btn-outline-gold">📖 시트 & 쇼튼폼</button>
-      </div>
+      <h1 class="text-base sm:text-lg font-bold tracking-widest text-slate-300">연습 모드</h1>
+      <div class="flex justify-end min-w-[40px]"></div>
     </header>
 
-    <!-- Main Problem & Answer Stage -->
-    <main class="quiz-container">
-      <!-- Left: The Single Sticker Problem (Using Photo Background Image) -->
-      <section class="sticker-card-column">
-        <div class="printer-indicator-bar">
-          <span class="pulse-dot"></span>
-          <span class="indicator-text">문제 스티커 라벨 (실제 이미지 배경)</span>
+    <!-- Main Stage Content -->
+    <div class="flex-1 overflow-y-auto px-4 pt-3 pb-2">
+      <div class="max-w-md mx-auto pb-2">
+        
+        <!-- Filter Selects (Category & Menu) -->
+        <div class="flex flex-col sm:flex-row gap-2 mb-3.5 animate-in fade-in relative z-20">
+          <select id="selectCategory" class="bg-slate-800/80 border border-white/10 hover:border-white/20 rounded-xl px-3.5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-slate-300 outline-none focus:border-blue-500/50 transition-all flex-1 shadow-inner shadow-black/20 appearance-none cursor-pointer">
+            <option value="all">👉 전체 랜덤 출제</option>
+          </select>
+          <select id="selectMenu" disabled class="bg-slate-800/80 border border-white/10 hover:border-white/20 rounded-xl px-3.5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-slate-300 outline-none focus:border-blue-500/50 transition-all flex-1 shadow-inner shadow-black/20 appearance-none disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
+            <option value="all">[ 메뉴 전체 혼합 ]</option>
+          </select>
         </div>
 
-        <!-- The Photo-Matched Single Sticker -->
-        <div class="sticker-holder">
-          <div class="dejeng-photo-sticker" id="dejengPhotoSticker">
-            <!-- Dynamic text overlaid on the exact background template image -->
-            <div class="st-text-title" id="stDrinkTitle">치즈 밀크폼<br>다크 로스티드 우롱티</div>
-            <div class="st-text-specs">
-              <div id="stSize">M</div>
-              <div id="stSugar">당도 30%</div>
-              <div id="stIce">얼음 적게</div>
-              <div id="stTopping" class="topping-item">토핑 우롱티 젤리</div>
-            </div>
-            <div class="st-text-orderno" id="stOrderNo">11234</div>
-            <div class="st-text-footer">
-              <span id="stTimestamp">2026/10/04 01:21</span>
-              <span id="stSeq">1/3</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="sticker-action-bar">
-          <button id="btnNextQuiz" class="btn btn-gold btn-next">
-            <span>다음 문제</span>
-            <kbd>Space</kbd>
-          </button>
-        </div>
-      </section>
-
-      <!-- Right: Fill-in-the-Blank Recipe Quiz Stage -->
-      <section class="answer-card-column">
-        <div class="recipe-quiz-card">
-          <!-- Quiz Card Header -->
-          <div class="quiz-card-header">
-            <h2 class="quiz-main-title">✍️ 레시피 용량 입력</h2>
+        <!-- Problem Stage: Left Sticker & Right Fields -->
+        <div class="flex flex-row gap-3 mt-2 items-start">
+          
+          <!-- Exact Photo-Matched Sticker Card (Noto Sans KR font on dejeng_real_bg.png) -->
+          <div id="dejengSticker" class="dejeng-sticker-card shrink-0">
+            <!-- Dynamically populated via renderSticker() -->
           </div>
 
-          <!-- Step-by-Step Inputs (Without Any Units!) -->
-          <div class="quiz-inputs-list" id="quizInputsList">
-            <!-- Dynamically populated via JS -->
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="quiz-action-buttons">
-            <button id="btnGradeQuiz" class="btn btn-gold btn-grade">
-              <span>채점하기</span>
-              <kbd class="desktop-only">Enter</kbd>
-            </button>
-            <button id="btnShowAllAnswers" class="btn btn-outline-gold btn-show-all">
-              <span>정답 전체보기</span>
-            </button>
-          </div>
-
-          <!-- Grade Result Feedback Banner -->
-          <div id="quizResultBanner" class="quiz-result-banner hidden"></div>
-
-          <!-- Detailed Answer Sheet (Revealed upon grading or when clicking 정답 전체보기) -->
-          <div id="detailedAnswerCard" class="detailed-answer-card hidden">
-            <!-- Exception Rule Box -->
-            <div class="exception-banner" id="ansExceptionBox">
-              <span class="exception-badge" id="ansExceptionBadge">M사이즈 + 토핑</span>
-              <p class="exception-text" id="ansExceptionText">M사이즈에 토핑이 추가되어 쇼튼 폼(검정 ➔ 빨강)이 적용됩니다.</p>
-            </div>
-
-            <!-- Shorten Form Breakdown Details -->
-            <div class="shorten-summary-box hidden" id="ansShortenBox">
-              <h4 class="shorten-header">⚡ 쇼튼 폼(Shorten Form) 감량 변환 내역</h4>
-              <div class="shorten-pills-grid" id="ansShortenGrid"></div>
+          <!-- Right Column: Recipe Fields -->
+          <div class="flex-1 flex flex-col min-w-0">
+            <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1 mb-2">레시피 입력</h3>
+            <div id="recipeFieldsContainer" class="flex flex-col gap-2">
+              <!-- Dynamically populated via renderInputFields() -->
             </div>
           </div>
-        </div>
-      </section>
-    </main>
-  </div>
 
-  <!-- Reference Modal -->
-  <div id="referenceModal" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div class="modal-top">
-        <h3>📖 득정 레시피 시트 원본 & 쇼튼 폼</h3>
-        <button id="btnCloseModal" class="btn-close">✕</button>
-      </div>
-      <div class="modal-nav">
-        <button class="modal-nav-tab active" data-ref="shorten">⚡ 쇼튼 폼 (Shorten Form Table)</button>
-        <button class="modal-nav-tab" data-ref="오리지널 티">오리지널 티</button>
-        <button class="modal-nav-tab" data-ref="클래식 밀크티">클래식 밀크티</button>
-        <button class="modal-nav-tab" data-ref="신선한 우유">신선한 우유</button>
-        <button class="modal-nav-tab" data-ref="더블 과일티">더블 과일티</button>
-        <button class="modal-nav-tab" data-ref="치즈 밀크폼">치즈 밀크폼</button>
-      </div>
-      <div class="modal-scroll-area">
-        <div id="viewShorten" class="modal-pane active">
-          <div class="info-callout">
-            <strong>Formula Shorten Reference Table</strong>: M사이즈에 토핑 추가 시 원래 용량(검정숫자)을 찾아 하단의 빨간숫자로 적용합니다.
-          </div>
-          <div class="table-group">
-            <h4>💧 시럽 / 티 / 주스 / 우유 / 온수 (액체류)</h4>
-            <div class="table-scroll"><table class="ref-table" id="modalLiquidTable"></table></div>
-          </div>
-          <div class="table-group">
-            <h4>🥄 파우더 (크리머, 호지차, 초코)</h4>
-            <div class="table-scroll"><table class="ref-table" id="modalPowderTable"></table></div>
-          </div>
-          <div class="table-group">
-            <h4>🧊 얼음 (스쿱)</h4>
-            <div class="table-scroll"><table class="ref-table" id="modalIceTable"></table></div>
-          </div>
         </div>
-        <div id="viewSheet" class="modal-pane hidden">
-          <div class="info-callout" id="modalSheetRule"></div>
-          <div class="table-scroll" id="modalSheetContent"></div>
-        </div>
+
       </div>
     </div>
+
+    <!-- Bottom Controls & Keypad (Fixed Dock) -->
+    <div class="border-t border-white/5 bg-slate-900 flex-shrink-0 p-3 pb-6 safe-bottom">
+      <div class="max-w-md mx-auto">
+        
+        <!-- Action Row -->
+        <div class="flex items-center justify-between mb-2.5 px-1 gap-2">
+          <button id="btnNextField" class="h-9 px-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 active:scale-95 transition-all border border-white/5 text-xs font-bold flex items-center gap-1 flex-shrink-0">
+            <span>다음 칸</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+          
+          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5 text-center">
+            <div id="statusDot" class="w-1.5 h-1.5 rounded-full animate-pulse shrink-0 bg-blue-500"></div>
+            <span id="statusText">입력 중</span>
+          </span>
+
+          <button id="btnAction" class="h-9 px-4 text-white rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all flex items-center gap-1 flex-shrink-0 bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20">
+            <span>정답 확인</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+
+        <!-- Numeric Keypad Grid (1-9, ., 0, DEL) -->
+        <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="1">1</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="2">2</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="3">3</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="4">4</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="5">5</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="6">6</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="7">7</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="8">8</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="9">9</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key=".">.</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="0">0</button>
+          <button type="button" class="pad-key-btn h-11 sm:h-13 rounded-xl flex items-center justify-center text-lg sm:text-xl font-black transition-all border shadow-inner bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white border-white/5" data-key="DEL">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400">
+              <path d="M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/>
+              <path d="m12 9 6 6"/>
+              <path d="m18 9-6 6"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
-  <!-- Scripts -->
-  <script src="template_b64.js"></script>
-  <script src="recipe_database.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

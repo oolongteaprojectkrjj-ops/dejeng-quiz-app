@@ -1,896 +1,619 @@
 /**
- * 得正 (Dejeng) Oolong Tea Project - Recipe Quiz & Training App
- * Mobile-First Fill-in-the-Blank Test with Virtual Number Pad (. included)
- * No units (스쿱, ml, cc removed), Pure Numeric Calculation
+ * 得正 (Dejeng) Oolong Tea Project - 트레이닝 퀴즈 (연습 모드)
+ * oolongteaproject.vercel.app/training 과 100% 동일한 엔진 및 UI
  */
 
-class SoundFX {
-  constructor() {
-    this.enabled = true;
-    this.ctx = null;
-  }
-
-  init() {
-    if (!this.ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) this.ctx = new AudioCtx();
-    }
-  }
-
-  playPrintSound() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    try {
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      const filter = this.ctx.createBiquadFilter();
-
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(140, now);
-      osc.frequency.exponentialRampToValueAtTime(360, now + 0.12);
-      osc.frequency.exponentialRampToValueAtTime(110, now + 0.26);
-
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(750, now);
-
-      gain.gain.setValueAtTime(0.09, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.28);
-    } catch (e) {
-      // AudioContext policy
-    }
-  }
-
-  playSuccess() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    try {
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(523.25, now);
-      osc.frequency.setValueAtTime(659.25, now + 0.08);
-      osc.frequency.setValueAtTime(783.99, now + 0.16);
-      gain.gain.setValueAtTime(0.12, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.35);
-    } catch (e) {}
-  }
-
-  playWrong() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    try {
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(220, now);
-      osc.frequency.setValueAtTime(170, now + 0.12);
-      gain.gain.setValueAtTime(0.1, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.28);
-    } catch (e) {}
-  }
-}
-
-const sfx = new SoundFX();
-
-// App State
-const state = {
-  categoryFilter: 'all',
-  toppingFilter: 'all',
-  currentQuestion: null,
-  activeInputIdx: 0,
-  stepInputs: [],
-  isGraded: false
-};
-
-const TOPPING_OPTIONS = [
-  '공백',
-  '블랙펄',
-  '골든버블',
-  '우롱티 젤리',
-  '블랙펄+골든버블',
-  '블랙펄+우롱티 젤리',
-  '골든버블+우롱티 젤리'
+// --- 1. Database & Lookups (from oolongteaproject.vercel.app) ---
+const b = [
+  { id: "O1", category: "오리지널 티", nameKo: "블랙티", nameEn: "Black Tea", lines: ["블랙티"], isOriginal: true },
+  { id: "O2", category: "오리지널 티", nameKo: "그린티", nameEn: "Green Tea", lines: ["그린티"], isOriginal: true },
+  { id: "O3", category: "오리지널 티", nameKo: "스프링 우롱티", nameEn: "Spring Oolong Tea", lines: ["스프링 우롱티"], isOriginal: true },
+  { id: "O4", category: "오리지널 티", nameKo: "라이트 로스티드 우롱티", nameEn: "Light Roasted Oolong Tea", lines: ["라이트 로스티드", "우롱티"], isOriginal: true },
+  { id: "O5", category: "오리지널 티", nameKo: "다크 로스티드 우롱티", nameEn: "Dark Roasted Oolong Tea", lines: ["다크 로스티드", "우롱티"], isOriginal: true },
+  { id: "M1", category: "클래식 밀크티", nameKo: "블랙 밀크티", nameEn: "Black Milk Tea", lines: ["블랙 밀크티"], isOriginal: false },
+  { id: "M2", category: "클래식 밀크티", nameKo: "그린 밀크티", nameEn: "Green Milk Tea", lines: ["그린 밀크티"], isOriginal: false },
+  { id: "M3", category: "클래식 밀크티", nameKo: "라이트 로스티드 우롱 밀크티", nameEn: "Light Roasted Oolong Milk Tea", lines: ["라이트 로스티드", "우롱 밀크티"], isOriginal: false },
+  { id: "M4", category: "클래식 밀크티", nameKo: "다크 로스티드 우롱 밀크티", nameEn: "Dark Roasted Oolong Milk Tea", lines: ["다크 로스티드", "우롱 밀크티"], isOriginal: false },
+  { id: "M5", category: "클래식 밀크티", nameKo: "호지차 밀크티", nameEn: "Hojicha Milk Tea", lines: ["호지차 밀크티"], isOriginal: false },
+  { id: "L1", category: "신선한 우유", nameKo: "블랙티 라떼", nameEn: "Black Tea Latte", lines: ["블랙티 라떼"], isOriginal: false },
+  { id: "L2", category: "신선한 우유", nameKo: "그린티 라떼", nameEn: "Green Tea Latte", lines: ["그린티 라떼"], isOriginal: false },
+  { id: "L3", category: "신선한 우유", nameKo: "라이트 로스티드 우롱티 라떼", nameEn: "Light Roasted Oolong Tea Latte", lines: ["라이트 로스티드", "우롱티 라떼"], isOriginal: false },
+  { id: "L4", category: "신선한 우유", nameKo: "다크 로스티드 우롱티 라떼", nameEn: "Dark Roasted Oolong Tea Latte", lines: ["다크 로스티드", "우롱티 라떼"], isOriginal: false },
+  { id: "L5", category: "신선한 우유", nameKo: "호지차 라떼", nameEn: "Hojicha Latte", lines: ["호지차 라떼"], isOriginal: false },
+  { id: "C1", category: "치즈 밀크폼", nameKo: "치즈 밀크폼 스프링 우롱티", nameEn: "Cheese Milk Foam Spring Oolong Tea", lines: ["치즈 밀크폼", "스프링 우롱티"], isOriginal: false },
+  { id: "C2", category: "치즈 밀크폼", nameKo: "치즈 밀크폼 라이트 로스티드 우롱티", nameEn: "Cheese Milk Foam Light Roasted Oolong Tea", lines: ["치즈 밀크폼", "라이트 로스티드 우롱티"], isOriginal: false },
+  { id: "C3", category: "치즈 밀크폼", nameKo: "치즈 밀크폼 다크 로스티드 우롱티", nameEn: "Cheese Milk Foam Dark Roasted Oolong Tea", lines: ["치즈 밀크폼", "다크 로스티드 우롱티"], isOriginal: false },
+  { id: "C4", category: "치즈 밀크폼", nameKo: "치즈 밀크폼 호지차", nameEn: "Cheese Milk Foam Hojicha", lines: ["치즈 밀크폼", "호지차"], isOriginal: false },
+  { id: "C5", category: "치즈 밀크폼", nameKo: "치즈 밀크폼 그린티", nameEn: "Cheese Milk Foam Green Tea", lines: ["치즈 밀크폼", "그린티"], isOriginal: false },
+  { id: "C6", category: "치즈 밀크폼", nameKo: "치즈 밀크폼 블랙티", nameEn: "Cheese Milk Foam Black Tea", lines: ["치즈 밀크폼", "블랙티"], isOriginal: false },
+  { id: "F1", category: "더블 과일티", nameKo: "레몬 스프링 우롱티", nameEn: "Lemon Spring Oolong Tea", lines: ["레몬 스프링", "우롱티"], isOriginal: false },
+  { id: "F2", category: "더블 과일티", nameKo: "오렌지 스프링 우롱티", nameEn: "Orange Spring Oolong Tea", lines: ["오렌지 스프링", "우롱티"], isOriginal: false },
+  { id: "F3", category: "더블 과일티", nameKo: "자몽 시트러스 우롱티", nameEn: "Grapefruit Citrus Oolong Tea", lines: ["자몽 시트러스", "우롱티"], isOriginal: false }
 ];
 
-/**
- * Shorten Form Value Converter
- */
-function shortenValue(val, type) {
-  if (val === 0 || !val) return { shortened: 0, changed: false };
-  const num = parseFloat(val);
-  const key = num.toFixed(1);
-  const db = window.RECIPE_DATABASE;
+const f = {
+  5: 5, 10: 10, 15: 10, 20: 15, 25: 20, 30: 25, 35: 25, 40: 30, 45: 35, 50: 40,
+  55: 40, 60: 45, 65: 50, 70: 55, 75: 55, 80: 60, 85: 65, 90: 70, 95: 70, 100: 75,
+  110: 85, 120: 90, 130: 100, 140: 105, 150: 115, 160: 120, 170: 130, 180: 135,
+  190: 145, 200: 150, 210: 160, 220: 165, 230: 175, 240: 180, 250: 190, 260: 195,
+  270: 205, 280: 210, 290: 220, 300: 225, 310: 235, 320: 240, 330: 250, 340: 255,
+  350: 265, 400: 300
+};
 
-  if (type === 'ice') {
-    if (db.shorten.ice[key] !== undefined) {
-      return { shortened: db.shorten.ice[key], changed: true };
-    }
-    if (num <= 0.5) return { shortened: 0.5, changed: false };
-    return { shortened: Math.round(num * 0.75 * 10) / 10, changed: true };
-  } else if (type === 'powder') {
-    if (db.shorten.powder[key] !== undefined) {
-      return { shortened: db.shorten.powder[key], changed: true };
-    }
-    return { shortened: Math.round(num * 0.75 * 10) / 10, changed: true };
-  } else if (type === 'liquid') {
-    if (db.shorten.liquid[key] !== undefined) {
-      return { shortened: db.shorten.liquid[key], changed: true };
-    }
-    return { shortened: Math.round(num * 0.75), changed: true };
-  }
-  return { shortened: num, changed: false };
-}
+const v = { .5: .5, .8: .5, 1: .8, 1.2: 1, 2.5: 2, 3: 2.5, 3.5: 2.5, 4: 3 };
+const y = { .8: .5, 1: .5, 1.2: .8, 1.5: 1, 1.8: 1.2, 2.2: 1.5, 2.5: 2.2 };
 
-/**
- * Calculate Recipe based on Sheet Logic & User's Topping Rules
- */
-function calculateRecipe(categoryName, drinkName, size, ice, sugar, topping) {
-  const db = window.RECIPE_DATABASE;
-  const category = db.categories[categoryName];
-  if (!category) return null;
-  const drink = category.items[drinkName];
-  if (!drink) return null;
-
-  const hasTopping = (topping && topping !== '공백' && topping !== '없음');
-
-  let targetSize = size;
-  let applyShorten = false;
-  let ruleBadge = '';
-  let ruleText = '';
-  let ruleClass = '';
-
-  if (hasTopping) {
-    if (size === 'L') {
-      targetSize = 'M';
-      applyShorten = false;
-      ruleBadge = 'L사이즈 + 토핑';
-      ruleText = 'L사이즈에 토핑이 추가되어 M사이즈 기본 레시피를 따릅니다.';
-      ruleClass = 'm-applied';
-    } else {
-      targetSize = 'M';
-      applyShorten = true;
-      ruleBadge = 'M사이즈 + 토핑 (쇼튼 폼 적용)';
-      ruleText = 'M사이즈에 토핑이 추가되어 기본 레시피 용량을 쇼튼 폼(검정숫자 ➔ 하단 빨간숫자)으로 변환합니다.';
-      ruleClass = 'shorten-applied';
-    }
-  } else {
-    ruleBadge = '정규 레시피 (토핑 없음)';
-    ruleText = '토핑이 없으므로 해당 사이즈의 정규 레시피를 그대로 적용합니다.';
-    ruleClass = '';
-  }
-
-  const baseRecipe = drink.recipes[targetSize][ice];
-  if (!baseRecipe) return null;
-
-  const steps = [];
-  const shortenBreakdown = [];
-
-  const TEA_NAMES = ['그린 티', '다크 티', '라이트 티', '루이보스 티', '블랙 티', '스프링 티'];
-
-  baseRecipe.steps.forEach(step => {
-    // 1. 치즈 밀크폼 메뉴에서 치즈폼 넣는 단계 제외
-    if (step.name === '치즈 밀크폼' || step.name.includes('치즈폼')) {
-      return;
-    }
-
-    const s = { ...step };
-
-    // 2. 티 이름 단순화 ('그린 티', '다크 티', '스프링 티' 등 -> '티')
-    if (TEA_NAMES.includes(s.name) || (s.name.endsWith('티') && s.type === 'liquid' && !s.name.includes('밀크티') && !s.name.includes('라떼'))) {
-      s.name = '티';
-    }
-
-    let amount = 0;
-
-    if (s.amount_by_sugar) {
-      amount = s.amount_by_sugar[sugar] !== undefined ? s.amount_by_sugar[sugar] : 0;
-    } else {
-      amount = s.amount !== undefined ? s.amount : 0;
-    }
-
-    if (sugar === '0%' && s.zero_sugar_extra) {
-      amount += s.zero_sugar_extra;
-      s.note = (s.note ? s.note + ', ' : '') + `당도 0% 보정 (+${s.zero_sugar_extra})`;
-    }
-
-    const origAmount = amount;
-    let isShortened = false;
-
-    if (applyShorten && amount > 0 && ['ice', 'liquid', 'powder'].includes(s.type)) {
-      const res = shortenValue(amount, s.type);
-      amount = res.shortened;
-      isShortened = res.changed;
-
-      shortenBreakdown.push({
-        name: s.name,
-        orig: origAmount,
-        shortened: amount
-      });
-    }
-
-    s.finalAmount = amount;
-    s.origAmount = origAmount;
-    s.isShortened = isShortened;
-    steps.push(s);
-  });
-
-  let sheetOrderRule = category.order_rule;
-  if (categoryName === '치즈 밀크폼') {
-    sheetOrderRule = '티 → 얼음 → 시럽 (초코/호지차: 파우더 → 크리머 → 온수 → 얼음 → 시럽)';
-  }
-
-  return {
-    categoryName,
-    drinkName,
-    lineBreakHtml: drink.line_break || drinkName,
-    size,
-    ice,
-    sugar,
-    topping,
-    hasTopping,
-    targetSizeUsed: targetSize,
-    applyShorten,
-    ruleBadge,
-    ruleText,
-    ruleClass,
-    sheetOrderRule,
-    steps,
-    shortenBreakdown
-  };
-}
-
-/**
- * Official Store Frequency Distribution Weights (from Spreadsheet 확률분포도)
- */
-const FREQUENCY_WEIGHTS = {
-  // Category & Drink Weights (22,075 orders total)
-  drinks: {
-    // 클래식 밀크티 (10,175건, 46.09%)
-    '다크 로스티드 우롱 밀크티': 6463,
-    '라이트 로스티드 우롱 밀크티': 1252,
-    '블랙 밀크티': 1044,
-    '그린 밀크티': 836,
-    '호지차 밀크티': 580,
-
-    // 치즈 밀크폼 (5,012건, 22.70%)
-    '치즈 밀크폼 다크 로스티드 우롱티': 2093,
-    '치즈 밀크폼 스프링 우롱티': 1883,
-    '치즈 밀크폼 라이트 로스티드 우롱티': 386,
-    '치즈 밀크폼 초콜렛': 298,
-    '치즈 밀크폼 호지차': 237,
-
-    // 더블 과일티 (3,279건, 14.85%)
-    '레몬 스프링 우롱티': 2351,
-    '자몽 시트러스 우롱티': 772,
-    '오렌지 스프링 우롱티': 156,
-
-    // 오리지널 티 (2,266건, 10.26%)
-    '스프링 우롱티': 994,
-    '다크 로스티드 우롱티': 454,
-    '라이트 로스티드 우롱티': 338,
-    '메밀 그린 루이보스티': 233,
-    '블랙티': 127,
-    '그린티': 120,
-
-    // 신선한 우유 (1,343건, 6.08%)
-    '다크 로스티드 우롱티 라떼': 470,
-    '라이트 로스티드 우롱티 라떼': 259,
-    '호지차 라떼': 222,
-    '블랙티 라떼': 221,
-    '그린티 라떼': 171
+const j = {
+  original: {
+    black_M: { 많이: { ice: 2.2, syrup: [40, 25, 15, 10], tea: 110, hotwater: 50 }, 보통: { ice: 1.8, syrup: [40, 25, 15, 10], tea: 150, hotwater: 70 }, 적게: { ice: 1.5, syrup: [50, 30, 20, 10], tea: 180, hotwater: 80 }, 없이: { ice: 1.5, syrup: [50, 30, 20, 10], tea: 190, hotwater: 90 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], tea: 260, hotwater: 250 } },
+    black_L: { 많이: { ice: 2.5, syrup: [50, 30, 20, 10], tea: 150, hotwater: 70 }, 보통: { ice: 2.2, syrup: [50, 30, 20, 10], tea: 190, hotwater: 90 }, 적게: { ice: 1.8, syrup: [60, 40, 25, 15], tea: 250, hotwater: 100 }, 없이: { ice: 1.8, syrup: [60, 40, 25, 15], tea: 260, hotwater: 120 }, 뜨겁게: { ice: "x", syrup: [60, 40, 25, 15], tea: 320, hotwater: 320 } },
+    green_M: { 많이: { ice: 2.2, syrup: [40, 25, 15, 10], tea: 170 }, 보통: { ice: 1.8, syrup: [40, 25, 15, 10], tea: 220 }, 적게: { ice: 1.5, syrup: [50, 30, 20, 10], tea: 260 }, 없이: { ice: 1.5, syrup: [50, 30, 20, 10], tea: 280 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], tea: 350 } },
+    green_L: { 많이: { ice: 2.5, syrup: [50, 30, 20, 10], tea: 220 }, 보통: { ice: 2.2, syrup: [50, 30, 20, 10], tea: 280 }, 적게: { ice: 1.8, syrup: [60, 40, 25, 15], tea: 360 }, 없이: { ice: 1.8, syrup: [60, 40, 25, 15], tea: 380 }, 뜨겁게: { ice: "x", syrup: [60, 40, 25, 15], tea: 450 } },
+    spring_M: { 많이: { ice: 1.8, syrup: [40, 25, 15, 10], tea: 250 }, 보통: { ice: 1.5, syrup: [40, 25, 15, 10], tea: 280 }, 적게: { ice: 1.2, syrup: [50, 30, 20, 10], tea: 340 }, 없이: { ice: 1.2, syrup: [50, 30, 20, 10], tea: 340 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], tea: 400 } },
+    spring_L: { 많이: { ice: 2.2, syrup: [50, 30, 20, 10], tea: 300 }, 보통: { ice: 1.8, syrup: [50, 30, 20, 10], tea: 340 }, 적게: { ice: 1.5, syrup: [60, 40, 25, 15], tea: 440 }, 없이: { ice: 1.5, syrup: [60, 40, 25, 15], tea: 440 }, 뜨겁게: { ice: "x", syrup: [60, 40, 25, 15], tea: 500 } }
   },
-
-  // Size Weights (20,566건: M 57.17%, L 42.83%)
-  sizes: {
-    'M': 11758,
-    'L': 8808
+  milk: {
+    black_M: { 많이: { ice: 2.2, syrup: [40, 25, 15, 10], creamer: 3, tea: 170 }, 보통: { ice: 1.8, syrup: [40, 25, 15, 10], creamer: 3, tea: 220 }, 적게: { ice: 1.5, syrup: [50, 30, 20, 10], creamer: 4, tea: 260 }, 없이: { ice: 1.5, syrup: [50, 30, 20, 10], creamer: 4, tea: 280 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], creamer: 4, tea: 350 } },
+    black_L: { 많이: { ice: 2.5, syrup: [50, 30, 20, 10], creamer: 4, tea: 220 }, 보통: { ice: 2.2, syrup: [50, 30, 20, 10], creamer: 4, tea: 280 }, 적게: { ice: 1.8, syrup: [60, 40, 25, 15], creamer: 5, tea: 360 }, 없이: { ice: 1.8, syrup: [60, 40, 25, 15], creamer: 5, tea: 380 }, 뜨겁게: { ice: "x", syrup: [60, 40, 25, 15], creamer: 5, tea: 450 } },
+    black_topping_M: { 많이: { ice: 1.8, syrup: [25, 15, 10, 5], creamer: 2.5, tea: 130 }, 보통: { ice: 1.5, syrup: [25, 15, 10, 5], creamer: 2.5, tea: 160 }, 적게: { ice: 1.2, syrup: [30, 20, 15, 10], creamer: 3.5, tea: 180 }, 없이: { ice: 1.2, syrup: [30, 20, 15, 10], creamer: 3.5, tea: 200 }, 뜨겁게: { ice: "x", syrup: [30, 20, 15, 10], creamer: 3.5, tea: 280 } },
+    black_topping_L: { 많이: { ice: 2.2, syrup: [30, 20, 15, 10], creamer: 3.5, tea: 180 }, 보통: { ice: 1.8, syrup: [30, 20, 15, 10], creamer: 3.5, tea: 210 }, 적게: { ice: 1.5, syrup: [40, 25, 15, 10], creamer: 4.5, tea: 260 }, 없이: { ice: 1.5, syrup: [40, 25, 15, 10], creamer: 4.5, tea: 280 }, 뜨겁게: { ice: "x", syrup: [40, 25, 15, 10], creamer: 4.5, tea: 360 } },
+    hojicha_M: { 많이: { ice: 2.5, syrup: [50, 30, 20, 10], hojicha: 1, creamer: 3, hotwater: 150 }, 보통: { ice: 2.2, syrup: [50, 30, 20, 10], hojicha: 1, creamer: 3, hotwater: 180 }, 적게: { ice: 1.8, syrup: [60, 40, 25, 15], hojicha: 1.2, creamer: 4, hotwater: 200 }, 없이: { ice: 1.8, syrup: [60, 40, 25, 15], hojicha: 1.2, creamer: 4, hotwater: 220 }, 뜨겁게: { ice: "x", syrup: [60, 40, 25, 15], hojicha: 1.2, creamer: 4, hotwater: 250 } },
+    hojicha_L: { 많이: { ice: 3, syrup: [60, 40, 25, 15], hojicha: 1.2, creamer: 4, hotwater: 200 }, 보통: { ice: 2.5, syrup: [60, 40, 25, 15], hojicha: 1.2, creamer: 4, hotwater: 230 }, 적게: { ice: 2.2, syrup: [70, 45, 30, 15], hojicha: 1.5, creamer: 5, hotwater: 250 }, 없이: { ice: 2.2, syrup: [70, 45, 30, 15], hojicha: 1.5, creamer: 5, hotwater: 270 }, 뜨겁게: { ice: "x", syrup: [70, 45, 30, 15], hojicha: 1.5, creamer: 5, hotwater: 300 } }
   },
-
-  // Sugar Weights (22,075건)
-  sugar: {
-    '30%': 10261, // 46.48%
-    '50%': 5219,  // 23.64%
-    '0%': 2797,   // 12.67%
-    '10%': 2760,  // 12.50%
-    '100%': 1038  // 4.70%
+  latte: {
+    black_M: { 많이: { ice: .8, syrup: [40, 25, 15, 10], tea: 150, milk: 100 }, 보통: { ice: .8, syrup: [40, 25, 15, 10], tea: 170, milk: 130 }, 적게: { ice: .8, syrup: [50, 30, 20, 10], tea: 180, milk: 150 }, 없이: { ice: .8, syrup: [50, 30, 20, 10], tea: 200, milk: 170 }, 뜨겁게: { ice: "x", syrup: [40, 25, 15, 10], tea: 250, milk: 200 } },
+    black_L: { 많이: { ice: 1, syrup: [50, 30, 20, 10], tea: 200, milk: 150 }, 보통: { ice: 1, syrup: [50, 30, 20, 10], tea: 220, milk: 180 }, 적게: { ice: 1, syrup: [60, 40, 25, 15], tea: 230, milk: 200 }, 없이: { ice: 1, syrup: [60, 40, 25, 15], tea: 250, milk: 220 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], tea: 300, milk: 250 } },
+    hojicha_M: { 많이: { ice: .5, syrup: [40, 25, 15, 10], hojicha: 1, hotwater: 80, milk: 200 }, 보통: { ice: .5, syrup: [40, 25, 15, 10], hojicha: 1, hotwater: 100, milk: 220 }, 적게: { ice: .5, syrup: [50, 30, 20, 10], hojicha: 1.2, hotwater: 100, milk: 250 }, 없이: { ice: .5, syrup: [50, 30, 20, 10], hojicha: 1.2, hotwater: 120, milk: 270 }, 뜨겁게: { ice: "x", syrup: [40, 25, 15, 10], hojicha: 1.2, hotwater: 120, milk: 330 } },
+    hojicha_L: { 많이: { ice: .8, syrup: [50, 30, 20, 10], hojicha: 1.2, hotwater: 90, milk: 290 }, 보통: { ice: .8, syrup: [50, 30, 20, 10], hojicha: 1.2, hotwater: 120, milk: 310 }, 적게: { ice: .8, syrup: [60, 40, 25, 15], hojicha: 1.5, hotwater: 130, milk: 340 }, 없이: { ice: .8, syrup: [60, 40, 25, 15], hojicha: 1.5, hotwater: 150, milk: 360 }, 뜨겁게: { ice: "x", syrup: [50, 30, 20, 10], hojicha: 1.5, hotwater: 150, milk: 400 } }
   },
-
-  // Ice / Temperature Weights (22,075건)
-  ice: {
-    '얼음 적게': 9564,     // 43.33%
-    '얼음 보통': 9545,     // 43.24% (9409 + 136)
-    '얼음 없이': 1240,     // 5.62%
-    '매우적게': 1094,       // 4.96%
-    '뜨겁게': 632          // 2.86% (432 + 97 + 103)
+  fruit: {
+    grapefruit_M: { 많이: { ice: 2.2, syrup: [30, 20, 15, 10], grapefruit: 10, pomelo: 30, dark: 140 }, 보통: { ice: 1.8, syrup: [30, 20, 15, 10], grapefruit: 10, pomelo: 35, dark: 210 }, 적게: { ice: 1.5, syrup: [40, 25, 15, 10], grapefruit: 20, pomelo: 45, dark: 250 }, 없이: { ice: 1.5, syrup: [40, 25, 15, 10], grapefruit: 20, pomelo: 45, dark: 270 } },
+    grapefruit_L: { 많이: { ice: 2.5, syrup: [40, 25, 15, 10], grapefruit: 20, pomelo: 35, dark: 200 }, 보통: { ice: 2.2, syrup: [40, 25, 15, 10], grapefruit: 20, pomelo: 40, dark: 240 }, 적게: { ice: 1.8, syrup: [50, 30, 20, 10], grapefruit: 30, pomelo: 50, dark: 310 }, 없이: { ice: 1.8, syrup: [50, 30, 20, 10], grapefruit: 30, pomelo: 50, dark: 330 } },
+    orange_M: { 많이: { ice: 2.2, syrup: [50, 30, 20, 10], orange: 80, spring: 120, dark: 40 }, 보통: { ice: 1.8, syrup: [50, 30, 20, 10], orange: 90, spring: 170, dark: 40 }, 적게: { ice: 1.5, syrup: [60, 40, 25, 15], orange: 110, spring: 190, dark: 60 }, 없이: { ice: 1.5, syrup: [60, 40, 25, 15], orange: 110, spring: 210, dark: 60 } },
+    orange_L: { 많이: { ice: 2.5, syrup: [60, 40, 25, 15], orange: 100, spring: 170, dark: 50 }, 보통: { ice: 2.2, syrup: [60, 40, 25, 15], orange: 110, spring: 210, dark: 50 }, 적게: { ice: 1.8, syrup: [70, 45, 30, 15], orange: 140, spring: 240, dark: 70 }, 없이: { ice: 1.8, syrup: [70, 45, 30, 15], orange: 140, spring: 260, dark: 70 } },
+    lemon_M: { 많이: { ice: 2.2, syrup: [55, 45, 35, 20], lemon: 25, spring: 80, dark: 100 }, 보통: { ice: 1.8, syrup: [55, 45, 35, 20], lemon: 25, spring: 90, dark: 120 }, 적게: { ice: 1.5, syrup: [65, 55, 45, 25], lemon: 35, spring: 100, dark: 140 }, 없이: { ice: 1.5, syrup: [65, 55, 45, 25], lemon: 35, spring: 120, dark: 160 } },
+    lemon_L: { 많이: { ice: 2.5, syrup: [65, 55, 45, 25], lemon: 35, spring: 100, dark: 120 }, 보통: { ice: 2.2, syrup: [65, 55, 45, 25], lemon: 35, spring: 120, dark: 150 }, 적게: { ice: 1.8, syrup: [75, 65, 55, 30], lemon: 45, spring: 140, dark: 180 }, 없이: { ice: 1.8, syrup: [75, 65, 55, 30], lemon: 45, spring: 160, dark: 200 } }
   },
-
-  // Topping Weights (22,075건)
-  toppings: {
-    '공백': 12630,                 // 57.21% (토핑 없음)
-    '블랙펄': 4270,                // 19.34%
-    '우롱티 젤리': 2501,           // 11.33%
-    '골든버블': 2185,              // 9.90%
-    '블랙펄+골든버블': 194,        // 0.88%
-    '골든버블+우롱티 젤리': 150,   // 0.68%
-    '블랙펄+우롱티 젤리': 145     // 0.66%
+  cheese: {
+    black_M: { ice: 1.5, syrup: [30, 20, 15, 10], tea: 150, hotwater: 50 },
+    black_L: { ice: 2, syrup: [40, 25, 15, 10], tea: 180, hotwater: 70 },
+    green_M: { ice: 1.5, syrup: [30, 20, 15, 10], tea: 200 },
+    green_L: { ice: 2, syrup: [40, 25, 15, 10], tea: 250 },
+    spring_M: { ice: 1.5, syrup: [30, 20, 15, 10], tea: 220 },
+    spring_L: { ice: 2, syrup: [40, 25, 15, 10], tea: 300 },
+    hojicha_M: { ice: 1.5, syrup: [40, 25, 15, 10], hojicha: .5, creamer: .5, hotwater: 180 },
+    hojicha_L: { ice: 2, syrup: [50, 30, 20, 10], hojicha: .8, creamer: .8, hotwater: 230 }
   }
 };
 
-/**
- * Weighted Random Selection
- */
-function weightedChoice(weightMap) {
-  const entries = Object.entries(weightMap);
-  if (entries.length === 0) return null;
-  const totalWeight = entries.reduce((acc, [, w]) => acc + w, 0);
-  let random = Math.random() * totalWeight;
-  for (const [item, w] of entries) {
-    if (random < w) return item;
-    random -= w;
+// --- 2. Random selection & Helper functions ---
+function w(arr) {
+  let total = arr.reduce((acc, cur) => acc + cur.weight, 0);
+  let rand = Math.random() * total;
+  let running = 0;
+  for (let item of arr) {
+    if (rand <= (running += item.weight)) return item.value;
   }
-  return entries[entries.length - 1][0];
+  return arr[arr.length - 1].value;
 }
 
-/**
- * Generate Next Single Question (Frequency-Weighted)
- */
-function nextQuestion() {
-  const db = window.RECIPE_DATABASE;
-
-  // 1. Choose Drink using Weighted Distribution
-  let drinkCandidates = {};
-  if (state.categoryFilter !== 'all') {
-    const cat = db.categories[state.categoryFilter];
-    if (cat) {
-      Object.keys(cat.items).forEach(dName => {
-        drinkCandidates[dName] = FREQUENCY_WEIGHTS.drinks[dName] || 100;
-      });
+function k(quiz) {
+  let fields = (function(e) {
+    let cat = e.menu.category;
+    if ("오리지널 티" === cat) {
+      let t = [{ id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }, { id: "tea", name: "티" }];
+      if (e.menu.nameKo.includes("블랙")) t.push({ id: "hotwater", name: "온수" });
+      return t;
     }
+    if ("클래식 밀크티" === cat) {
+      if (e.menu.nameKo.includes("호지차")) {
+        return [{ id: "hotwater", name: "온수" }, { id: "hojicha", name: "호지차" }, { id: "creamer", name: "크리머" }, { id: "syrup", name: "시럽" }, { id: "ice", name: "얼음" }];
+      }
+      return [{ id: "creamer", name: "크리머" }, { id: "syrup", name: "시럽" }, { id: "tea", name: "티" }, { id: "ice", name: "얼음" }];
+    }
+    if ("신선한 우유" === cat) {
+      if (e.menu.nameKo.includes("호지차")) {
+        return [{ id: "hotwater", name: "온수" }, { id: "hojicha", name: "호지차" }, { id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }, { id: "milk", name: "우유" }];
+      }
+      return [{ id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }, { id: "tea", name: "티" }, { id: "milk", name: "우유" }];
+    }
+    if ("더블 과일티" === cat) {
+      let t = [{ id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }];
+      if (e.menu.nameKo.includes("자몽")) {
+        t.push({ id: "grapefruit", name: "자몽" }, { id: "pomelo", name: "포멜로" }, { id: "dark", name: "다크" });
+      } else if (e.menu.nameKo.includes("오렌지")) {
+        t.push({ id: "orange", name: "오렌지" }, { id: "spring", name: "스프링" }, { id: "dark", name: "다크" });
+      } else if (e.menu.nameKo.includes("레몬")) {
+        t.push({ id: "lemon", name: "레몬" }, { id: "spring", name: "스프링" }, { id: "dark", name: "다크" });
+      }
+      return t;
+    }
+    if ("치즈 밀크폼" === cat) {
+      if (e.menu.nameKo.includes("호지차")) {
+        return [{ id: "hotwater", name: "온수" }, { id: "hojicha", name: "호지차" }, { id: "creamer", name: "크리머" }, { id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }];
+      }
+      let t = [{ id: "ice", name: "얼음" }, { id: "syrup", name: "시럽" }, { id: "tea", name: "티" }];
+      if (e.menu.nameKo.includes("블랙")) t.push({ id: "hotwater", name: "온수" });
+      return t;
+    }
+    return [];
+  })(quiz);
+
+  return ("뜨겁게" === quiz.ice || "따뜻하게" === quiz.ice) ? fields.filter(fld => "ice" !== fld.id) : fields;
+}
+
+function N(name) {
+  return name.includes("블랙") ? "black"
+       : name.includes("자몽") ? "grapefruit"
+       : name.includes("오렌지") ? "orange"
+       : name.includes("레몬") ? "lemon"
+       : name.includes("스프링") ? "spring"
+       : name.includes("호지차") ? "hojicha"
+       : "green";
+}
+
+function _(ice) {
+  return "얼음 많이" === ice ? "많이"
+       : "얼음 적게" === ice ? "적게"
+       : ("얼음 없이" === ice || "상온" === ice) ? "없이"
+       : ("뜨겁게" === ice || "따뜻하게" === ice) ? "뜨겁게"
+       : "보통";
+}
+
+function z(quiz, fieldId) {
+  let val;
+  let recipeObj = (function(e) {
+    let t = N(e.menu.nameKo);
+    let size = e.size;
+    let hasTopping = "없음" !== e.topping;
+    if ("클래식 밀크티" === e.menu.category && hasTopping && "hojicha" !== t) {
+      let key = `black_topping_${size}`;
+      let iceKey = _(e.ice);
+      return j.milk[key]?.[iceKey];
+    }
+    let targetSize = (hasTopping && "L" === size) ? "M" : size;
+    if ("치즈 밀크폼" === e.menu.category) {
+      return j.cheese[`${t}_${targetSize}`] || null;
+    }
+    let catKey = "original";
+    let typeKey = t;
+    if ("클래식 밀크티" === e.menu.category) {
+      catKey = "milk";
+      if ("hojicha" !== t) typeKey = "black";
+    } else if ("신선한 우유" === e.menu.category) {
+      catKey = "latte";
+      if ("hojicha" !== t) typeKey = "black";
+    } else if ("더블 과일티" === e.menu.category) {
+      catKey = "fruit";
+    }
+    let fullKey = `${typeKey}_${targetSize}`;
+    let iceKey = _(e.ice);
+    return j[catKey][fullKey]?.[iceKey] || null;
+  })(quiz);
+
+  if (!recipeObj) return "0";
+
+  if ("syrup" === fieldId) {
+    if ("0%" === quiz.sugar) return "0";
+    let sugarIdx = "100%" === quiz.sugar ? 0 : "50%" === quiz.sugar ? 1 : "30%" === quiz.sugar ? 2 : "10%" === quiz.sugar ? 3 : -1;
+    val = recipeObj.syrup ? recipeObj.syrup[sugarIdx] : 0;
   } else {
-    drinkCandidates = { ...FREQUENCY_WEIGHTS.drinks };
+    val = recipeObj[fieldId];
   }
 
-  const chosenDrinkName = weightedChoice(drinkCandidates);
+  if ("0%" === quiz.sugar) {
+    if (quiz.menu.nameKo.includes("오렌지") && "spring" === fieldId) val = (val || 0) + 30;
+    if (quiz.menu.nameKo.includes("레몬") && "dark" === fieldId) val = (val || 0) + 30;
+  }
 
-  // Find Category for chosen drink
-  let chosenCatName = '';
-  for (const [cName, cObj] of Object.entries(db.categories)) {
-    if (cObj.items[chosenDrinkName]) {
-      chosenCatName = cName;
+  if (undefined === val) return "0";
+  if ("x" === val) return "x";
+
+  let applyShorten = ("M" === quiz.size && "없음" !== quiz.topping);
+  let typeCode = N(quiz.menu.nameKo);
+  if ("클래식 밀크티" === quiz.menu.category && "hojicha" !== typeCode) applyShorten = false;
+  if ("치즈 밀크폼" === quiz.menu.category) {
+    applyShorten = ("M" === quiz.size && "없음" !== quiz.topping);
+  }
+
+  if (applyShorten && typeof val === "number" && val > 0) {
+    let shortenType = "sugar_tea_juice_water_milk";
+    if ("ice" === fieldId) shortenType = "ice";
+    if ("hojicha" === fieldId || "creamer" === fieldId) shortenType = "powder";
+    let orig = val;
+    val = (shortenType === "sugar_tea_juice_water_milk") ? (f[orig] ?? orig)
+        : (shortenType === "powder") ? (v[orig] ?? orig)
+        : (shortenType === "ice") ? (y[orig] ?? orig)
+        : orig;
+  }
+
+  return val.toString();
+}
+
+function L(userAns, targetAns) {
+  let a = "" === (userAns || "").trim() ? "0" : (userAns || "").trim();
+  let s = "" === (targetAns || "").trim() ? "0" : (targetAns || "").trim();
+  if (a === s) return true;
+  let numA = Number(a);
+  let numS = Number(s);
+  return !(isNaN(numA) || isNaN(numS)) && numA === numS;
+}
+
+// --- 3. App State & Logic ---
+const state = {
+  selectedCategory: "all",
+  selectedMenu: "all",
+  currentQuiz: null,
+  answers: {},
+  activeFieldId: "ice",
+  isInputBlank: true,
+  isSubmitted: false,
+  isAllCorrect: false,
+  orderNumber: 1
+};
+
+function generateQuiz(categoryFilter = "all", menuFilter = "all") {
+  let chosenCategory = "all" !== categoryFilter ? categoryFilter : w([
+    { value: "클래식 밀크티", weight: 30 },
+    { value: "치즈 밀크폼", weight: 25 },
+    { value: "더블 과일티", weight: 20 },
+    { value: "오리지널 티", weight: 15 },
+    { value: "신선한 우유", weight: 10 }
+  ]);
+
+  let catCandidates = b.filter(item => item.category === chosenCategory);
+  let chosenMenu = catCandidates[0] || b[0];
+
+  if ("all" !== menuFilter) {
+    chosenMenu = b.find(item => item.nameKo === menuFilter) || chosenMenu;
+    chosenCategory = chosenMenu.category;
+  } else if ("더블 과일티" === chosenCategory) {
+    chosenMenu = catCandidates[Math.floor(Math.random() * catCandidates.length)];
+  } else {
+    chosenMenu = w(catCandidates.map(item => {
+      let wt = 10;
+      if (item.nameKo.includes("다크")) wt = 40;
+      else if (item.nameKo.includes("스프링")) wt = 30;
+      else if (item.nameKo.includes("그린")) wt = 15;
+      else if (item.nameKo.includes("블랙")) wt = 8;
+      else if (item.nameKo.includes("라이트")) wt = 7;
+      else if (item.nameKo.includes("호지차")) wt = 10;
+      return { value: item, weight: wt };
+    }));
+  }
+
+  let size = Math.random() < 0.5 ? "M" : "L";
+  let sugar = w([
+    { value: "50%", weight: 37.5 },
+    { value: "30%", weight: 37.5 },
+    { value: "10%", weight: 15 },
+    { value: "100%", weight: 5 },
+    { value: "0%", weight: 5 }
+  ]);
+
+  let topping = "없음";
+  if (Math.random() < 0.3) {
+    let topList = ["블랙 펄", "골든 버블", "우롱티 젤리"];
+    topping = topList[Math.floor(Math.random() * topList.length)];
+  }
+
+  let ice = ("치즈 밀크폼" === chosenCategory) ? "얼음 보통"
+          : ("더블 과일티" === chosenCategory) ? w([
+              { value: "얼음 보통", weight: 45 },
+              { value: "얼음 적게", weight: 35 },
+              { value: "얼음 없이", weight: 13 },
+              { value: "얼음 많이", weight: 5 },
+              { value: "상온", weight: 2 }
+            ])
+          : w([
+              { value: "얼음 보통", weight: 40 },
+              { value: "얼음 적게", weight: 30 },
+              { value: "얼음 없이", weight: 14 },
+              { value: "상온", weight: 2 },
+              { value: "얼음 많이", weight: 5 },
+              { value: "따뜻하게", weight: 4.5 },
+              { value: "뜨겁게", weight: 4.5 }
+            ]);
+
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+  const quiz = {
+    menu: chosenMenu,
+    size: size,
+    ice: ice,
+    sugar: sugar,
+    topping: topping,
+    orderNumber: Math.floor(Math.random() * 90) + 10,
+    orderDate: dateStr
+  };
+
+  state.currentQuiz = quiz;
+  state.answers = {};
+  const fields = k(quiz);
+  fields.forEach(fld => {
+    state.answers[fld.id] = "";
+  });
+  state.activeFieldId = fields[0]?.id || "ice";
+  state.isInputBlank = true;
+  state.isSubmitted = false;
+  state.isAllCorrect = false;
+
+  renderUI();
+}
+
+function handleKeypad(key) {
+  if (state.isSubmitted) return;
+  const curField = state.activeFieldId;
+  const curVal = state.answers[curField] || "";
+
+  if (key === "DEL") {
+    state.answers[curField] = state.isInputBlank ? "" : curVal.slice(0, -1);
+  } else {
+    state.answers[curField] = state.isInputBlank ? key : curVal + key;
+  }
+  state.isInputBlank = false;
+  renderInputFields();
+}
+
+function submitAnswers() {
+  if (!state.currentQuiz) return;
+  const fields = k(state.currentQuiz);
+  let allCorrect = true;
+  for (let fld of fields) {
+    if (!L(state.answers[fld.id], z(state.currentQuiz, fld.id))) {
+      allCorrect = false;
       break;
     }
   }
-  const cat = db.categories[chosenCatName];
-
-  // 2. Choose Size using Weights
-  const chosenSize = weightedChoice(FREQUENCY_WEIGHTS.sizes) || 'M';
-
-  // 3. Choose Ice using Weights, constrained by Category options
-  const iceCandidates = {};
-  cat.ice_options.forEach(opt => {
-    iceCandidates[opt] = FREQUENCY_WEIGHTS.ice[opt] || 100;
-  });
-  const chosenIce = weightedChoice(iceCandidates) || cat.ice_options[0];
-
-  // 4. Choose Sugar using Weights, constrained by Category options
-  const sugarCandidates = {};
-  cat.sugar_options.forEach(opt => {
-    sugarCandidates[opt] = FREQUENCY_WEIGHTS.sugar[opt] || 100;
-  });
-  const chosenSugar = weightedChoice(sugarCandidates) || cat.sugar_options[0];
-
-  // 5. Choose Topping using Weights and Topping Filter
-  let chosenTopping = '공백';
-  if (state.toppingFilter === 'with') {
-    const nonBlankToppings = { ...FREQUENCY_WEIGHTS.toppings };
-    delete nonBlankToppings['공백'];
-    chosenTopping = weightedChoice(nonBlankToppings);
-  } else if (state.toppingFilter === 'without') {
-    chosenTopping = '공백';
-  } else {
-    chosenTopping = weightedChoice(FREQUENCY_WEIGHTS.toppings);
-  }
-
-  const q = calculateRecipe(chosenCatName, chosenDrinkName, chosenSize, chosenIce, chosenSugar, chosenTopping);
-
-  // 5-digit store order number (matching media_1791044325110.png e.g. 11234)
-  q.orderNo = Math.floor(Math.random() * 89999) + 10000;
-  const now = new Date();
-  q.timestamp = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-  const totalItems = Math.floor(Math.random() * 3) + 1;
-  const itemSeq = Math.floor(Math.random() * totalItems) + 1;
-  q.seq = `${itemSeq}/${totalItems}`;
-
-  state.currentQuestion = q;
-  state.isGraded = false;
-
-  renderSticker(q);
-  renderQuizForm(q);
-  sfx.playPrintSound();
+  state.isAllCorrect = allCorrect;
+  state.isSubmitted = true;
+  renderUI();
 }
 
-/**
- * Render text directly on the photo sticker template
- */
+function nextField() {
+  if (state.isSubmitted || !state.currentQuiz) return;
+  const fields = k(state.currentQuiz);
+  const curIdx = fields.findIndex(f => f.id === state.activeFieldId);
+  const nextIdx = (curIdx + 1) % fields.length;
+  state.activeFieldId = fields[nextIdx].id;
+  state.isInputBlank = true;
+  renderInputFields();
+}
+
+function prevField() {
+  if (state.isSubmitted || !state.currentQuiz) return;
+  const fields = k(state.currentQuiz);
+  const curIdx = fields.findIndex(f => f.id === state.activeFieldId);
+  const prevIdx = curIdx > 0 ? curIdx - 1 : fields.length - 1;
+  state.activeFieldId = fields[prevIdx].id;
+  state.isInputBlank = true;
+  renderInputFields();
+}
+
+// --- 4. DOM Rendering ---
+function renderUI() {
+  const q = state.currentQuiz;
+  if (!q) return;
+
+  // Render Sticker
+  renderSticker(q);
+
+  // Render Input Fields
+  renderInputFields();
+
+  // Render Bottom Status & Action Button
+  const statusDot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+  const btnAction = document.getElementById('btnAction');
+
+  if (state.isSubmitted) {
+    statusDot.className = `w-1.5 h-1.5 rounded-full animate-pulse shrink-0 ${state.isAllCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
+    statusText.textContent = state.isAllCorrect ? '완벽!' : '오답 확인';
+    btnAction.className = 'h-9 px-4 text-white rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all flex items-center gap-1 flex-shrink-0 bg-blue-600 hover:bg-blue-500 shadow-blue-500/20';
+    btnAction.innerHTML = `다음 문제 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+  } else {
+    statusDot.className = 'w-1.5 h-1.5 rounded-full animate-pulse shrink-0 bg-blue-500';
+    statusText.textContent = '입력 중';
+    btnAction.className = 'h-9 px-4 text-white rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all flex items-center gap-1 flex-shrink-0 bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20';
+    btnAction.innerHTML = `정답 확인 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+  }
+}
+
 function renderSticker(q) {
-  const stickerEl = document.getElementById('dejengPhotoSticker');
+  const stickerEl = document.getElementById('dejengSticker');
   if (!stickerEl) return;
 
-  if (window.DEJENG_STICKER_TEMPLATE_B64) {
-    stickerEl.style.backgroundImage = `url("${window.DEJENG_STICKER_TEMPLATE_B64}")`;
-  }
+  const titleHtml = q.menu.lines.map((line, idx) => `<div>${idx === 0 && q.menu.isOriginal ? `# ${line}` : line}</div>`).join('');
+  const toppingHtml = (q.topping && q.topping !== '없음') ? `<div>토핑 ${q.topping}</div>` : '';
 
-  // Drink title with official store line breaks
-  const titleEl = document.getElementById('stDrinkTitle');
-  titleEl.innerHTML = q.lineBreakHtml;
+  stickerEl.className = 'dejeng-sticker-card shrink-0';
+  stickerEl.innerHTML = `
+    <!-- Dynamic Drink Name Overlay -->
+    <div class="st-real-title">
+      ${titleHtml}
+    </div>
 
-  // Auto adjust font size if title is long
-  if (q.drinkName.length > 15) {
-    titleEl.style.fontSize = '1.20rem';
-    titleEl.style.lineHeight = '1.2';
-  } else if (q.drinkName.length > 10) {
-    titleEl.style.fontSize = '1.30rem';
-    titleEl.style.lineHeight = '1.22';
-  } else {
-    titleEl.style.fontSize = '1.35rem';
-    titleEl.style.lineHeight = '1.25';
-  }
+    <!-- Dynamic Specs Overlay -->
+    <div class="st-real-specs">
+      <div>${q.size}</div>
+      <div>당도 ${q.sugar.split('%')[0]}%</div>
+      <div>${q.ice}</div>
+      ${toppingHtml}
+    </div>
 
-  // Specs (matching media_1791044325110.png)
-  document.getElementById('stSize').textContent = q.size;
-  document.getElementById('stSugar').textContent = `당도 ${q.sugar}`;
-  document.getElementById('stIce').textContent = q.ice;
+    <!-- Dynamic Order Number -->
+    <div class="st-real-orderno">
+      ${q.orderNumber}
+    </div>
 
-  const toppingEl = document.getElementById('stTopping');
-  if (q.topping && q.topping !== '공백' && q.topping !== '없음') {
-    toppingEl.textContent = `토핑 ${q.topping}`;
-    toppingEl.style.display = 'block';
-  } else {
-    toppingEl.textContent = '';
-    toppingEl.style.display = 'none';
-  }
-
-  // 5-digit Order Number
-  document.getElementById('stOrderNo').textContent = q.orderNo;
-  document.getElementById('stTimestamp').textContent = q.timestamp;
-  document.getElementById('stSeq').textContent = q.seq;
-
-  // Drop animation
-  stickerEl.style.animation = 'none';
-  stickerEl.offsetHeight;
-  stickerEl.style.animation = 'stickerDrop 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.15)';
-}
-
-/**
- * Render Fill-in-the-Blank Quiz Form (No units!)
- */
-function renderQuizForm(q) {
-  // Hint Banner
-  const hintEl = document.getElementById('quizSequenceHint');
-  if (hintEl) {
-    hintEl.textContent = q.sheetOrderRule || '시트 제조 순서대로 정확한 수량을 입력하세요.';
-  }
-
-  // Clear Result Banner & Detailed Card
-  const resultBanner = document.getElementById('quizResultBanner');
-  resultBanner.className = 'quiz-result-banner hidden';
-  resultBanner.innerHTML = '';
-
-  const detailedCard = document.getElementById('detailedAnswerCard');
-  detailedCard.classList.add('hidden');
-
-  // Populate Input List (순서 힌트나 조리 과정 없이 정답 입력칸만 나열)
-  const listEl = document.getElementById('quizInputsList');
-  listEl.innerHTML = '';
-  state.stepInputs = [];
-
-  let inputSeq = 1;
-  q.steps.forEach((step, idx) => {
-    // action 타입(흔들기, 섞기 등)은 입력칸이 아니므로 제외
-    if (step.type === 'action') return;
-
-    const row = document.createElement('div');
-    row.className = 'quiz-step-row';
-    row.id = `quizStepRow_${idx}`;
-    row.dataset.stepIndex = idx;
-
-    const leftHtml = `
-      <div class="step-left-info">
-        <span class="step-idx-badge">${inputSeq}</span>
-        <div class="step-text-wrap">
-          <span class="step-name-text">${step.name}</span>
-        </div>
-      </div>
-    `;
-
-    const rightHtml = `
-      <div class="step-input-wrap">
-        <input type="text"
-               inputmode="decimal"
-               pattern="[0-9]*\\.?[0-9]*"
-               class="quiz-step-input"
-               id="quizInput_${idx}"
-               data-idx="${idx}"
-               data-name="${step.name}"
-               placeholder="수량"
-               autocomplete="off"
-               autocorrect="off"
-               spellcheck="false">
-        <div class="step-feedback-msg" id="stepFeedback_${idx}"></div>
-      </div>
-    `;
-
-    row.innerHTML = leftHtml + rightHtml;
-    listEl.appendChild(row);
-
-    const inputEl = row.querySelector('.quiz-step-input');
-    state.stepInputs.push({
-      idx: idx,
-      inputEl: inputEl,
-      step: step
-    });
-
-    // Events for input focus
-    inputEl.addEventListener('focus', () => {
-      setActiveInput(idx);
-    });
-
-    inputEl.addEventListener('click', () => {
-      setActiveInput(idx);
-    });
-
-    // Enter key moves to next or submits
-    inputEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const currentPos = state.stepInputs.findIndex(item => item.idx === idx);
-        if (currentPos < state.stepInputs.length - 1) {
-          state.stepInputs[currentPos + 1].inputEl.focus();
-        } else {
-          gradeQuiz();
-        }
-      }
-    });
-
-    inputSeq++;
-  });
-
-  // Focus the first input field
-  if (state.stepInputs.length > 0) {
-    setActiveInput(state.stepInputs[0].idx);
-  }
-}
-
-/**
- * Set Active Input
- */
-function setActiveInput(idx) {
-  state.activeInputIdx = idx;
-
-  // Highlight row
-  document.querySelectorAll('.quiz-step-row').forEach(r => r.classList.remove('is-active-step'));
-  const activeRow = document.getElementById(`quizStepRow_${idx}`);
-  if (activeRow) {
-    activeRow.classList.add('is-active-step');
-  }
-}
-
-/**
- * Grade the Current Quiz Inputs
- */
-function gradeQuiz() {
-  if (!state.currentQuestion) return;
-  state.isGraded = true;
-
-  let totalNumericCount = state.stepInputs.length;
-  let correctCount = 0;
-
-  state.stepInputs.forEach(item => {
-    const input = item.inputEl;
-    const step = item.step;
-    const feedbackEl = document.getElementById(`stepFeedback_${item.idx}`);
-
-    const rawVal = input.value.trim();
-    const userVal = parseFloat(rawVal);
-    const targetVal = parseFloat(step.finalAmount);
-
-    let isMatch = false;
-    if (!isNaN(userVal) && Math.abs(userVal - targetVal) < 0.001) {
-      isMatch = true;
-    }
-
-    if (isMatch) {
-      correctCount++;
-      input.classList.remove('is-wrong');
-      input.classList.add('is-correct');
-      if (feedbackEl) {
-        feedbackEl.className = 'step-feedback-msg correct-msg';
-        feedbackEl.innerHTML = `✓ 정답 (${targetVal})`;
-      }
-    } else {
-      input.classList.remove('is-correct');
-      input.classList.add('is-wrong');
-      if (feedbackEl) {
-        feedbackEl.className = 'step-feedback-msg wrong-msg';
-        const note = step.isShortened ? ` (쇼튼 적용, 원래 ${step.origAmount})` : '';
-        feedbackEl.innerHTML = `정답: <strong>${targetVal}</strong>${note}`;
-      }
-    }
-  });
-
-  // Overall Result Banner
-  const banner = document.getElementById('quizResultBanner');
-  banner.classList.remove('hidden');
-
-  const isPerfect = (correctCount === totalNumericCount);
-  if (isPerfect) {
-    banner.className = 'quiz-result-banner perfect';
-    banner.innerHTML = `
-      <span class="result-banner-icon">🎉</span>
-      <div class="result-banner-text">
-        <div>100점 만점! 완벽합니다!</div>
-        <div style="font-size:0.85rem; font-weight:normal; opacity:0.9;">모든 레시피 순서와 용량을 정확히 맞췄습니다.</div>
-      </div>
-    `;
-    sfx.playSuccess();
-  } else {
-    banner.className = 'quiz-result-banner incorrect';
-    banner.innerHTML = `
-      <span class="result-banner-icon">⚠️</span>
-      <div class="result-banner-text">
-        <div>${correctCount} / ${totalNumericCount} 정답</div>
-        <div style="font-size:0.85rem; font-weight:normal; opacity:0.9;">빨간색으로 표시된 오답의 올바른 정답 수치를 확인해보세요.</div>
-      </div>
-    `;
-    sfx.playWrong();
-  }
-
-  // Reveal Detailed Breakdown
-  renderDetailedBreakdown(state.currentQuestion);
-}
-
-/**
- * Show All Answers
- */
-function showAllAnswers() {
-  if (!state.currentQuestion) return;
-
-  state.stepInputs.forEach(item => {
-    item.inputEl.value = item.step.finalAmount;
-    item.inputEl.classList.remove('is-wrong');
-    item.inputEl.classList.add('is-correct');
-
-    const feedbackEl = document.getElementById(`stepFeedback_${item.idx}`);
-    if (feedbackEl) {
-      feedbackEl.className = 'step-feedback-msg correct-msg';
-      feedbackEl.innerHTML = `✓ 정답 (${item.step.finalAmount})`;
-    }
-  });
-
-  const banner = document.getElementById('quizResultBanner');
-  banner.classList.remove('hidden');
-  banner.className = 'quiz-result-banner perfect';
-  banner.innerHTML = `
-    <span class="result-banner-icon">💡</span>
-    <div class="result-banner-text">
-      <div>정답 전체 공개 완료</div>
-      <div style="font-size:0.85rem; font-weight:normal; opacity:0.9;">하단 상세 해설과 쇼튼 폼 변환표를 확인하세요.</div>
+    <!-- Dynamic Footer -->
+    <div class="st-real-footer">
+      <span>${q.orderDate}</span>
+      <span>1/1</span>
     </div>
   `;
-
-  renderDetailedBreakdown(state.currentQuestion);
 }
 
-/**
- * Render Detailed Breakdown (Exceptions & Shorten Summary)
- */
-function renderDetailedBreakdown(q) {
-  const card = document.getElementById('detailedAnswerCard');
-  if (!card) return;
-  card.classList.remove('hidden');
+function renderInputFields() {
+  const container = document.getElementById('recipeFieldsContainer');
+  if (!container || !state.currentQuiz) return;
 
-  // Exception Rule Banner
-  const badgeEl = document.getElementById('ansExceptionBadge');
-  const textEl = document.getElementById('ansExceptionText');
-  badgeEl.textContent = q.ruleBadge;
-  badgeEl.className = 'exception-badge ' + q.ruleClass;
-  textEl.textContent = q.ruleText;
+  const q = state.currentQuiz;
+  const fields = k(q);
 
-  // Shorten Form Breakdown (No units!)
-  const shortenBox = document.getElementById('ansShortenBox');
-  const shortenGrid = document.getElementById('ansShortenGrid');
+  container.innerHTML = '';
+  fields.forEach(fld => {
+    const isActive = (state.activeFieldId === fld.id);
+    const targetVal = z(q, fld.id);
+    const userVal = state.answers[fld.id] || '';
+    const isCorrect = L(userVal, targetVal);
+    const isWrong = state.isSubmitted && !isCorrect;
+    const isPass = state.isSubmitted && isCorrect;
 
-  if (q.applyShorten && q.shortenBreakdown.length > 0) {
-    shortenBox.classList.remove('hidden');
-    shortenGrid.innerHTML = '';
-    q.shortenBreakdown.forEach(item => {
-      const bEl = document.createElement('div');
-      bEl.className = 'shorten-pill-card';
-      bEl.innerHTML = `
-        <span class="shorten-ing-name">${item.name}</span>
-        <div class="shorten-calc">
-          <span class="black-val">${item.orig}</span>
-          <span class="arrow">➔</span>
-          <span class="red-val">${item.shortened}</span>
-        </div>
-      `;
-      shortenGrid.appendChild(bEl);
-    });
-  } else {
-    shortenBox.classList.add('hidden');
-  }
-}
+    let borderClass = 'border-white/5 bg-slate-800/40 hover:bg-slate-800';
+    if (isActive) {
+      borderClass = 'border-blue-500 bg-blue-500/10';
+    } else if (isWrong) {
+      borderClass = 'border-rose-500 bg-rose-500/10';
+    } else if (isPass) {
+      borderClass = 'border-emerald-500 bg-emerald-500/10';
+    }
 
-/**
- * Reference Modal Initialization
- */
-function initReferenceModal() {
-  const db = window.RECIPE_DATABASE;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `px-3 py-2.5 rounded-xl border-2 text-left transition-all relative overflow-hidden flex items-center justify-between w-full ${borderClass}`;
+    btn.onclick = () => {
+      if (state.isSubmitted || state.activeFieldId === fld.id) return;
+      state.activeFieldId = fld.id;
+      state.isInputBlank = true;
+      renderInputFields();
+    };
 
-  // Liquid
-  const liquidEl = document.getElementById('modalLiquidTable');
-  const liquidEntries = Object.entries(db.shorten.liquid).map(([k, v]) => ({ k: parseFloat(k), v }));
-  liquidEntries.sort((a, b) => a.k - b.k);
-  let lqCols = 8;
-  let lqHtml = '';
-  for (let i = 0; i < liquidEntries.length; i += lqCols) {
-    const chunk = liquidEntries.slice(i, i + lqCols);
-    lqHtml += '<tr class="black-row">' + chunk.map(c => `<td>${c.k}</td>`).join('') + '</tr>';
-    lqHtml += '<tr class="red-row">' + chunk.map(c => `<td>${c.v}</td>`).join('') + '</tr>';
-  }
-  liquidEl.innerHTML = lqHtml;
+    const valDisplay = userVal || '<span class="text-slate-700 animate-pulse">_</span>';
+    const wrongValDisplay = isWrong ? `<div class="text-xl font-black text-rose-500 animate-in slide-in-from-left-2 ml-1" style="font-family:'Outfit', sans-serif;">${targetVal}</div>` : '';
+    const checkIcon = isPass ? `
+      <div class="absolute top-1/2 -translate-y-1/2 right-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>` : '';
 
-  // Powder
-  const powderEl = document.getElementById('modalPowderTable');
-  const powderEntries = Object.entries(db.shorten.powder).map(([k, v]) => ({ k: parseFloat(k), v }));
-  powderEntries.sort((a, b) => a.k - b.k);
-  let pwHtml = '<tr class="black-row">' + powderEntries.map(c => `<td>${c.k}</td>`).join('') + '</tr>';
-  pwHtml += '<tr class="red-row">' + powderEntries.map(c => `<td>${c.v}</td>`).join('') + '</tr>';
-  powderEl.innerHTML = pwHtml;
+    btn.innerHTML = `
+      <div class="text-xs font-bold text-slate-400" style="font-family:'Noto Sans KR', sans-serif;">${fld.name}</div>
+      <div class="flex flex-row items-center justify-end gap-2 h-6 ${isPass ? 'pr-5' : ''}">
+        <div class="text-xl font-black text-white" style="font-family:'Outfit', sans-serif;">${valDisplay}</div>
+        ${wrongValDisplay}
+      </div>
+      ${checkIcon}
+    `;
 
-  // Ice
-  const iceEl = document.getElementById('modalIceTable');
-  const iceEntries = Object.entries(db.shorten.ice).map(([k, v]) => ({ k: parseFloat(k), v }));
-  iceEntries.sort((a, b) => a.k - b.k);
-  let icHtml = '<tr class="black-row">' + iceEntries.map(c => `<td>${c.k}</td>`).join('') + '</tr>';
-  icHtml += '<tr class="red-row">' + iceEntries.map(c => `<td>${c.v}</td>`).join('') + '</tr>';
-  iceEl.innerHTML = icHtml;
-
-  // Modal open/close
-  const modal = document.getElementById('referenceModal');
-  document.getElementById('btnOpenReference').addEventListener('click', () => modal.classList.remove('hidden'));
-  document.getElementById('btnCloseModal').addEventListener('click', () => modal.classList.add('hidden'));
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) modal.classList.add('hidden');
-  });
-
-  // Modal tabs
-  const modalTabs = document.querySelectorAll('.modal-nav-tab');
-  const viewShorten = document.getElementById('viewShorten');
-  const viewSheet = document.getElementById('viewSheet');
-  const modalSheetRule = document.getElementById('modalSheetRule');
-  const modalSheetContent = document.getElementById('modalSheetContent');
-
-  modalTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      modalTabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-
-      const target = tab.dataset.ref;
-      if (target === 'shorten') {
-        viewShorten.classList.remove('hidden');
-        viewSheet.classList.add('hidden');
-      } else {
-        viewShorten.classList.add('hidden');
-        viewSheet.classList.remove('hidden');
-
-        const cat = db.categories[target];
-        if (!cat) return;
-        modalSheetRule.innerHTML = `<strong>${target} 공식 문제 순서</strong> : ${cat.order_rule}`;
-
-        let tableHtml = '<table class="sheet-raw-view-table"><thead><tr><th>음료명</th><th>사이즈</th><th>얼음옵션</th><th>제조 순서 및 용량</th></tr></thead><tbody>';
-        Object.entries(cat.items).forEach(([dName, dObj]) => {
-          ['M', 'L'].forEach(size => {
-            cat.ice_options.forEach(iceOpt => {
-              const rec = dObj.recipes[size][iceOpt];
-              if (!rec) return;
-              const stepsStr = rec.steps.map(s => {
-                if (s.amount_by_sugar) {
-                  return `${s.name}(100%:${s.amount_by_sugar['100%']} / 50%:${s.amount_by_sugar['50%']} / 30%:${s.amount_by_sugar['30%']} / 10%:${s.amount_by_sugar['10%']})`;
-                }
-                return `${s.name}: ${s.amount || 0}`;
-              }).join(' ➔ ');
-
-              tableHtml += `<tr><td><strong>${dName}</strong></td><td>${size}</td><td>${iceOpt}</td><td style="text-align:left;">${stepsStr}</td></tr>`;
-            });
-          });
-        });
-        tableHtml += '</tbody></table>';
-        modalSheetContent.innerHTML = tableHtml;
-      }
-    });
+    container.appendChild(btn);
   });
 }
 
-/**
- * Event Listeners & Boot
- */
+// --- 5. Boot & Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
-  // Category Filter
-  document.querySelectorAll('#categoryFilter .filter-pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#categoryFilter .filter-pill').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.categoryFilter = btn.dataset.cat;
-      nextQuestion();
+  // Category & Menu Select Dropdowns
+  const selectCat = document.getElementById('selectCategory');
+  const selectMenu = document.getElementById('selectMenu');
+
+  // Populate categories
+  const categories = Array.from(new Set(b.map(item => item.category)));
+  categories.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = `${cat} 집중 훈련`;
+    selectCat.appendChild(opt);
+  });
+
+  function updateMenuOptions(catVal) {
+    selectMenu.innerHTML = '<option value="all">[ 메뉴 전체 혼합 ]</option>';
+    selectMenu.disabled = (catVal === 'all');
+    const filtered = b.filter(item => catVal === 'all' || item.category === catVal);
+    filtered.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.nameKo;
+      opt.textContent = item.isOriginal ? `# ${item.nameKo}` : item.nameKo;
+      selectMenu.appendChild(opt);
+    });
+  }
+
+  selectCat.addEventListener('change', (e) => {
+    const val = e.target.value;
+    state.selectedCategory = val;
+    state.selectedMenu = 'all';
+    updateMenuOptions(val);
+    generateQuiz(val, 'all');
+  });
+
+  selectMenu.addEventListener('change', (e) => {
+    const val = e.target.value;
+    state.selectedMenu = val;
+    generateQuiz(state.selectedCategory, val);
+  });
+
+  // Action Button (정답 확인 / 다음 문제)
+  const btnAction = document.getElementById('btnAction');
+  btnAction.addEventListener('click', () => {
+    if (state.isSubmitted) {
+      generateQuiz(state.selectedCategory, state.selectedMenu);
+    } else {
+      submitAnswers();
+    }
+  });
+
+  // Next Field Button
+  const btnNextField = document.getElementById('btnNextField');
+  btnNextField.addEventListener('click', () => {
+    nextField();
+  });
+
+  // Virtual Keypad Clicks
+  document.querySelectorAll('.pad-key-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const key = btn.dataset.key;
+      handleKeypad(key);
     });
   });
 
-  // Topping Filter
-  document.querySelectorAll('#toppingFilter .filter-pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#toppingFilter .filter-pill').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.toppingFilter = btn.dataset.top;
-      nextQuestion();
-    });
-  });
-
-  // Sound Toggle
-  const soundBtn = document.getElementById('soundToggle');
-  soundBtn.addEventListener('click', () => {
-    sfx.enabled = !sfx.enabled;
-    soundBtn.textContent = sfx.enabled ? '🔊' : '🔇';
-  });
-
-  // Action Buttons
-  document.getElementById('btnNextQuiz').addEventListener('click', nextQuestion);
-  document.getElementById('btnGradeQuiz').addEventListener('click', gradeQuiz);
-  document.getElementById('btnShowAllAnswers').addEventListener('click', showAllAnswers);
-
-
-  // Desktop Keyboard Shortcuts
+  // Keyboard Shortcuts (matching vercel app keydown listener)
   window.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-      if (e.key === 'Enter') {
-        // Handled in individual input listener
-      }
+    if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'SELECT') {
       return;
     }
-    if (e.code === 'Space') {
-      e.preventDefault();
-      nextQuestion();
-    } else if (e.code === 'Enter') {
-      e.preventDefault();
-      gradeQuiz();
+
+    if (state.isSubmitted) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        generateQuiz(state.selectedCategory, state.selectedMenu);
+      }
+    } else {
+      if (/^[0-9.]$/.test(e.key)) {
+        handleKeypad(e.key);
+      } else if (e.key === 'Backspace') {
+        handleKeypad('DEL');
+      } else if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        if (!state.currentQuiz) return;
+        const fields = k(state.currentQuiz);
+        const curIdx = fields.findIndex(f => f.id === state.activeFieldId);
+
+        if (e.key === 'Tab' && e.shiftKey) {
+          prevField();
+        } else if (curIdx < fields.length - 1) {
+          nextField();
+        } else if (e.key === 'Enter') {
+          submitAnswers();
+        } else {
+          state.activeFieldId = fields[0].id;
+          state.isInputBlank = true;
+          renderInputFields();
+        }
+      }
     }
   });
 
-  // Initialize
-  initReferenceModal();
-  nextQuestion();
+  // Initial load
+  updateMenuOptions('all');
+  generateQuiz('all', 'all');
 });
