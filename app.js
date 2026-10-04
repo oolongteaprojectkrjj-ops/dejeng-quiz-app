@@ -503,89 +503,80 @@ function renderQuizForm(q) {
   const detailedCard = document.getElementById('detailedAnswerCard');
   detailedCard.classList.add('hidden');
 
-  // Populate Input List
+  // Populate Input List (순서 힌트나 조리 과정 없이 정답 입력칸만 나열)
   const listEl = document.getElementById('quizInputsList');
   listEl.innerHTML = '';
   state.stepInputs = [];
 
+  let inputSeq = 1;
   q.steps.forEach((step, idx) => {
+    // action 타입(흔들기, 섞기 등)은 입력칸이 아니므로 제외
+    if (step.type === 'action') return;
+
     const row = document.createElement('div');
     row.className = 'quiz-step-row';
     row.id = `quizStepRow_${idx}`;
     row.dataset.stepIndex = idx;
 
-    const isAction = (step.type === 'action');
-
     const leftHtml = `
       <div class="step-left-info">
-        <span class="step-idx-badge">${idx + 1}</span>
+        <span class="step-idx-badge">${inputSeq}</span>
         <div class="step-text-wrap">
           <span class="step-name-text">${step.name}</span>
-          ${step.note ? `<span class="step-action-note">💡 ${step.note}</span>` : ''}
-          ${step.action ? `<span class="step-action-note">👉 ${step.action}</span>` : ''}
         </div>
       </div>
     `;
 
-    let rightHtml = '';
-    if (isAction) {
-      rightHtml = `
-        <div class="step-input-wrap">
-          <span class="step-action-note">${step.note || step.action || '조리 과정'}</span>
-        </div>
-      `;
-    } else {
-      rightHtml = `
-        <div class="step-input-wrap">
-          <input type="text"
-                 inputmode="decimal"
-                 pattern="[0-9]*\\.?[0-9]*"
-                 class="quiz-step-input"
-                 id="quizInput_${idx}"
-                 data-idx="${idx}"
-                 data-name="${step.name}"
-                 placeholder="수량 입력"
-                 autocomplete="off"
-                 autocorrect="off"
-                 spellcheck="false">
-          <div class="step-feedback-msg" id="stepFeedback_${idx}"></div>
-        </div>
-      `;
-    }
+    const rightHtml = `
+      <div class="step-input-wrap">
+        <input type="text"
+               inputmode="decimal"
+               pattern="[0-9]*\\.?[0-9]*"
+               class="quiz-step-input"
+               id="quizInput_${idx}"
+               data-idx="${idx}"
+               data-name="${step.name}"
+               placeholder="수량"
+               autocomplete="off"
+               autocorrect="off"
+               spellcheck="false">
+        <div class="step-feedback-msg" id="stepFeedback_${idx}"></div>
+      </div>
+    `;
 
     row.innerHTML = leftHtml + rightHtml;
     listEl.appendChild(row);
 
-    if (!isAction) {
-      const inputEl = row.querySelector('.quiz-step-input');
-      state.stepInputs.push({
-        idx: idx,
-        inputEl: inputEl,
-        step: step
-      });
+    const inputEl = row.querySelector('.quiz-step-input');
+    state.stepInputs.push({
+      idx: idx,
+      inputEl: inputEl,
+      step: step
+    });
 
-      // Events for input focus and active keypad tracking
-      inputEl.addEventListener('focus', () => {
-        setActiveInput(idx);
-      });
+    // Events for input focus
+    inputEl.addEventListener('focus', () => {
+      setActiveInput(idx);
+    });
 
-      inputEl.addEventListener('click', () => {
-        setActiveInput(idx);
-      });
+    inputEl.addEventListener('click', () => {
+      setActiveInput(idx);
+    });
 
-      // Enter key moves to next or submits
-      inputEl.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const currentPos = state.stepInputs.findIndex(item => item.idx === idx);
-          if (currentPos < state.stepInputs.length - 1) {
-            state.stepInputs[currentPos + 1].inputEl.focus();
-          } else {
-            gradeQuiz();
-          }
+    // Enter key moves to next or submits
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const currentPos = state.stepInputs.findIndex(item => item.idx === idx);
+        if (currentPos < state.stepInputs.length - 1) {
+          state.stepInputs[currentPos + 1].inputEl.focus();
+        } else {
+          gradeQuiz();
         }
-      });
-    }
+      }
+    });
+
+    inputSeq++;
   });
 
   // Focus the first input field
