@@ -2186,12 +2186,15 @@ function renderInputFields() {
 
   const q = state.currentQuiz;
   const fields = k(q);
+  const is5Rows = fields.length >= 5;
 
-  // Set gap dynamically so height matches sticker card (200px)
-  container.className = fields.length >= 5 ? 'flex flex-col gap-1.5' : 'flex flex-col gap-2';
+  // Set gap & height dynamically so 5 rows match sticker card (200px) evenly
+  container.className = is5Rows ? 'recipe-fields-5-rows w-full' : 'flex flex-col gap-2 w-full';
   container.innerHTML = '';
 
-  const pyClass = fields.length >= 5 ? 'py-1.5' : 'py-2 sm:py-2.5';
+  const pyClass = is5Rows ? 'py-0' : 'py-2 sm:py-2.5';
+  const valTextSize = is5Rows ? 'field-val-text' : 'text-xl';
+  const wrongValTextSize = is5Rows ? 'field-val-text' : 'text-xl';
 
   fields.forEach(fld => {
     const isActive = (state.activeFieldId === fld.id);
@@ -2212,7 +2215,7 @@ function renderInputFields() {
 
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = `px-3 ${pyClass} rounded-xl border-2 text-left transition-all relative overflow-hidden flex items-center justify-between w-full ${borderClass}`;
+    btn.className = `field-btn px-3 ${pyClass} rounded-xl border-2 text-left transition-all relative overflow-hidden flex items-center justify-between w-full ${borderClass}`;
     btn.onclick = () => {
       if (state.isSubmitted || state.activeFieldId === fld.id) return;
       state.activeFieldId = fld.id;
@@ -2221,16 +2224,16 @@ function renderInputFields() {
     };
 
     const valDisplay = userVal || '<span class="text-slate-700 animate-pulse">_</span>';
-    const wrongValDisplay = isWrong ? `<div class="text-xl font-black text-rose-500 animate-in slide-in-from-left-2 ml-1" style="font-family:'Outfit', sans-serif;">${targetVal}</div>` : '';
+    const wrongValDisplay = isWrong ? `<div class="${wrongValTextSize} font-black text-rose-500 animate-in slide-in-from-left-2 ml-1" style="font-family:'Outfit', sans-serif;">${targetVal}</div>` : '';
     const checkIcon = isPass ? `
       <div class="absolute top-1/2 -translate-y-1/2 right-2">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500"><polyline points="20 6 9 17 4 12"/></svg>
       </div>` : '';
 
     btn.innerHTML = `
-      <div class="text-xs font-bold text-slate-400" style="font-family:'Noto Sans KR', sans-serif;">${fld.name}</div>
-      <div class="flex flex-row items-center justify-end gap-2 h-6 ${isPass ? 'pr-5' : ''}">
-        <div class="text-xl font-black text-white" style="font-family:'Outfit', sans-serif;">${valDisplay}</div>
+      <div class="text-xs font-bold text-slate-400 shrink-0" style="font-family:'Noto Sans KR', sans-serif;">${fld.name}</div>
+      <div class="field-val-container flex flex-row items-center justify-end gap-1.5 ${is5Rows ? '' : 'h-6'} ${isPass ? 'pr-5' : ''}">
+        <div class="${valTextSize} font-black text-white" style="font-family:'Outfit', sans-serif;">${valDisplay}</div>
         ${wrongValDisplay}
       </div>
       ${checkIcon}
@@ -2446,9 +2449,10 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) {}
 
   // Initial load
-  updateMenuOptions('all');
-  syncToppingOptions('all');
-  generateQuiz('all', 'all');
+  updateMenuOptions(state.selectedCategory);
+  syncTempOptions(state.selectedCategory);
+  syncToppingOptions(state.selectedMenu);
+  generateQuiz(state.selectedCategory, state.selectedMenu);
 
   // Immediately fetch latest live recipes from Google Sheets in background
   syncLiveSheetData(false);

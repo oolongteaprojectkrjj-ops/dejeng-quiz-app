@@ -106,6 +106,30 @@ body {
   font-family: 'Noto Sans KR', sans-serif !important;
 }
 
+/* 5-Field Recipe Container (Matches Sticker Card Height 200px exactly) */
+.recipe-fields-5-rows {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.recipe-fields-5-rows .field-btn {
+  flex: 1 1 0;
+  min-height: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.recipe-fields-5-rows .field-val-container {
+  height: auto !important;
+}
+
+.recipe-fields-5-rows .field-val-text {
+  font-size: 1.1rem !important;
+  line-height: 1 !important;
+}
+
 /* Utility Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
