@@ -2293,6 +2293,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     shortenModal.resetZoom = resetShortenZoom;
 
+    // iOS Safari and some in-app browsers can otherwise pinch-zoom the whole
+    // document before the card receives its touch handling. While the popup is
+    // open, reserve every multi-touch gesture for the shorten-form image only.
+    const preventViewportZoom = (event) => {
+      if (!shortenModal.classList.contains('active')) return;
+      if (event.type.startsWith('gesture') || event.touches?.length > 1) {
+        event.preventDefault();
+      }
+    };
+    document.addEventListener('gesturestart', preventViewportZoom, { passive: false });
+    document.addEventListener('gesturechange', preventViewportZoom, { passive: false });
+    document.addEventListener('gestureend', preventViewportZoom, { passive: false });
+    document.addEventListener('touchmove', preventViewportZoom, { passive: false });
+
     if (shortenCard) {
       shortenCard.addEventListener('touchstart', (event) => {
         if (event.touches.length !== 2) return;
