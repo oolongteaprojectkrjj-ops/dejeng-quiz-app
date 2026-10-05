@@ -465,5 +465,5 @@ body {
   display: block !important;
   border-radius: 4px !important;
   transform-origin: top left;
-  transition: width 0.08s ease-out;
+  transition: none;
 }

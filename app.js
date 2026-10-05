@@ -2279,6 +2279,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
     };
 
+    const touchMidpoint = (touches) => ({
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2,
+    });
+
     const resetShortenZoom = () => {
       if (!shortenCard) return;
       shortenCard.style.setProperty('--shorten-image-width', '100%');
@@ -2299,7 +2304,19 @@ document.addEventListener('DOMContentLoaded', () => {
       shortenCard.addEventListener('touchmove', (event) => {
         if (event.touches.length !== 2 || !pinchStartDistance) return;
         const nextZoom = Math.min(4, Math.max(1, pinchStartZoom * (touchDistance(event.touches) / pinchStartDistance)));
+        const currentZoom = (Number.parseFloat(shortenCard.style.getPropertyValue('--shorten-image-width')) || 100) / 100;
+        const cardBounds = shortenCard.getBoundingClientRect();
+        const midpoint = touchMidpoint(event.touches);
+        const touchX = midpoint.x - cardBounds.left;
+        const touchY = midpoint.y - cardBounds.top;
+        const imageX = shortenCard.scrollLeft + touchX;
+        const imageY = shortenCard.scrollTop + touchY;
+        const zoomRatio = nextZoom / currentZoom;
+
         shortenCard.style.setProperty('--shorten-image-width', `${(nextZoom * 100).toFixed(0)}%`);
+        // Keep the pixels beneath the user's fingers in place while the image grows.
+        shortenCard.scrollLeft = imageX * zoomRatio - touchX;
+        shortenCard.scrollTop = imageY * zoomRatio - touchY;
         shortenModal.dataset.lastPinchAt = String(Date.now());
         event.preventDefault();
       }, { passive: false });
