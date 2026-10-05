@@ -363,7 +363,7 @@ body {
   display: none !important;
 }
 
-/* Shorten Form Modal Popup - Store Printout Exact Visual */
+/* Shorten Form Modal Popup - Store Printout Exact Image */
 .shorten-modal-overlay {
   display: none !important;
   position: fixed !important;
@@ -377,7 +377,7 @@ body {
   align-items: center !important;
   justify-content: center !important;
   padding: 8px !important;
-  background-color: rgba(0, 0, 0, 0.75) !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
   backdrop-filter: blur(4px) !important;
   -webkit-backdrop-filter: blur(4px) !important;
   cursor: pointer !important;
@@ -390,90 +390,21 @@ body {
 
 .shorten-modal-card {
   background-color: #ffffff !important;
-  border-radius: 4px !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75) !important;
-  max-width: 520px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85) !important;
+  max-width: 640px !important;
   width: 100% !important;
-  max-height: 94vh !important;
+  max-height: 95vh !important;
   overflow: auto !important;
-  padding: 6px !important;
+  padding: 4px !important;
   cursor: pointer !important;
 }
 
-/* Exact Sheet Table Styling matching store printout */
-.shorten-sheet-table {
+.shorten-modal-card img {
   width: 100% !important;
-  border-collapse: collapse !important;
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  font-family: Arial, Helvetica, "맑은 고딕", "Malgun Gothic", sans-serif !important;
-  font-size: 11px !important;
-  border: 1px solid #000000 !important;
-  table-layout: fixed !important;
-  margin: 0 auto !important;
-}
-
-.shorten-sheet-table th,
-.shorten-sheet-table td {
-  border: 1px solid #000000 !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  padding: 2.5px 1px !important;
-  line-height: 1.2 !important;
-  font-weight: 500 !important;
-}
-
-.shorten-sheet-table .sheet-title {
-  font-size: 13.5px !important;
-  font-weight: 900 !important;
-  padding: 5px 2px !important;
-  text-decoration: underline !important;
-  color: #000000 !important;
-  letter-spacing: -0.2px !important;
-}
-
-.shorten-sheet-table .sheet-section-header {
-  font-size: 12px !important;
-  font-weight: 800 !important;
-  padding: 3.5px 1px !important;
-  color: #000000 !important;
-}
-
-.shorten-sheet-table .red-val td {
-  color: #c00000 !important;
-  font-weight: 600 !important;
-}
-
-.shorten-sheet-table .gray-cell {
-  background-color: #bfbfbf !important;
-}
-
-.shorten-sheet-table .empty-row td {
-  height: 10px !important;
-}
-
-@media (min-width: 440px) {
-  .shorten-modal-card {
-    padding: 10px !important;
-  }
-  .shorten-sheet-table {
-    font-size: 12px !important;
-  }
-  .shorten-sheet-table th,
-  .shorten-sheet-table td {
-    padding: 3.5px 2px !important;
-  }
-  .shorten-sheet-table .sheet-title {
-    font-size: 15px !important;
-    padding: 6px 4px !important;
-  }
-  .shorten-sheet-table .sheet-section-header {
-    font-size: 13px !important;
-    padding: 4px !important;
-  }
-  .shorten-sheet-table .empty-row td {
-    height: 12px !important;
-  }
+  height: auto !important;
+  display: block !important;
+  border-radius: 4px !important;
 }
 
 
