@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1791157600">
+  <link rel="stylesheet" href="style.css?v=1791209632">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
@@ -88,8 +88,9 @@
 
         <!-- Shorten Form Quick Access (라벨지 - 넘버패드 사이 항시 노출) -->
         <div id="shortenPromptContainer" class="mt-2">
-          <button id="btnProblemShorten" type="button" class="w-full h-8 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white active:scale-98 transition-all border border-white/5 text-xs font-bold flex items-center justify-center shadow-sm">
-            <span>쇼튼폼</span>
+          <button id="btnProblemShorten" type="button" class="problem-shorten-button">
+            <span class="problem-shorten-button__label">쇼튼폼</span>
+            <span class="problem-shorten-button__hint">감량표 보기</span>
           </button>
         </div>
 
@@ -152,6 +153,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=1791158500"></script>
+  <script src="app.js?v=1791209632"></script>
 </body>
 </html>
