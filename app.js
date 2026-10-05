@@ -2246,12 +2246,14 @@ function renderInputFields() {
 function openShortenModal() {
   const modal = document.getElementById('shortenModal');
   if (!modal) return;
+  modal.resetZoom?.();
   modal.classList.add('active');
 }
 
 function closeShortenModal() {
   const modal = document.getElementById('shortenModal');
   if (!modal) return;
+  modal.resetZoom?.();
   modal.classList.remove('active');
 }
 
@@ -2268,8 +2270,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const shortenModal = document.getElementById('shortenModal');
   if (shortenModal) {
+    const shortenCard = document.getElementById('shortenModalCard');
+    let pinchStartDistance = 0;
+    let pinchStartZoom = 1;
+
+    const touchDistance = (touches) => {
+      const [first, second] = touches;
+      return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+    };
+
+    const resetShortenZoom = () => {
+      if (!shortenCard) return;
+      shortenCard.style.setProperty('--shorten-image-width', '100%');
+      shortenCard.scrollTop = 0;
+      shortenCard.scrollLeft = 0;
+    };
+
+    shortenModal.resetZoom = resetShortenZoom;
+
+    if (shortenCard) {
+      shortenCard.addEventListener('touchstart', (event) => {
+        if (event.touches.length !== 2) return;
+        pinchStartDistance = touchDistance(event.touches);
+        pinchStartZoom = (Number.parseFloat(shortenCard.style.getPropertyValue('--shorten-image-width')) || 100) / 100;
+        event.preventDefault();
+      }, { passive: false });
+
+      shortenCard.addEventListener('touchmove', (event) => {
+        if (event.touches.length !== 2 || !pinchStartDistance) return;
+        const nextZoom = Math.min(4, Math.max(1, pinchStartZoom * (touchDistance(event.touches) / pinchStartDistance)));
+        shortenCard.style.setProperty('--shorten-image-width', `${(nextZoom * 100).toFixed(0)}%`);
+        shortenModal.dataset.lastPinchAt = String(Date.now());
+        event.preventDefault();
+      }, { passive: false });
+
+      shortenCard.addEventListener('touchend', (event) => {
+        if (event.touches.length < 2) pinchStartDistance = 0;
+      });
+    }
+
     // Touch/click ANYWHERE on screen (modal card or overlay) to dismiss
     shortenModal.addEventListener('click', () => {
+      if (Date.now() - Number(shortenModal.dataset.lastPinchAt || 0) < 350) return;
       closeShortenModal();
     });
   }
@@ -2828,4 +2870,3 @@ async function syncLiveSheetData() {
     console.warn("syncLiveSheetData notice:", err);
   }
 }
-

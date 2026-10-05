@@ -454,12 +454,16 @@ body {
   overflow: auto !important;
   padding: 4px !important;
   cursor: pointer !important;
+  touch-action: pan-x pan-y !important;
+  overscroll-behavior: contain;
 }
 
 .shorten-modal-card img {
-  width: 100% !important;
+  width: var(--shorten-image-width, 100%) !important;
+  max-width: none !important;
   height: auto !important;
   display: block !important;
   border-radius: 4px !important;
+  transform-origin: top left;
+  transition: width 0.08s ease-out;
 }
-
