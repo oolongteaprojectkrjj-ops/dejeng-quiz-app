@@ -2121,17 +2121,6 @@ function renderUI() {
   // Render Input Fields
   renderInputFields();
 
-  // Shorten prompt banner for M size + topping
-  const shortenPrompt = document.getElementById('shortenPromptContainer');
-  if (shortenPrompt) {
-    const isMWithTopping = (q.size === "M" && q.topping && q.topping !== "없음");
-    if (isMWithTopping) {
-      shortenPrompt.classList.remove('hidden');
-    } else {
-      shortenPrompt.classList.add('hidden');
-    }
-  }
-
   // Render Bottom Status & Action Button
   const statusDot = document.getElementById('statusDot');
   const statusText = document.getElementById('statusText');
@@ -2268,15 +2257,7 @@ function closeShortenModal() {
 
 // --- 5. Boot & Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
-  // Shorten Modal Handlers
-  const btnHeaderShorten = document.getElementById('btnHeaderShorten');
-  if (btnHeaderShorten) {
-    btnHeaderShorten.addEventListener('click', (e) => {
-      e.stopPropagation();
-      openShortenModal();
-    });
-  }
-
+  // Shorten Modal Handler
   const btnProblemShorten = document.getElementById('btnProblemShorten');
   if (btnProblemShorten) {
     btnProblemShorten.addEventListener('click', (e) => {
