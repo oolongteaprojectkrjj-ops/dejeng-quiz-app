@@ -2094,8 +2094,11 @@ function nextField() {
   if (state.isSubmitted || !state.currentQuiz) return;
   const fields = k(state.currentQuiz);
   const curIdx = fields.findIndex(f => f.id === state.activeFieldId);
-  const nextIdx = (curIdx + 1) % fields.length;
-  state.activeFieldId = fields[nextIdx].id;
+  if (curIdx >= fields.length - 1) {
+    submitAnswers();
+    return;
+  }
+  state.activeFieldId = fields[curIdx + 1].id;
   state.isInputBlank = true;
   renderInputFields();
 }
