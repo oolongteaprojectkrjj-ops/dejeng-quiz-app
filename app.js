@@ -2162,8 +2162,8 @@ function renderSticker(q) {
     <!-- Dynamic Specs Overlay -->
     <div class="st-real-specs">
       <div>${q.size}</div>
-      <div>당도 ${q.sugar.split('%')[0]}%</div>
       <div>${q.ice}</div>
+      <div>당도 ${q.sugar.split('%')[0]}%</div>
       ${toppingHtml}
     </div>
 
