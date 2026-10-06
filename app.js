@@ -2257,6 +2257,16 @@ function closeShortenModal() {
   modal.classList.remove('active');
 }
 
+// The script is loaded after the full quiz markup, so a first random question
+// can be rendered immediately. New trainees never need to choose a filter to begin.
+function startDefaultQuiz() {
+  if (!state.currentQuiz) {
+    generateQuiz('all', 'all');
+  }
+}
+
+startDefaultQuiz();
+
 // --- 5. Boot & Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
   // Shorten Modal Handler
@@ -2560,7 +2570,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateMenuOptions(state.selectedCategory);
   syncTempOptions(state.selectedCategory);
   syncToppingOptions(state.selectedMenu);
-  generateQuiz(state.selectedCategory, state.selectedMenu);
+  startDefaultQuiz();
 
   // Immediately fetch latest live recipes from Google Sheets in background
   syncLiveSheetData(false);
