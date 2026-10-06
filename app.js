@@ -1806,7 +1806,7 @@ function z(quiz, fieldId) {
   if (applyShorten && typeof val === "number" && val > 0) {
     let shortenType = "sugar_tea_juice_water_milk";
     if ("ice" === fieldId) shortenType = "ice";
-    if ("hojicha" === fieldId || "creamer" === fieldId) shortenType = "powder";
+    if ("hojicha" === fieldId || "creamer" === fieldId || "choco" === fieldId) shortenType = "powder";
     let orig = val;
     val = (shortenType === "sugar_tea_juice_water_milk") ? (f[orig] ?? orig)
         : (shortenType === "powder") ? (v[orig] ?? orig)
@@ -2150,7 +2150,13 @@ function renderSticker(q) {
   const fontStyle = maxLen >= 12 ? 'font-size: 0.62rem;' : (maxLen >= 10 ? 'font-size: 0.66rem;' : '');
 
   const titleHtml = safeLines.map((line, idx) => `<div style="white-space: nowrap; overflow: visible;">${idx === 0 && q.menu.isOriginal ? `# ${line}` : line}</div>`).join('');
-  const toppingHtml = (q.topping && q.topping !== '없음') ? `<div>${q.topping}</div>` : '';
+  const stickerSpecs = [
+    q.size,
+    q.ice,
+    `당도 ${q.sugar.split('%')[0]}%`,
+    q.topping && q.topping !== '없음' ? q.topping : null,
+  ].filter(Boolean);
+  const specsHtml = stickerSpecs.map((spec) => `<div>${spec}</div>`).join('');
 
   stickerEl.className = 'dejeng-sticker-card shrink-0';
   stickerEl.innerHTML = `
@@ -2161,10 +2167,7 @@ function renderSticker(q) {
 
     <!-- Dynamic Specs Overlay -->
     <div class="st-real-specs">
-      <div>${q.size}</div>
-      <div>${q.ice}</div>
-      <div>당도 ${q.sugar.split('%')[0]}%</div>
-      ${toppingHtml}
+      ${specsHtml}
     </div>
 
     <!-- Dynamic Order Number -->
