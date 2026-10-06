@@ -385,15 +385,6 @@ body {
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
-.problem-shorten-button__hint {
-  padding: 4px 7px;
-  border-radius: 999px;
-  color: #94a3b8;
-  background: rgba(15, 23, 42, 0.7);
-  font-size: 0.65rem;
-  font-weight: 700;
-}
-
 .problem-shorten-button:hover,
 .problem-shorten-button:focus-visible {
   border-color: rgba(148, 163, 184, 0.46);
