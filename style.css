@@ -398,6 +398,27 @@ body {
   background: #162033;
 }
 
+.challenge-restart-button {
+  width: 100%;
+  min-height: 43px;
+  margin-top: 8px;
+  border: 1px solid rgba(251, 113, 133, 0.34);
+  border-radius: 13px;
+  background: rgba(76, 20, 42, 0.42);
+  color: #fecdd3;
+  font: 800 0.82rem/1 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+}
+
+.challenge-restart-button:active { transform: scale(0.985); }
+
+.challenge-rule-notice {
+  margin: 8px 0 0;
+  color: #94a3b8;
+  text-align: center;
+  font: 700 0.67rem/1.35 'Noto Sans KR', sans-serif;
+}
+
 @media (max-width: 374px) {
   .problem-shorten-button {
     min-height: 46px;

@@ -1933,6 +1933,8 @@ function setMode(mode) {
   const challenge = document.getElementById('btnChallengeMode');
   const filterPanel = document.getElementById('filterPanel');
   const timer = document.getElementById('challengeTimer');
+  const restartButton = document.getElementById('btnRestartChallenge');
+  const ruleNotice = document.getElementById('challengeRuleNotice');
   const isChallenge = mode === 'challenge';
   practice?.classList.toggle('is-active', !isChallenge);
   challenge?.classList.toggle('is-active', isChallenge);
@@ -1940,6 +1942,8 @@ function setMode(mode) {
   challenge?.setAttribute('aria-selected', String(isChallenge));
   filterPanel?.classList.toggle('hidden', isChallenge);
   timer?.classList.toggle('hidden', !isChallenge || !state.challenge);
+  restartButton?.classList.toggle('hidden', !isChallenge);
+  ruleNotice?.classList.toggle('hidden', !isChallenge);
 }
 
 function startChallenge() {
@@ -2063,6 +2067,12 @@ function exitChallenge() {
   setMode('practice');
   document.getElementById('challengeResult')?.classList.add('hidden');
   generateQuiz('all', 'all');
+}
+
+function restartChallenge() {
+  stopChallengeTimer();
+  state.challenge = null;
+  beginChallengeCountdown();
 }
 
 function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = state.selectedMenu) {
@@ -2509,6 +2519,7 @@ document.addEventListener('DOMContentLoaded', () => {
     beginChallengeCountdown();
   });
   document.getElementById('btnExitChallenge')?.addEventListener('click', exitChallenge);
+  document.getElementById('btnRestartChallenge')?.addEventListener('click', restartChallenge);
   const recordButton = document.getElementById('btnSubmitRecord');
   recordButton?.addEventListener('click', submitChallengeRecord);
   employeeSelect?.addEventListener('change', () => {
