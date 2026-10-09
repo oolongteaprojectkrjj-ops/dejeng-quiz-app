@@ -1910,7 +1910,7 @@ function setMode(mode) {
   timer?.classList.toggle('hidden', !isChallenge || !state.challenge);
 }
 
-function startChallenge(employee) {
+function startChallenge() {
   // Challenge mode always uses the full store probability distribution,
   // regardless of the filters used during the preceding practice session.
   state.selectedCategory = 'all';
@@ -1925,8 +1925,11 @@ function startChallenge(employee) {
   if (selectMenu) selectMenu.value = 'all';
   if (selectTemp) selectTemp.value = 'all';
   if (selectTopping) selectTopping.value = 'all';
+  const employeeSelect = document.getElementById('challengeEmployee');
+  if (employeeSelect) employeeSelect.value = '';
+  document.getElementById('challengeSetupError')?.classList.add('hidden');
   state.challenge = {
-    employee,
+    employee: '',
     startedAt: Date.now(),
     question: 1,
     totalQuestions: 10,
@@ -1950,13 +1953,15 @@ function finishChallenge() {
   const stats = document.getElementById('challengeResultStats');
   const message = document.getElementById('challengeResultMessage');
   const recordLink = document.getElementById('btnOpenRecordForm');
+  const employeePicker = document.getElementById('challengeEmployeePicker');
   if (stats) {
-    stats.innerHTML = `<div><span>이름</span><strong>${challenge.employee}</strong></div><div><span>소요 시간</span><strong>${formatDuration(elapsed)}</strong></div><div><span>정답 빈칸</span><strong>${challenge.correctBlanks}개</strong></div><div><span>오답 빈칸</span><strong>${challenge.wrongBlanks}개</strong></div>`;
+    stats.innerHTML = `<div><span>소요 시간</span><strong>${formatDuration(elapsed)}</strong></div><div><span>정답 빈칸</span><strong>${challenge.correctBlanks}개</strong></div><div><span>오답 빈칸</span><strong>${challenge.wrongBlanks}개</strong></div>`;
   }
   if (message) message.textContent = eligible
     ? '오답 빈칸이 2개 이하입니다. 아래 기록 제출 폼에서 결과를 확인하고 제출해 주세요.'
     : '오답 빈칸이 3개 이상이라 이번 기록은 순위에 반영되지 않습니다.';
-  recordLink?.classList.toggle('hidden', !eligible);
+  employeePicker?.classList.toggle('hidden', !eligible);
+  recordLink?.classList.add('hidden');
   document.getElementById('challengeResult')?.classList.remove('hidden');
 }
 
@@ -2402,26 +2407,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('btnChallengeMode')?.addEventListener('click', () => {
     if (state.mode === 'challenge' && state.challenge) return;
-    document.getElementById('challengeSetupError')?.classList.add('hidden');
     document.getElementById('challengeSetup')?.classList.remove('hidden');
   });
   document.getElementById('btnCloseChallengeSetup')?.addEventListener('click', () => {
     document.getElementById('challengeSetup')?.classList.add('hidden');
   });
   document.getElementById('btnStartChallenge')?.addEventListener('click', () => {
-    const employee = employeeSelect?.value || '';
-    const error = document.getElementById('challengeSetupError');
-    if (!employee) {
-      error?.classList.remove('hidden');
-      return;
-    }
-    error?.classList.add('hidden');
     document.getElementById('challengeSetup')?.classList.add('hidden');
-    startChallenge(employee);
+    startChallenge();
   });
   document.getElementById('btnExitChallenge')?.addEventListener('click', exitChallenge);
   const recordLink = document.getElementById('btnOpenRecordForm');
   if (recordLink) recordLink.href = CHALLENGE_RECORD_FORM_URL;
+  employeeSelect?.addEventListener('change', () => {
+    if (!state.challenge) return;
+    state.challenge.employee = employeeSelect.value;
+    document.getElementById('challengeSetupError')?.classList.toggle('hidden', Boolean(employeeSelect.value));
+    recordLink?.classList.toggle('hidden', !employeeSelect.value);
+  });
 
   // Shorten Modal Handler
   const btnProblemShorten = document.getElementById('btnProblemShorten');
