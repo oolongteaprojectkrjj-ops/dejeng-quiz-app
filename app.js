@@ -2277,10 +2277,15 @@ function renderUI() {
 
   if (state.isSubmitted) {
     statusDot.className = `w-1.5 h-1.5 rounded-full animate-pulse shrink-0 ${state.isAllCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
-    statusText.textContent = state.isAllCorrect ? '완벽!' : '오답 확인';
+    const challengeProgress = state.mode === 'challenge' && state.challenge
+      ? `${state.challenge.question} / ${state.challenge.totalQuestions} · `
+      : '';
+    statusText.textContent = `${challengeProgress}${state.isAllCorrect ? '완벽!' : '오답 확인'}`;
     btnAction.className = 'h-9 px-4 text-white rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all flex items-center gap-1 flex-shrink-0 bg-blue-600 hover:bg-blue-500 shadow-blue-500/20';
     const isLastChallengeQuestion = state.mode === 'challenge' && state.challenge?.question === state.challenge.totalQuestions;
-    btnAction.innerHTML = `${isLastChallengeQuestion ? '결과 보기' : '다음 문제'} <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+    const nextChallengeNumber = state.challenge ? state.challenge.question + 1 : null;
+    const nextLabel = isLastChallengeQuestion ? '결과 보기' : (nextChallengeNumber ? `다음 ${nextChallengeNumber} / ${state.challenge.totalQuestions}` : '다음 문제');
+    btnAction.innerHTML = `${nextLabel} <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
   } else {
     statusDot.className = 'w-1.5 h-1.5 rounded-full animate-pulse shrink-0 bg-blue-500';
     statusText.textContent = state.mode === 'challenge' && state.challenge ? `${state.challenge.question} / ${state.challenge.totalQuestions} 문제` : '입력 중';
@@ -2726,7 +2731,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.isSubmitted) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        generateQuiz(state.selectedCategory, state.selectedMenu);
+        if (state.mode === 'challenge') {
+          advanceChallenge();
+        } else {
+          generateQuiz(state.selectedCategory, state.selectedMenu);
+        }
       }
     } else {
       if (/^[0-9.]$/.test(e.key)) {
