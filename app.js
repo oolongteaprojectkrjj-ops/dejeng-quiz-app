@@ -2392,7 +2392,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btnPracticeMode')?.addEventListener('click', () => {
-    if (state.mode === 'challenge' && state.challenge) return;
+    // The mode switch remains an always-available escape route during a round.
+    // Leaving early discards the unfinished challenge instead of recording it.
+    if (state.mode === 'challenge' && state.challenge) {
+      exitChallenge();
+      return;
+    }
     setMode('practice');
   });
   document.getElementById('btnChallengeMode')?.addEventListener('click', () => {
