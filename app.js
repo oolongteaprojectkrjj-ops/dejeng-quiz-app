@@ -1933,17 +1933,21 @@ function setMode(mode) {
   state.mode = mode;
   const practice = document.getElementById('btnPracticeMode');
   const challenge = document.getElementById('btnChallengeMode');
+  const ranking = document.getElementById('btnRankingMode');
   const filterPanel = document.getElementById('filterPanel');
   const timer = document.getElementById('challengeTimer');
   const restartButton = document.getElementById('btnRestartChallenge');
   const ruleNotice = document.getElementById('challengeRuleNotice');
   const allowance = document.getElementById('challengeAllowance');
   const isChallenge = mode === 'challenge';
-  practice?.classList.toggle('is-active', !isChallenge);
+  const isRanking = mode === 'ranking';
+  practice?.classList.toggle('is-active', mode === 'practice');
   challenge?.classList.toggle('is-active', isChallenge);
-  practice?.setAttribute('aria-selected', String(!isChallenge));
+  ranking?.classList.toggle('is-active', isRanking);
+  practice?.setAttribute('aria-selected', String(mode === 'practice'));
   challenge?.setAttribute('aria-selected', String(isChallenge));
-  filterPanel?.classList.toggle('hidden', isChallenge);
+  ranking?.setAttribute('aria-selected', String(isRanking));
+  filterPanel?.classList.toggle('hidden', isChallenge || isRanking);
   timer?.classList.toggle('hidden', !isChallenge || !state.challenge);
   restartButton?.classList.toggle('hidden', !isChallenge);
   ruleNotice?.classList.toggle('hidden', !isChallenge);
@@ -2165,6 +2169,7 @@ function renderChallengeRanking(records) {
 }
 
 function showChallengeRanking() {
+  setMode('ranking');
   document.getElementById('challengeResult')?.classList.add('hidden');
   document.getElementById('quizProblemStage')?.classList.add('hidden');
   document.getElementById('shortenPromptContainer')?.classList.add('hidden');
@@ -2636,7 +2641,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // The mode switch remains an always-available escape route during a round.
     // Leaving early discards the unfinished challenge instead of recording it.
-    if (state.mode === 'challenge' && state.challenge) {
+    if ((state.mode === 'challenge' && state.challenge) || state.mode === 'ranking') {
       exitChallenge();
       return;
     }
@@ -2644,7 +2649,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('btnChallengeMode')?.addEventListener('click', () => {
     if (state.mode === 'challenge' && state.challenge) return;
+    if (state.mode === 'ranking') state.challenge = null;
     beginChallengeCountdown();
+  });
+  document.getElementById('btnRankingMode')?.addEventListener('click', () => {
+    if (state.mode === 'challenge' && state.challenge) return;
+    showChallengeRanking();
   });
   document.getElementById('btnSkipRecord')?.addEventListener('click', showChallengeRanking);
   document.getElementById('btnRetryFromRanking')?.addEventListener('click', () => {
