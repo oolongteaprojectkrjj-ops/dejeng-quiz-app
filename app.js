@@ -1935,6 +1935,7 @@ function setMode(mode) {
   const timer = document.getElementById('challengeTimer');
   const restartButton = document.getElementById('btnRestartChallenge');
   const ruleNotice = document.getElementById('challengeRuleNotice');
+  const allowance = document.getElementById('challengeAllowance');
   const isChallenge = mode === 'challenge';
   practice?.classList.toggle('is-active', !isChallenge);
   challenge?.classList.toggle('is-active', isChallenge);
@@ -1944,6 +1945,19 @@ function setMode(mode) {
   timer?.classList.toggle('hidden', !isChallenge || !state.challenge);
   restartButton?.classList.toggle('hidden', !isChallenge);
   ruleNotice?.classList.toggle('hidden', !isChallenge);
+  allowance?.classList.toggle('hidden', !isChallenge);
+}
+
+function renderChallengeAllowance() {
+  const challenge = state.challenge;
+  if (!challenge) return;
+  const remaining = Math.max(0, 2 - challenge.wrongBlanks);
+  const firstLife = document.getElementById('challengeAllowanceOne');
+  const secondLife = document.getElementById('challengeAllowanceTwo');
+  const text = document.getElementById('challengeAllowanceText');
+  firstLife?.classList.toggle('is-lost', remaining < 1);
+  secondLife?.classList.toggle('is-lost', remaining < 2);
+  if (text) text.textContent = `${remaining} / 2`;
 }
 
 function startChallenge() {
@@ -2333,6 +2347,7 @@ function renderUI() {
 
   // Render Input Fields
   renderInputFields();
+  renderChallengeAllowance();
 
   // Render Bottom Status & Action Button
   const statusDot = document.getElementById('statusDot');
