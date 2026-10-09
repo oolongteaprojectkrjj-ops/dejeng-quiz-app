@@ -1858,7 +1858,13 @@ function L(userAns, targetAns) {
 }
 
 // --- 3. App State & Logic ---
-const CHALLENGE_RECORD_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdUj40kea-mgGdFJznTvKZtyShiyBTVIxqNUdeq5S5WwrpKRA/viewform?usp=publish-editor';
+const CHALLENGE_RECORD_ENDPOINT = 'https://docs.google.com/forms/d/e/1FAIpQLSdUj40kea-mgGdFJznTvKZtyShiyBTVIxqNUdeq5S5WwrpKRA/formResponse';
+const CHALLENGE_FORM_FIELDS = {
+  employee: 'entry.1316094893',
+  correctBlanks: 'entry.529873074',
+  wrongBlanks: 'entry.986390711',
+  elapsedSeconds: 'entry.686093816'
+};
 const EMPLOYEES = ['김사규', '김유리안', '이소정', '송연주', '양지윤', '황재성', '김혜인', '장재혁', '정성은', '창징', '서주형', '김상아', '이예진', '이아름', '여은', '고성재', '박재성', '김수빈', '채지훈', '엄수연', '권은림', '임믿음', '박주아', '호채억', '문현규', '염하늘', '이충호', '박혜인', '진관운', '이지호', '최선아', '신승용', '박지혜', '고나영', '김진영', '황현민', '조유진'];
 let challengeTimerId = null;
 let challengeCountdownId = null;
@@ -1977,20 +1983,68 @@ function finishChallenge() {
   if (!challenge) return;
   stopChallengeTimer();
   const elapsed = Date.now() - challenge.startedAt;
+  challenge.elapsedSeconds = Math.max(1, Math.floor(elapsed / 1000));
   const eligible = challenge.wrongBlanks <= 2;
   const stats = document.getElementById('challengeResultStats');
   const message = document.getElementById('challengeResultMessage');
-  const recordLink = document.getElementById('btnOpenRecordForm');
+  const recordButton = document.getElementById('btnSubmitRecord');
   const employeePicker = document.getElementById('challengeEmployeePicker');
   if (stats) {
     stats.innerHTML = `<div><span>소요 시간</span><strong>${formatDuration(elapsed)}</strong></div><div><span>정답 빈칸</span><strong>${challenge.correctBlanks}개</strong></div><div><span>오답 빈칸</span><strong>${challenge.wrongBlanks}개</strong></div>`;
   }
   if (message) message.textContent = eligible
-    ? '오답 빈칸이 2개 이하입니다. 아래 기록 제출 폼에서 결과를 확인하고 제출해 주세요.'
+    ? '오답 빈칸이 2개 이하입니다. 직원명을 선택한 뒤 기록하기를 눌러 주세요.'
     : '오답 빈칸이 3개 이상이라 이번 기록은 순위에 반영되지 않습니다.';
   employeePicker?.classList.toggle('hidden', !eligible);
-  recordLink?.classList.add('hidden');
+  if (recordButton) {
+    recordButton.disabled = false;
+    recordButton.textContent = '기록하기';
+    recordButton.classList.add('hidden');
+  }
   document.getElementById('challengeResult')?.classList.remove('hidden');
+}
+
+function submitChallengeRecord() {
+  const challenge = state.challenge;
+  const employeeSelect = document.getElementById('challengeEmployee');
+  const button = document.getElementById('btnSubmitRecord');
+  const message = document.getElementById('challengeResultMessage');
+  if (!challenge || challenge.submitted) return;
+  if (!employeeSelect?.value) {
+    document.getElementById('challengeSetupError')?.classList.remove('hidden');
+    return;
+  }
+
+  // Google Forms accepts standard form posts. Targeting the hidden iframe keeps
+  // the trainee on the result page while the completed record is sent.
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = CHALLENGE_RECORD_ENDPOINT;
+  form.target = 'challengeRecordSubmitTarget';
+  form.style.display = 'none';
+  const payload = {
+    [CHALLENGE_FORM_FIELDS.employee]: employeeSelect.value,
+    [CHALLENGE_FORM_FIELDS.correctBlanks]: String(challenge.correctBlanks),
+    [CHALLENGE_FORM_FIELDS.wrongBlanks]: String(challenge.wrongBlanks),
+    [CHALLENGE_FORM_FIELDS.elapsedSeconds]: String(challenge.elapsedSeconds)
+  };
+  Object.entries(payload).forEach(([name, value]) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  });
+  document.body.appendChild(form);
+  form.submit();
+  form.remove();
+
+  challenge.submitted = true;
+  if (button) {
+    button.disabled = true;
+    button.textContent = '기록 완료';
+  }
+  if (message) message.textContent = '기록이 제출되었습니다.';
 }
 
 function advanceChallenge() {
@@ -2455,13 +2509,13 @@ document.addEventListener('DOMContentLoaded', () => {
     beginChallengeCountdown();
   });
   document.getElementById('btnExitChallenge')?.addEventListener('click', exitChallenge);
-  const recordLink = document.getElementById('btnOpenRecordForm');
-  if (recordLink) recordLink.href = CHALLENGE_RECORD_FORM_URL;
+  const recordButton = document.getElementById('btnSubmitRecord');
+  recordButton?.addEventListener('click', submitChallengeRecord);
   employeeSelect?.addEventListener('change', () => {
     if (!state.challenge) return;
     state.challenge.employee = employeeSelect.value;
     document.getElementById('challengeSetupError')?.classList.toggle('hidden', Boolean(employeeSelect.value));
-    recordLink?.classList.toggle('hidden', !employeeSelect.value);
+    recordButton?.classList.toggle('hidden', !employeeSelect.value);
   });
 
   // Shorten Modal Handler
