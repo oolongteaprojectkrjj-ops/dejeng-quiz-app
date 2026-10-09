@@ -1861,6 +1861,7 @@ function L(userAns, targetAns) {
 const CHALLENGE_RECORD_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdUj40kea-mgGdFJznTvKZtyShiyBTVIxqNUdeq5S5WwrpKRA/viewform?usp=publish-editor';
 const EMPLOYEES = ['김사규', '김유리안', '이소정', '송연주', '양지윤', '황재성', '김혜인', '장재혁', '정성은', '창징', '서주형', '김상아', '이예진', '이아름', '여은', '고성재', '박재성', '김수빈', '채지훈', '엄수연', '권은림', '임믿음', '박주아', '호채억', '문현규', '염하늘', '이충호', '박혜인', '진관운', '이지호', '최선아', '신승용', '박지혜', '고나영', '김진영', '황현민', '조유진'];
 let challengeTimerId = null;
+let challengeCountdownId = null;
 
 const state = {
   selectedCategory: "all",
@@ -1893,6 +1894,31 @@ function updateChallengeTimer() {
 function stopChallengeTimer() {
   if (challengeTimerId) window.clearInterval(challengeTimerId);
   challengeTimerId = null;
+}
+
+function cancelChallengeCountdown() {
+  if (challengeCountdownId) window.clearInterval(challengeCountdownId);
+  challengeCountdownId = null;
+  document.getElementById('challengeCountdown')?.classList.add('hidden');
+}
+
+function beginChallengeCountdown() {
+  if (challengeCountdownId || state.challenge) return;
+  let count = 3;
+  const overlay = document.getElementById('challengeCountdown');
+  const number = document.getElementById('challengeCountdownNumber');
+  setMode('challenge');
+  if (number) number.textContent = String(count);
+  overlay?.classList.remove('hidden');
+  challengeCountdownId = window.setInterval(() => {
+    count -= 1;
+    if (count > 0) {
+      if (number) number.textContent = String(count);
+      return;
+    }
+    cancelChallengeCountdown();
+    startChallenge();
+  }, 1000);
 }
 
 function setMode(mode) {
@@ -1935,7 +1961,9 @@ function startChallenge() {
     totalQuestions: 10,
     wrongBlanks: 0,
     totalBlanks: 0,
-    correctBlanks: 0
+    correctBlanks: 0,
+    // Exactly three topping orders per round: M twice and L once.
+    toppingPlan: ['M', 'M', 'L', null, null, null, null, null, null, null].sort(() => Math.random() - 0.5)
   };
   setMode('challenge');
   updateChallengeTimer();
@@ -2083,7 +2111,14 @@ function createQuizInstance(chosenCategory, chosenMenu, forceTopping = null) {
     { value: "우롱티 젤리", weight: 28 },
     { value: "골든 버블", weight: 24 }
   ];
-  if (forceTopping === "with") {
+  const challengeToppingSize = state.mode === 'challenge' && state.challenge
+    ? state.challenge.toppingPlan[state.challenge.question - 1]
+    : null;
+  if (state.mode === 'challenge' && state.challenge) {
+    // The round plan takes precedence over every practice filter.
+    topping = challengeToppingSize ? w(topList) : "없음";
+    if (challengeToppingSize) size = challengeToppingSize;
+  } else if (forceTopping === "with") {
     topping = w(topList);
   } else if (forceTopping === "without") {
     topping = "없음";
@@ -2397,6 +2432,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btnPracticeMode')?.addEventListener('click', () => {
+    if (challengeCountdownId) {
+      cancelChallengeCountdown();
+      setMode('practice');
+      return;
+    }
     // The mode switch remains an always-available escape route during a round.
     // Leaving early discards the unfinished challenge instead of recording it.
     if (state.mode === 'challenge' && state.challenge) {
@@ -2407,14 +2447,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('btnChallengeMode')?.addEventListener('click', () => {
     if (state.mode === 'challenge' && state.challenge) return;
-    document.getElementById('challengeSetup')?.classList.remove('hidden');
-  });
-  document.getElementById('btnCloseChallengeSetup')?.addEventListener('click', () => {
-    document.getElementById('challengeSetup')?.classList.add('hidden');
-  });
-  document.getElementById('btnStartChallenge')?.addEventListener('click', () => {
-    document.getElementById('challengeSetup')?.classList.add('hidden');
-    startChallenge();
+    beginChallengeCountdown();
   });
   document.getElementById('btnExitChallenge')?.addEventListener('click', exitChallenge);
   const recordLink = document.getElementById('btnOpenRecordForm');
