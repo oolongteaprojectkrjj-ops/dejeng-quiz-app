@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1791562595">
+  <link rel="stylesheet" href="style.css?v=1791562995">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
@@ -112,6 +112,10 @@
             <h2>명예의 전당</h2>
           </header>
           <div class="challenge-ranking__grid">
+            <section class="challenge-ranking__section challenge-ranking__section--alltime">
+              <header><span aria-hidden="true">🏅</span><h3>역대 기록</h3></header>
+              <div id="challengeAllTimeRanking" class="challenge-ranking__list"></div>
+            </section>
             <section class="challenge-ranking__section challenge-ranking__section--monthly">
               <header><span aria-hidden="true">↻</span><h3>이번 달 랭킹</h3></header>
               <div id="challengeCurrentRanking" class="challenge-ranking__list"></div>
@@ -119,10 +123,6 @@
             <section id="challengePastRankings" class="challenge-ranking__section challenge-ranking__section--champion hidden">
               <header><span aria-hidden="true">♛</span><h3>과거 월간 챔피언</h3></header>
               <div id="challengePastRankingList"></div>
-            </section>
-            <section class="challenge-ranking__section challenge-ranking__section--alltime">
-              <header><span aria-hidden="true">🏅</span><h3>역대 기록</h3></header>
-              <div id="challengeAllTimeRanking" class="challenge-ranking__list"></div>
             </section>
           </div>
         </section>
@@ -215,6 +215,6 @@
 
   <iframe name="challengeRecordSubmitTarget" class="hidden" title="도전 기록 제출"></iframe>
 
-  <script src="app.js?v=1791562595"></script>
+  <script src="app.js?v=1791562995"></script>
 </body>
 </html>

@@ -858,9 +858,6 @@ body {
 .challenge-ranking__note { margin: 13px 4px 15px; color: #64748b; font: 700 0.68rem/1.4 'Noto Sans KR', sans-serif; }
 .challenge-ranking > .challenge-primary { width: 100%; min-height: 52px; }
 
-@media (min-width: 760px) {
-  .challenge-ranking__grid { grid-template-columns: repeat(3, 1fr); align-items: start; }
-}
 
 @media (max-width: 374px) {
   .mode-switch__button { padding: 0 9px; }
