@@ -557,10 +557,29 @@ body {
 
 .challenge-timer {
   position: absolute;
-  right: 16px;
+  left: 16px;
   color: #f8fafc;
   font: 800 0.85rem/1 'Outfit', sans-serif;
   font-variant-numeric: tabular-nums;
+}
+
+.ranking-board-button {
+  position: absolute;
+  right: 12px;
+  min-height: 33px;
+  padding: 0 10px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 9px;
+  background: rgba(30, 41, 59, 0.78);
+  color: #cbd5e1;
+  font: 800 0.7rem/1 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+}
+
+.ranking-board-button.is-active {
+  border-color: #60a5fa;
+  background: #1d4ed8;
+  color: #fff;
 }
 
 .challenge-countdown {
@@ -705,11 +724,16 @@ body {
   background: #17243a;
 }
 
+.challenge-ranking__section + .challenge-ranking__section { margin-top: 22px; }
+
 .challenge-ranking h2 {
-  margin: 0;
+  margin: 0 0 10px;
   color: #fff;
   font: 800 1.35rem/1.25 'Noto Sans KR', sans-serif;
 }
+
+.challenge-ranking__past-month + .challenge-ranking__past-month { margin-top: 14px; }
+.challenge-ranking__past-month h3 { margin: 0 0 7px; color: #93c5fd; font: 800 0.82rem/1 'Noto Sans KR', sans-serif; }
 
 .challenge-ranking__list {
   margin: 16px 0;
@@ -736,5 +760,6 @@ body {
 
 @media (max-width: 374px) {
   .mode-switch__button { padding: 0 9px; }
-  .challenge-timer { right: 10px; font-size: 0.75rem; }
+  .challenge-timer { left: 9px; font-size: 0.75rem; }
+  .ranking-board-button { right: 7px; padding: 0 7px; font-size: 0.64rem; }
 }

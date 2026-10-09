@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1791562088">
+  <link rel="stylesheet" href="style.css?v=1791562309">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
@@ -21,8 +21,8 @@
       <div class="mode-switch" role="tablist" aria-label="퀴즈 모드 선택">
         <button id="btnPracticeMode" class="mode-switch__button is-active" type="button" role="tab" aria-selected="true">연습 모드</button>
         <button id="btnChallengeMode" class="mode-switch__button" type="button" role="tab" aria-selected="false">도전 모드</button>
-        <button id="btnRankingMode" class="mode-switch__button" type="button" role="tab" aria-selected="false">랭킹</button>
       </div>
+      <button id="btnRankingMode" class="ranking-board-button" type="button" aria-selected="false">랭킹보드</button>
       <div id="challengeTimer" class="challenge-timer hidden" aria-live="polite">00:00</div>
     </header>
 
@@ -107,9 +107,18 @@
         </div>
 
         <section id="challengeRanking" class="challenge-ranking hidden" aria-live="polite">
-          <p class="challenge-eyebrow">이번 달</p>
-          <h2>도전 랭킹</h2>
-          <div id="challengeRankingList" class="challenge-ranking__list"></div>
+          <section class="challenge-ranking__section">
+            <h2>이번 달</h2>
+            <div id="challengeCurrentRanking" class="challenge-ranking__list"></div>
+          </section>
+          <section id="challengePastRankings" class="challenge-ranking__section hidden">
+            <h2>과거 기록</h2>
+            <div id="challengePastRankingList"></div>
+          </section>
+          <section class="challenge-ranking__section">
+            <h2>역대 기록</h2>
+            <div id="challengeAllTimeRanking" class="challenge-ranking__list"></div>
+          </section>
           <button id="btnRetryFromRanking" class="challenge-primary" type="button">다시 도전하기</button>
         </section>
 
@@ -201,6 +210,6 @@
 
   <iframe name="challengeRecordSubmitTarget" class="hidden" title="도전 기록 제출"></iframe>
 
-  <script src="app.js?v=1791562088"></script>
+  <script src="app.js?v=1791562309"></script>
 </body>
 </html>

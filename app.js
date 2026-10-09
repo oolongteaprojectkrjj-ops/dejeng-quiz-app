@@ -2147,25 +2147,43 @@ async function getChallengeRankingRecords() {
   }
 }
 
-function rankChallengeRecords(records) {
-  const month = getCurrentMonthKey();
+function rankChallengeRecords(records, { month = null, limit = 3 } = {}) {
   const bestByEmployee = new Map();
-  records.filter((record) => record.month === month && record.wrongBlanks <= 2).forEach((record) => {
+  records.filter((record) => (!month || record.month === month) && record.wrongBlanks <= 2).forEach((record) => {
     const previous = bestByEmployee.get(record.employee);
     if (!previous || record.elapsedSeconds < previous.elapsedSeconds || (record.elapsedSeconds === previous.elapsedSeconds && record.wrongBlanks < previous.wrongBlanks)) {
       bestByEmployee.set(record.employee, record);
     }
   });
-  return [...bestByEmployee.values()].sort((a, b) => a.elapsedSeconds - b.elapsedSeconds || a.wrongBlanks - b.wrongBlanks).slice(0, 5);
+  return [...bestByEmployee.values()].sort((a, b) => a.elapsedSeconds - b.elapsedSeconds || a.wrongBlanks - b.wrongBlanks).slice(0, limit);
+}
+
+function rankingRows(records, emptyText) {
+  return records.length
+    ? records.map((record, index) => `<div class="challenge-ranking__row"><span>${index + 1}</span><strong>${record.employee}</strong><em>${formatDuration(record.elapsedSeconds * 1000)}</em></div>`).join('')
+    : `<p class="challenge-ranking__empty">${emptyText}</p>`;
 }
 
 function renderChallengeRanking(records) {
-  const list = document.getElementById('challengeRankingList');
-  if (!list) return;
-  const ranked = rankChallengeRecords(records);
-  list.innerHTML = ranked.length
-    ? ranked.map((record, index) => `<div class="challenge-ranking__row"><span>${index + 1}</span><strong>${record.employee}</strong><em>${formatDuration(record.elapsedSeconds * 1000)}</em></div>`).join('')
-    : '<p class="challenge-ranking__empty">이번 달 기록이 아직 없습니다.</p>';
+  const currentList = document.getElementById('challengeCurrentRanking');
+  const pastSection = document.getElementById('challengePastRankings');
+  const pastList = document.getElementById('challengePastRankingList');
+  const allTimeList = document.getElementById('challengeAllTimeRanking');
+  if (!currentList || !pastSection || !pastList || !allTimeList) return;
+
+  const currentMonth = getCurrentMonthKey();
+  currentList.innerHTML = rankingRows(rankChallengeRecords(records, { month: currentMonth }), '이번 달 기록이 아직 없습니다.');
+  allTimeList.innerHTML = rankingRows(rankChallengeRecords(records), '아직 기록이 없습니다.');
+
+  const pastMonths = [...new Set(records.map((record) => record.month).filter((month) => month && month !== currentMonth))]
+    .sort((a, b) => b.localeCompare(a));
+  pastSection.classList.toggle('hidden', pastMonths.length === 0);
+  pastList.innerHTML = pastMonths.map((month) => `
+    <article class="challenge-ranking__past-month">
+      <h3>${Number(month.split('-')[1])}월</h3>
+      <div class="challenge-ranking__list">${rankingRows(rankChallengeRecords(records, { month }), '기록이 없습니다.')}</div>
+    </article>
+  `).join('');
 }
 
 function showChallengeRanking() {
