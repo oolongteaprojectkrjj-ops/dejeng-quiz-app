@@ -11,14 +11,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1791255105">
+  <link rel="stylesheet" href="style.css?v=1791543899">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
     
     <!-- Top Bar Navigation -->
-    <header class="flex items-center justify-center px-4 py-2.5 sm:px-6 border-b border-white/5 bg-[#111827]/90 backdrop-blur-md z-10">
-      <h1 class="text-base sm:text-lg font-bold tracking-widest text-slate-200">연습 모드</h1>
+    <header class="quiz-header px-4 py-2.5 sm:px-6 border-b border-white/5 bg-[#111827]/90 backdrop-blur-md z-10">
+      <div class="mode-switch" role="tablist" aria-label="퀴즈 모드 선택">
+        <button id="btnPracticeMode" class="mode-switch__button is-active" type="button" role="tab" aria-selected="true">연습 모드</button>
+        <button id="btnChallengeMode" class="mode-switch__button" type="button" role="tab" aria-selected="false">도전 모드</button>
+      </div>
+      <div id="challengeTimer" class="challenge-timer hidden" aria-live="polite">00:00</div>
     </header>
 
     <!-- Main Stage Content -->
@@ -26,7 +30,7 @@
       <div class="max-w-md mx-auto pb-2">
         
         <!-- Filter Controls (Sequential: Category -> Submenu -> Temp -> Topping) -->
-        <div class="flex flex-col gap-2 mb-2.5 animate-in fade-in relative z-20">
+        <div id="filterPanel" class="flex flex-col gap-2 mb-2.5 animate-in fade-in relative z-20">
           <!-- Row 1: Category & Submenu Dropdowns -->
           <div class="grid grid-cols-2 gap-2">
             <div>
@@ -152,6 +156,38 @@
     </div>
   </div>
 
-  <script src="app.js?v=1791255105"></script>
+  <!-- Challenge Mode: employee selection before the timed 10-question round -->
+  <div id="challengeSetup" class="challenge-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="challengeSetupTitle">
+    <section class="challenge-card">
+      <p class="challenge-eyebrow">더정 우롱티 프로젝트</p>
+      <h2 id="challengeSetupTitle">도전 모드</h2>
+      <p class="challenge-copy">확률분포를 반영한 랜덤 10문제입니다. 오답 빈칸은 2개까지 기록 제출이 가능합니다.</p>
+      <label class="challenge-label" for="challengeEmployee">이름 선택</label>
+      <select id="challengeEmployee" class="challenge-select">
+        <option value="">직원명을 선택하세요</option>
+      </select>
+      <p id="challengeSetupError" class="challenge-error hidden" role="alert">직원명을 선택해 주세요.</p>
+      <div class="challenge-actions">
+        <button id="btnCloseChallengeSetup" class="challenge-secondary" type="button">취소</button>
+        <button id="btnStartChallenge" class="challenge-primary" type="button">도전 시작</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Challenge mode result. Form submit remains separate so the user can review it. -->
+  <div id="challengeResult" class="challenge-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="challengeResultTitle">
+    <section class="challenge-card">
+      <p class="challenge-eyebrow">10문제 완료</p>
+      <h2 id="challengeResultTitle">도전 결과</h2>
+      <div id="challengeResultStats" class="challenge-result-stats"></div>
+      <p id="challengeResultMessage" class="challenge-copy"></p>
+      <div class="challenge-actions challenge-actions--stack">
+        <a id="btnOpenRecordForm" class="challenge-primary challenge-record-link hidden" target="_blank" rel="noopener">기록 제출 폼 열기</a>
+        <button id="btnExitChallenge" class="challenge-secondary" type="button">연습 모드로 돌아가기</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js?v=1791543899"></script>
 </body>
 </html>

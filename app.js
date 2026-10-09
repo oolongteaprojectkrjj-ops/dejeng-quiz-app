@@ -1858,6 +1858,10 @@ function L(userAns, targetAns) {
 }
 
 // --- 3. App State & Logic ---
+const CHALLENGE_RECORD_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdUj40kea-mgGdFJznTvKZtyShiyBTVIxqNUdeq5S5WwrpKRA/viewform?usp=publish-editor';
+const EMPLOYEES = ['김사규', '김유리안', '이소정', '송연주', '양지윤', '황재성', '김혜인', '장재혁', '정성은', '창징', '서주형', '김상아', '이예진', '이아름', '여은', '고성재', '박재성', '김수빈', '채지훈', '엄수연', '권은림', '임믿음', '박주아', '호채억', '문현규', '염하늘', '이충호', '박혜인', '진관운', '이지호', '최선아', '신승용', '박지혜', '고나영', '김진영', '황현민', '조유진'];
+let challengeTimerId = null;
+
 const state = {
   selectedCategory: "all",
   selectedMenu: "all",
@@ -1869,8 +1873,110 @@ const state = {
   isInputBlank: true,
   isSubmitted: false,
   isAllCorrect: false,
-  orderNumber: 1
+  orderNumber: 1,
+  mode: 'practice',
+  challenge: null
 };
+
+function formatDuration(milliseconds) {
+  const seconds = Math.max(0, Math.floor(milliseconds / 1000));
+  const minutes = Math.floor(seconds / 60);
+  return `${String(minutes).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
+function updateChallengeTimer() {
+  const timer = document.getElementById('challengeTimer');
+  if (!timer || !state.challenge) return;
+  timer.textContent = formatDuration(Date.now() - state.challenge.startedAt);
+}
+
+function stopChallengeTimer() {
+  if (challengeTimerId) window.clearInterval(challengeTimerId);
+  challengeTimerId = null;
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  const practice = document.getElementById('btnPracticeMode');
+  const challenge = document.getElementById('btnChallengeMode');
+  const filterPanel = document.getElementById('filterPanel');
+  const timer = document.getElementById('challengeTimer');
+  const isChallenge = mode === 'challenge';
+  practice?.classList.toggle('is-active', !isChallenge);
+  challenge?.classList.toggle('is-active', isChallenge);
+  practice?.setAttribute('aria-selected', String(!isChallenge));
+  challenge?.setAttribute('aria-selected', String(isChallenge));
+  filterPanel?.classList.toggle('hidden', isChallenge);
+  timer?.classList.toggle('hidden', !isChallenge || !state.challenge);
+}
+
+function startChallenge(employee) {
+  // Challenge mode always uses the full store probability distribution,
+  // regardless of the filters used during the preceding practice session.
+  state.selectedCategory = 'all';
+  state.selectedMenu = 'all';
+  state.tempFilter = 'all';
+  state.toppingFilter = 'all';
+  const selectCategory = document.getElementById('selectCategory');
+  const selectMenu = document.getElementById('selectMenu');
+  const selectTemp = document.getElementById('selectTemp');
+  const selectTopping = document.getElementById('selectTopping');
+  if (selectCategory) selectCategory.value = 'all';
+  if (selectMenu) selectMenu.value = 'all';
+  if (selectTemp) selectTemp.value = 'all';
+  if (selectTopping) selectTopping.value = 'all';
+  state.challenge = {
+    employee,
+    startedAt: Date.now(),
+    question: 1,
+    totalQuestions: 10,
+    wrongBlanks: 0,
+    totalBlanks: 0,
+    correctBlanks: 0
+  };
+  setMode('challenge');
+  updateChallengeTimer();
+  stopChallengeTimer();
+  challengeTimerId = window.setInterval(updateChallengeTimer, 1000);
+  generateQuiz('all', 'all');
+}
+
+function finishChallenge() {
+  const challenge = state.challenge;
+  if (!challenge) return;
+  stopChallengeTimer();
+  const elapsed = Date.now() - challenge.startedAt;
+  const eligible = challenge.wrongBlanks <= 2;
+  const stats = document.getElementById('challengeResultStats');
+  const message = document.getElementById('challengeResultMessage');
+  const recordLink = document.getElementById('btnOpenRecordForm');
+  if (stats) {
+    stats.innerHTML = `<div><span>이름</span><strong>${challenge.employee}</strong></div><div><span>소요 시간</span><strong>${formatDuration(elapsed)}</strong></div><div><span>정답 빈칸</span><strong>${challenge.correctBlanks}개</strong></div><div><span>오답 빈칸</span><strong>${challenge.wrongBlanks}개</strong></div>`;
+  }
+  if (message) message.textContent = eligible
+    ? '오답 빈칸이 2개 이하입니다. 아래 기록 제출 폼에서 결과를 확인하고 제출해 주세요.'
+    : '오답 빈칸이 3개 이상이라 이번 기록은 순위에 반영되지 않습니다.';
+  recordLink?.classList.toggle('hidden', !eligible);
+  document.getElementById('challengeResult')?.classList.remove('hidden');
+}
+
+function advanceChallenge() {
+  if (!state.challenge) return;
+  if (state.challenge.question >= state.challenge.totalQuestions) {
+    finishChallenge();
+    return;
+  }
+  state.challenge.question += 1;
+  generateQuiz('all', 'all');
+}
+
+function exitChallenge() {
+  stopChallengeTimer();
+  state.challenge = null;
+  setMode('practice');
+  document.getElementById('challengeResult')?.classList.add('hidden');
+  generateQuiz('all', 'all');
+}
 
 function generateQuiz(categoryFilter = state.selectedCategory, menuFilter = state.selectedMenu) {
   state.selectedCategory = categoryFilter;
@@ -2076,14 +2182,14 @@ function handleKeypad(key) {
 }
 
 function submitAnswers() {
-  if (!state.currentQuiz) return;
+  if (!state.currentQuiz || state.isSubmitted) return;
   const fields = k(state.currentQuiz);
-  let allCorrect = true;
-  for (let fld of fields) {
-    if (!L(state.answers[fld.id], z(state.currentQuiz, fld.id))) {
-      allCorrect = false;
-      break;
-    }
+  const wrongFields = fields.filter((fld) => !L(state.answers[fld.id], z(state.currentQuiz, fld.id)));
+  const allCorrect = wrongFields.length === 0;
+  if (state.mode === 'challenge' && state.challenge) {
+    state.challenge.wrongBlanks += wrongFields.length;
+    state.challenge.totalBlanks += fields.length;
+    state.challenge.correctBlanks += fields.length - wrongFields.length;
   }
   state.isAllCorrect = allCorrect;
   state.isSubmitted = true;
@@ -2133,10 +2239,11 @@ function renderUI() {
     statusDot.className = `w-1.5 h-1.5 rounded-full animate-pulse shrink-0 ${state.isAllCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
     statusText.textContent = state.isAllCorrect ? '완벽!' : '오답 확인';
     btnAction.className = 'h-9 px-4 text-white rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all flex items-center gap-1 flex-shrink-0 bg-blue-600 hover:bg-blue-500 shadow-blue-500/20';
-    btnAction.innerHTML = `다음 문제 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+    const isLastChallengeQuestion = state.mode === 'challenge' && state.challenge?.question === state.challenge.totalQuestions;
+    btnAction.innerHTML = `${isLastChallengeQuestion ? '결과 보기' : '다음 문제'} <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
   } else {
     statusDot.className = 'w-1.5 h-1.5 rounded-full animate-pulse shrink-0 bg-blue-500';
-    statusText.textContent = '입력 중';
+    statusText.textContent = state.mode === 'challenge' && state.challenge ? `${state.challenge.question} / ${state.challenge.totalQuestions} 문제` : '입력 중';
     btnAction.className = 'h-9 px-4 text-white rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all flex items-center gap-1 flex-shrink-0 bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20';
     btnAction.innerHTML = `정답 확인 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
   }
@@ -2275,6 +2382,42 @@ startDefaultQuiz();
 
 // --- 5. Boot & Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
+  // Mode selection and timed challenge setup
+  const employeeSelect = document.getElementById('challengeEmployee');
+  EMPLOYEES.forEach((employee) => {
+    const option = document.createElement('option');
+    option.value = employee;
+    option.textContent = employee;
+    employeeSelect?.appendChild(option);
+  });
+
+  document.getElementById('btnPracticeMode')?.addEventListener('click', () => {
+    if (state.mode === 'challenge' && state.challenge) return;
+    setMode('practice');
+  });
+  document.getElementById('btnChallengeMode')?.addEventListener('click', () => {
+    if (state.mode === 'challenge' && state.challenge) return;
+    document.getElementById('challengeSetupError')?.classList.add('hidden');
+    document.getElementById('challengeSetup')?.classList.remove('hidden');
+  });
+  document.getElementById('btnCloseChallengeSetup')?.addEventListener('click', () => {
+    document.getElementById('challengeSetup')?.classList.add('hidden');
+  });
+  document.getElementById('btnStartChallenge')?.addEventListener('click', () => {
+    const employee = employeeSelect?.value || '';
+    const error = document.getElementById('challengeSetupError');
+    if (!employee) {
+      error?.classList.remove('hidden');
+      return;
+    }
+    error?.classList.add('hidden');
+    document.getElementById('challengeSetup')?.classList.add('hidden');
+    startChallenge(employee);
+  });
+  document.getElementById('btnExitChallenge')?.addEventListener('click', exitChallenge);
+  const recordLink = document.getElementById('btnOpenRecordForm');
+  if (recordLink) recordLink.href = CHALLENGE_RECORD_FORM_URL;
+
   // Shorten Modal Handler
   const btnProblemShorten = document.getElementById('btnProblemShorten');
   if (btnProblemShorten) {
@@ -2508,7 +2651,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnAction = document.getElementById('btnAction');
   btnAction.addEventListener('click', () => {
     if (state.isSubmitted) {
-      generateQuiz(state.selectedCategory, state.selectedMenu);
+      if (state.mode === 'challenge') {
+        advanceChallenge();
+      } else {
+        generateQuiz(state.selectedCategory, state.selectedMenu);
+      }
     } else {
       submitAnswers();
     }
