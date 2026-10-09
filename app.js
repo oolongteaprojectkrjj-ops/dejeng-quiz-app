@@ -1865,6 +1865,8 @@ const CHALLENGE_FORM_FIELDS = {
   wrongBlanks: 'entry.986390711',
   elapsedSeconds: 'entry.686093816'
 };
+const CHALLENGE_RANKING_CSV_URL = 'https://docs.google.com/spreadsheets/d/1kIlcPLr0GPp3yZkpoc9xEFrIBkKSvJLFVLHYMLnJmwk/pub?gid=1114167429&single=true&output=csv';
+const CHALLENGE_LOCAL_RANKINGS_KEY = 'dejeng-challenge-rankings';
 const EMPLOYEES = ['김사규', '김유리안', '이소정', '송연주', '양지윤', '황재성', '김혜인', '장재혁', '정성은', '창징', '서주형', '김상아', '이예진', '이아름', '여은', '고성재', '박재성', '김수빈', '채지훈', '엄수연', '권은림', '임믿음', '박주아', '호채억', '문현규', '염하늘', '이충호', '박혜인', '진관운', '이지호', '최선아', '신승용', '박지혜', '고나영', '김진영', '황현민', '조유진'];
 let challengeTimerId = null;
 let challengeCountdownId = null;
@@ -1978,6 +1980,10 @@ function startChallenge() {
   const employeeSelect = document.getElementById('challengeEmployee');
   if (employeeSelect) employeeSelect.value = '';
   document.getElementById('challengeSetupError')?.classList.add('hidden');
+  document.getElementById('challengeRanking')?.classList.add('hidden');
+  document.getElementById('quizProblemStage')?.classList.remove('hidden');
+  document.getElementById('shortenPromptContainer')?.classList.remove('hidden');
+  document.getElementById('quizDock')?.classList.remove('hidden');
   state.challenge = {
     employee: '',
     startedAt: Date.now(),
@@ -2063,6 +2069,109 @@ function submitChallengeRecord() {
     button.textContent = '기록 완료';
   }
   if (message) message.textContent = '기록이 제출되었습니다.';
+  saveLocalChallengeRecord(challenge, employeeSelect.value);
+  showChallengeRanking();
+}
+
+function getCurrentMonthKey(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function saveLocalChallengeRecord(challenge, employee) {
+  try {
+    const records = JSON.parse(localStorage.getItem(CHALLENGE_LOCAL_RANKINGS_KEY) || '[]');
+    records.push({
+      employee,
+      correctBlanks: challenge.correctBlanks,
+      wrongBlanks: challenge.wrongBlanks,
+      elapsedSeconds: challenge.elapsedSeconds,
+      month: getCurrentMonthKey(),
+      createdAt: new Date().toISOString()
+    });
+    localStorage.setItem(CHALLENGE_LOCAL_RANKINGS_KEY, JSON.stringify(records.slice(-100)));
+  } catch (_) {
+    // Local fallback is optional; the Google Form submission remains authoritative.
+  }
+}
+
+function getLocalChallengeRecords() {
+  try {
+    return JSON.parse(localStorage.getItem(CHALLENGE_LOCAL_RANKINGS_KEY) || '[]');
+  } catch (_) {
+    return [];
+  }
+}
+
+function parseCsvRow(row) {
+  const cells = [];
+  let cell = '';
+  let quoted = false;
+  for (let index = 0; index < row.length; index += 1) {
+    const char = row[index];
+    if (char === '"' && row[index + 1] === '"') {
+      cell += '"';
+      index += 1;
+    } else if (char === '"') {
+      quoted = !quoted;
+    } else if (char === ',' && !quoted) {
+      cells.push(cell);
+      cell = '';
+    } else {
+      cell += char;
+    }
+  }
+  cells.push(cell);
+  return cells;
+}
+
+async function getChallengeRankingRecords() {
+  const localRecords = getLocalChallengeRecords();
+  try {
+    const response = await fetch(CHALLENGE_RANKING_CSV_URL, { cache: 'no-store' });
+    if (!response.ok) throw new Error('ranking feed unavailable');
+    const rows = (await response.text()).trim().split(/\r?\n/).slice(1).map(parseCsvRow);
+    const remoteRecords = rows.map((row) => ({
+      employee: row[1],
+      correctBlanks: Number(row[2]),
+      wrongBlanks: Number(row[3]),
+      elapsedSeconds: Number(row[4]),
+      month: getCurrentMonthKey(new Date(row[0]))
+    })).filter((record) => record.employee && Number.isFinite(record.elapsedSeconds));
+    return remoteRecords.length ? remoteRecords : localRecords;
+  } catch (_) {
+    return localRecords;
+  }
+}
+
+function rankChallengeRecords(records) {
+  const month = getCurrentMonthKey();
+  const bestByEmployee = new Map();
+  records.filter((record) => record.month === month && record.wrongBlanks <= 2).forEach((record) => {
+    const previous = bestByEmployee.get(record.employee);
+    if (!previous || record.elapsedSeconds < previous.elapsedSeconds || (record.elapsedSeconds === previous.elapsedSeconds && record.wrongBlanks < previous.wrongBlanks)) {
+      bestByEmployee.set(record.employee, record);
+    }
+  });
+  return [...bestByEmployee.values()].sort((a, b) => a.elapsedSeconds - b.elapsedSeconds || a.wrongBlanks - b.wrongBlanks).slice(0, 5);
+}
+
+function renderChallengeRanking(records) {
+  const list = document.getElementById('challengeRankingList');
+  if (!list) return;
+  const ranked = rankChallengeRecords(records);
+  list.innerHTML = ranked.length
+    ? ranked.map((record, index) => `<div class="challenge-ranking__row"><span>${index + 1}</span><strong>${record.employee}</strong><em>${formatDuration(record.elapsedSeconds * 1000)}</em></div>`).join('')
+    : '<p class="challenge-ranking__empty">이번 달 기록이 아직 없습니다.</p>';
+}
+
+function showChallengeRanking() {
+  document.getElementById('challengeResult')?.classList.add('hidden');
+  document.getElementById('quizProblemStage')?.classList.add('hidden');
+  document.getElementById('shortenPromptContainer')?.classList.add('hidden');
+  document.getElementById('quizDock')?.classList.add('hidden');
+  document.getElementById('challengeRanking')?.classList.remove('hidden');
+  renderChallengeRanking(getLocalChallengeRecords());
+  getChallengeRankingRecords().then(renderChallengeRanking);
 }
 
 function advanceChallenge() {
@@ -2080,6 +2189,10 @@ function exitChallenge() {
   state.challenge = null;
   setMode('practice');
   document.getElementById('challengeResult')?.classList.add('hidden');
+  document.getElementById('challengeRanking')?.classList.add('hidden');
+  document.getElementById('quizProblemStage')?.classList.remove('hidden');
+  document.getElementById('shortenPromptContainer')?.classList.remove('hidden');
+  document.getElementById('quizDock')?.classList.remove('hidden');
   generateQuiz('all', 'all');
 }
 
@@ -2533,7 +2646,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.mode === 'challenge' && state.challenge) return;
     beginChallengeCountdown();
   });
-  document.getElementById('btnExitChallenge')?.addEventListener('click', exitChallenge);
+  document.getElementById('btnSkipRecord')?.addEventListener('click', showChallengeRanking);
+  document.getElementById('btnRetryFromRanking')?.addEventListener('click', () => {
+    state.challenge = null;
+    beginChallengeCountdown();
+  });
   document.getElementById('btnRestartChallenge')?.addEventListener('click', restartChallenge);
   const recordButton = document.getElementById('btnSubmitRecord');
   recordButton?.addEventListener('click', submitChallengeRecord);

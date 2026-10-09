@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1791559702">
+  <link rel="stylesheet" href="style.css?v=1791560403">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
@@ -74,7 +74,7 @@
         </div>
 
         <!-- Problem Stage: Left Sticker & Right Fields (Top-Aligned) -->
-        <div class="flex flex-row gap-3 mt-1 items-start">
+        <div id="quizProblemStage" class="flex flex-row gap-3 mt-1 items-start">
           
           <!-- Exact Photo-Matched Sticker Card (Noto Sans KR font on dejeng_real_bg.png) -->
           <div id="dejengSticker" class="dejeng-sticker-card shrink-0">
@@ -105,11 +105,18 @@
           </div>
         </div>
 
+        <section id="challengeRanking" class="challenge-ranking hidden" aria-live="polite">
+          <p class="challenge-eyebrow">이번 달</p>
+          <h2>도전 랭킹</h2>
+          <div id="challengeRankingList" class="challenge-ranking__list"></div>
+          <button id="btnRetryFromRanking" class="challenge-primary" type="button">다시 도전하기</button>
+        </section>
+
       </div>
     </div>
 
     <!-- Bottom Controls & Keypad (Fixed Dock) -->
-    <div class="border-t border-white/5 bg-slate-900 flex-shrink-0 p-3 pb-6 safe-bottom">
+    <div id="quizDock" class="border-t border-white/5 bg-slate-900 flex-shrink-0 p-3 pb-6 safe-bottom">
       <div class="max-w-md mx-auto">
         
         <!-- Action Row -->
@@ -186,13 +193,13 @@
       </div>
       <div class="challenge-actions challenge-actions--stack">
         <button id="btnSubmitRecord" class="challenge-primary hidden" type="button">기록하기</button>
-        <button id="btnExitChallenge" class="challenge-secondary" type="button">연습 모드로 돌아가기</button>
+        <button id="btnSkipRecord" class="challenge-secondary" type="button">기록하지 않기</button>
       </div>
     </section>
   </div>
 
   <iframe name="challengeRecordSubmitTarget" class="hidden" title="도전 기록 제출"></iframe>
 
-  <script src="app.js?v=1791559702"></script>
+  <script src="app.js?v=1791560403"></script>
 </body>
 </html>
