@@ -1941,6 +1941,7 @@ function setMode(mode) {
   const allowance = document.getElementById('challengeAllowance');
   const isChallenge = mode === 'challenge';
   const isRanking = mode === 'ranking';
+  document.body.classList.toggle('ranking-view', isRanking);
   practice?.classList.toggle('is-active', mode === 'practice');
   challenge?.classList.toggle('is-active', isChallenge);
   ranking?.classList.toggle('is-active', isRanking);
