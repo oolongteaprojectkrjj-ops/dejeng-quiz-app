@@ -2642,6 +2642,18 @@ startDefaultQuiz();
 
 // --- 5. Boot & Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
+  // Mobile Safari can still interpret two quick taps as page zoom despite the
+  // viewport setting. Reserve that gesture everywhere except the shorten popup,
+  // where two-finger zoom is intentionally handled below.
+  let lastTapAt = 0;
+  document.addEventListener('touchend', (event) => {
+    if (document.getElementById('shortenModal')?.classList.contains('active')) return;
+    const now = Date.now();
+    if (now - lastTapAt < 300) event.preventDefault();
+    lastTapAt = now;
+  }, { passive: false });
+  document.addEventListener('dblclick', (event) => event.preventDefault(), { passive: false });
+
   // Mode selection and timed challenge setup
   const employeeSelect = document.getElementById('challengeEmployee');
   EMPLOYEES.forEach((employee) => {

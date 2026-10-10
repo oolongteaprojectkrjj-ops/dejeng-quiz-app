@@ -17,6 +17,14 @@ body {
   -webkit-user-select: none;
 }
 
+/* Keep quiz controls at the intended scale on mobile. The shorten-form popup
+   overrides this with its own two-finger zoom handler. */
+html,
+body,
+.app-wrapper {
+  touch-action: manipulation;
+}
+
 .app-wrapper {
   min-height: 100vh;
   min-height: 100dvh;
