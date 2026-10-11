@@ -1865,7 +1865,9 @@ const CHALLENGE_FORM_FIELDS = {
   wrongBlanks: 'entry.986390711',
   elapsedSeconds: 'entry.686093816'
 };
-const CHALLENGE_RANKING_CSV_URL = 'https://docs.google.com/spreadsheets/d/1kIlcPLr0GPp3yZkpoc9xEFrIBkKSvJLFVLHYMLnJmwk/pub?gid=1114167429&single=true&output=csv';
+// The response sheet is shared for viewing. `export` is the public CSV endpoint
+// that works on every device; the former `/pub` URL requires a separate publish ID.
+const CHALLENGE_RANKING_CSV_URL = 'https://docs.google.com/spreadsheets/d/1kIlcPLr0GPp3yZkpoc9xEFrIBkKSvJLFVLHYMLnJmwk/export?format=csv&gid=1114167429';
 const CHALLENGE_LOCAL_RANKINGS_KEY = 'dejeng-challenge-rankings';
 const EMPLOYEES = ['김사규', '김유리안', '이소정', '송연주', '양지윤', '황재성', '김혜인', '장재혁', '정성은', '창징', '서주형', '김상아', '이예진', '이아름', '여은', '고성재', '박재성', '김수빈', '채지훈', '엄수연', '권은림', '임믿음', '박주아', '호채억', '문현규', '염하늘', '이충호', '박혜인', '진관운', '이지호', '최선아', '신승용', '박지혜', '고나영', '김진영', '황현민', '조유진'];
 let challengeTimerId = null;
@@ -2129,6 +2131,19 @@ function parseCsvRow(row) {
   return cells;
 }
 
+function parseChallengeTimestamp(value) {
+  // Google Forms Korean timestamps look like: 2026. 10. 11 오후 2:10:33
+  // Parsing them explicitly prevents device/browser locale differences from
+  // sending valid October records into an invalid month bucket.
+  const match = String(value || '').match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\s*(오전|오후)\s*(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (!match) return new Date(value);
+  const [, year, month, day, meridiem, hourText, minute, second = '0'] = match;
+  let hour = Number(hourText);
+  if (meridiem === '오전' && hour === 12) hour = 0;
+  if (meridiem === '오후' && hour !== 12) hour += 12;
+  return new Date(Number(year), Number(month) - 1, Number(day), hour, Number(minute), Number(second));
+}
+
 async function getChallengeRankingRecords() {
   const localRecords = getLocalChallengeRecords();
   try {
@@ -2140,9 +2155,11 @@ async function getChallengeRankingRecords() {
       correctBlanks: Number(row[2]),
       wrongBlanks: Number(row[3]),
       elapsedSeconds: Number(row[4]),
-      month: getCurrentMonthKey(new Date(row[0]))
+      month: getCurrentMonthKey(parseChallengeTimestamp(row[0]))
     })).filter((record) => record.employee && Number.isFinite(record.elapsedSeconds));
-    return remoteRecords.length ? remoteRecords : localRecords;
+    // Keep the freshly submitted local entry visible during Google Forms'
+    // short write delay, then the shared response sheet becomes authoritative.
+    return remoteRecords.length ? [...remoteRecords, ...localRecords] : localRecords;
   } catch (_) {
     return localRecords;
   }
