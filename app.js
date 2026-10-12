@@ -2188,7 +2188,11 @@ function rankChallengeRecords(records, { month = null, limit = 3 } = {}) {
 
 function rankingRows(records, emptyText) {
   return records.length
-    ? records.map((record, index) => `<div class="challenge-ranking__row"><span>${index + 1}</span><strong>${record.employee}</strong><em>${formatDuration(record.elapsedSeconds * 1000)}</em></div>`).join('')
+    ? records.map((record, index) => {
+      const rank = index + 1;
+      const medal = ['🥇', '🥈', '🥉'][index] || String(rank);
+      return `<div class="challenge-ranking__row challenge-ranking__row--rank-${rank}"><span class="challenge-ranking__rank challenge-ranking__rank--${rank}">${medal}</span><strong>${record.employee}</strong><em>${formatDuration(record.elapsedSeconds * 1000)}</em></div>`;
+    }).join('')
     : `<p class="challenge-ranking__empty">${emptyText}</p>`;
 }
 
