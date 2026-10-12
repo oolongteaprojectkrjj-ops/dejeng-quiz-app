@@ -1011,6 +1011,10 @@ body,
 }
 
 .challenge-ranking__row strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: #e2e8f0;
   font-size: 0.78rem;
   font-weight: 700;
@@ -1094,8 +1098,8 @@ body,
 .challenge-ranking__row {
   position: relative;
   grid-template-columns: 26px minmax(0, 1fr) auto;
-  margin: 3px -3px;
-  padding: 0 6px;
+  margin: 3px 0;
+  padding: 0 5px;
   border: 1px solid transparent;
   border-radius: 9px;
 }
@@ -1113,26 +1117,30 @@ body,
 }
 
 .challenge-ranking__row--rank-1 {
-  border-color: rgba(250, 204, 21, 0.26);
-  background: linear-gradient(90deg, rgba(250, 204, 21, 0.16), rgba(250, 204, 21, 0.02));
+  border-color: rgba(250, 204, 21, 0.38);
+  background: linear-gradient(90deg, rgba(250, 204, 21, 0.19), rgba(250, 204, 21, 0.025));
 }
 
 .challenge-ranking__row--rank-2 {
-  border-color: rgba(203, 213, 225, 0.2);
-  background: linear-gradient(90deg, rgba(203, 213, 225, 0.12), rgba(203, 213, 225, 0.015));
+  border-color: rgba(226, 232, 240, 0.42);
+  background: linear-gradient(90deg, rgba(226, 232, 240, 0.18), rgba(148, 163, 184, 0.025));
 }
 
 .challenge-ranking__row--rank-3 {
-  border-color: rgba(251, 146, 60, 0.22);
-  background: linear-gradient(90deg, rgba(251, 146, 60, 0.13), rgba(251, 146, 60, 0.015));
+  border-color: rgba(194, 120, 73, 0.2);
+  background: linear-gradient(90deg, rgba(194, 120, 73, 0.08), rgba(194, 120, 73, 0.01));
 }
 
 .challenge-ranking__row--rank-1 strong { color: #fef3c7; }
-.challenge-ranking__row--rank-2 strong { color: #e2e8f0; }
-.challenge-ranking__row--rank-3 strong { color: #fed7aa; }
+.challenge-ranking__row--rank-2 strong { color: #f8fafc; }
+.challenge-ranking__row--rank-3 strong { color: #d6b49a; }
+
+.challenge-ranking__rank--1 { transform: scale(1.08); filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.34)); }
+.challenge-ranking__rank--2 { transform: scale(1.04); filter: drop-shadow(0 0 5px rgba(226, 232, 240, 0.35)); }
+.challenge-ranking__rank--3 { opacity: 0.74; filter: saturate(0.58) brightness(0.88); }
 
 .challenge-ranking__past-month .challenge-ranking__row {
-  margin: 2px -3px;
+  margin: 2px 0;
 }
 
 
