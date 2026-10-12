@@ -154,6 +154,12 @@ body,
   background-color: #334155 !important;
 }
 
+.pad-key-btn {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 /* Scrollbar polish */
 ::-webkit-scrollbar {
   width: 4px;

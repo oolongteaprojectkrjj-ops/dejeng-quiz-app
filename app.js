@@ -2450,7 +2450,7 @@ function handleKeypad(key) {
     state.answers[curField] = state.isInputBlank ? key : curVal + key;
   }
   state.isInputBlank = false;
-  renderInputFields();
+  updateActiveFieldValue();
 }
 
 function submitAnswers() {
@@ -2606,6 +2606,7 @@ function renderInputFields() {
 
     const btn = document.createElement('button');
     btn.type = 'button';
+    btn.dataset.fieldId = fld.id;
     btn.className = `field-btn px-3 ${pyClass} rounded-xl border-2 text-left transition-all relative overflow-hidden flex items-center justify-between w-full ${borderClass}`;
     btn.onclick = () => {
       if (state.isSubmitted || state.activeFieldId === fld.id) return;
@@ -2624,7 +2625,7 @@ function renderInputFields() {
     btn.innerHTML = `
       <div class="text-xs font-bold text-slate-400 shrink-0" style="font-family:'Noto Sans KR', sans-serif;">${fld.name}</div>
       <div class="field-val-container flex flex-row items-center justify-end gap-1.5 ${is5Rows ? '' : 'h-6'} ${isPass ? 'pr-5' : ''}">
-        <div class="${valTextSize} font-black text-white" style="font-family:'Outfit', sans-serif;">${valDisplay}</div>
+        <div class="field-user-value ${valTextSize} font-black text-white" style="font-family:'Outfit', sans-serif;">${valDisplay}</div>
         ${wrongValDisplay}
       </div>
       ${checkIcon}
@@ -2632,6 +2633,20 @@ function renderInputFields() {
 
     container.appendChild(btn);
   });
+}
+
+// Updating only the active value avoids rebuilding every recipe field after
+// each digit. This keeps rapid entries such as 150 responsive on mobile.
+function updateActiveFieldValue() {
+  const container = document.getElementById('recipeFieldsContainer');
+  if (!container || !state.currentQuiz || !state.activeFieldId) return;
+  const activeField = container.querySelector(`[data-field-id="${state.activeFieldId}"] .field-user-value`);
+  if (!activeField) {
+    renderInputFields();
+    return;
+  }
+  const value = state.answers[state.activeFieldId] || '';
+  activeField.innerHTML = value || '<span class="text-slate-700 animate-pulse">_</span>';
 }
 
 function openShortenModal() {
@@ -2968,12 +2983,20 @@ document.addEventListener('DOMContentLoaded', () => {
     nextField();
   });
 
-  // Virtual Keypad Clicks
+  // Virtual Keypad: react on contact for touch devices, then suppress the
+  // synthetic click that follows so one tap never becomes two inputs.
   document.querySelectorAll('.pad-key-btn').forEach(btn => {
+    btn.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse') return;
+      e.preventDefault();
+      btn.dataset.lastPointerInput = String(performance.now());
+      handleKeypad(btn.dataset.key);
+    }, { passive: false });
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      const key = btn.dataset.key;
-      handleKeypad(key);
+      const elapsed = performance.now() - Number(btn.dataset.lastPointerInput || 0);
+      if (elapsed >= 0 && elapsed < 700) return;
+      handleKeypad(btn.dataset.key);
     });
   });
 
