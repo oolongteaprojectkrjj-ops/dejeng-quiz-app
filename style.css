@@ -793,17 +793,17 @@ body,
 
 .challenge-ranking__grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-areas:
-    'monthly'
-    'champion'
-    'alltime';
+    'monthly alltime'
+    'champion alltime';
+  align-items: start;
   gap: 12px;
 }
 
 .challenge-ranking__section--monthly { grid-area: monthly; }
 .challenge-ranking__section--champion { grid-area: champion; }
-.challenge-ranking__section--alltime { grid-area: alltime; }
+.challenge-ranking__section--alltime { grid-area: alltime; align-self: stretch; }
 
 .challenge-ranking__section {
   position: relative;
@@ -931,22 +931,12 @@ body,
 .challenge-ranking__note { margin: 13px 4px 15px; color: #64748b; font: 700 0.68rem/1.4 'Noto Sans KR', sans-serif; }
 .challenge-ranking > .challenge-primary { width: 100%; min-height: 52px; }
 
-/* The board becomes two columns when there is enough room: monthly history on
-   the left, and the all-time leaderboard occupying the right column. */
+/* Ranking board uses a consistent two-column split: monthly history stays on
+   the left while the all-time leaderboard remains fixed on the right. */
 @media (min-width: 640px) {
   body.ranking-view #quizMain > .max-w-md {
     max-width: 780px !important;
   }
-
-  .challenge-ranking__grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-areas:
-      'monthly alltime'
-      'champion alltime';
-    align-items: start;
-  }
-
-  .challenge-ranking__section--alltime { align-self: stretch; }
 }
 
 /* Ranking board: intentionally quiet, compact, and information-first. */
