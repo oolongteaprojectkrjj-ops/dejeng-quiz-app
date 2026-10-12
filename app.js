@@ -1872,6 +1872,7 @@ const CHALLENGE_LOCAL_RANKINGS_KEY = 'dejeng-challenge-rankings';
 const EMPLOYEES = ['김사규', '김유리안', '이소정', '송연주', '양지윤', '황재성', '김혜인', '장재혁', '정성은', '창징', '서주형', '김상아', '이예진', '이아름', '여은', '고성재', '박재성', '김수빈', '채지훈', '엄수연', '권은림', '임믿음', '박주아', '호채억', '문현규', '염하늘', '이충호', '박혜인', '진관운', '이지호', '최선아', '신승용', '박지혜', '고나영', '김진영', '황현민', '조유진'];
 let challengeTimerId = null;
 let challengeCountdownId = null;
+let latestChallengeRankingRecords = [];
 
 const state = {
   selectedCategory: "all",
@@ -2168,9 +2169,12 @@ async function getChallengeRankingRecords() {
 function rankChallengeRecords(records, { month = null, limit = 3 } = {}) {
   const bestByEmployee = new Map();
   records.filter((record) => (!month || record.month === month) && record.wrongBlanks <= 2).forEach((record) => {
-    const previous = bestByEmployee.get(record.employee);
+    const employee = String(record.employee || '').trim();
+    if (!employee) return;
+    const candidate = { ...record, employee };
+    const previous = bestByEmployee.get(employee);
     if (!previous || record.elapsedSeconds < previous.elapsedSeconds || (record.elapsedSeconds === previous.elapsedSeconds && record.wrongBlanks < previous.wrongBlanks)) {
-      bestByEmployee.set(record.employee, record);
+      bestByEmployee.set(employee, candidate);
     }
   });
   return [...bestByEmployee.values()].sort((a, b) => a.elapsedSeconds - b.elapsedSeconds || a.wrongBlanks - b.wrongBlanks).slice(0, limit);
@@ -2189,6 +2193,7 @@ function renderChallengeRanking(records) {
   const allTimeList = document.getElementById('challengeAllTimeRanking');
   if (!currentList || !pastSection || !pastList || !allTimeList) return;
 
+  latestChallengeRankingRecords = records;
   const currentMonth = getCurrentMonthKey();
   currentList.innerHTML = rankingRows(rankChallengeRecords(records, { month: currentMonth }), '이번 달 기록이 아직 없습니다.');
   allTimeList.innerHTML = rankingRows(rankChallengeRecords(records), '아직 기록이 없습니다.');
@@ -2202,6 +2207,21 @@ function renderChallengeRanking(records) {
       <div class="challenge-ranking__list">${rankingRows(rankChallengeRecords(records, { month }), '기록이 없습니다.')}</div>
     </article>
   `).join('');
+}
+
+function openAllTimeRankingModal() {
+  const modal = document.getElementById('allTimeRankingModal');
+  const list = document.getElementById('challengeAllTimeFullRanking');
+  if (!modal || !list) return;
+  list.innerHTML = rankingRows(
+    rankChallengeRecords(latestChallengeRankingRecords, { limit: Number.POSITIVE_INFINITY }),
+    '아직 기록이 없습니다.'
+  );
+  modal.classList.remove('hidden');
+}
+
+function closeAllTimeRankingModal() {
+  document.getElementById('allTimeRankingModal')?.classList.add('hidden');
 }
 
 function showChallengeRanking() {
@@ -2719,6 +2739,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.mode === 'challenge' && state.challenge) return;
     showChallengeRanking();
   });
+  document.getElementById('btnShowAllTimeRanking')?.addEventListener('click', openAllTimeRankingModal);
+  document.getElementById('btnCloseAllTimeRanking')?.addEventListener('click', closeAllTimeRankingModal);
+  document.getElementById('allTimeRankingModal')?.addEventListener('click', (event) => {
+    if (event.target === event.currentTarget) closeAllTimeRankingModal();
+  });
   document.getElementById('btnSkipRecord')?.addEventListener('click', showChallengeRanking);
   document.getElementById('btnRetryFromRanking')?.addEventListener('click', () => {
     state.challenge = null;
@@ -3002,6 +3027,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Keyboard Shortcuts (matching vercel app keydown listener)
   window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !document.getElementById('allTimeRankingModal')?.classList.contains('hidden')) {
+      closeAllTimeRankingModal();
+      return;
+    }
     if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'SELECT') {
       return;
     }

@@ -864,6 +864,57 @@ body,
 .challenge-ranking__row em { color: #94a3b8; font-size: 0.8rem; }
 .challenge-ranking__empty { padding: 15px 2px 6px; color: #718096; text-align: left; font-size: 0.74rem; }
 
+.challenge-ranking__more {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 38px;
+  margin-top: 10px;
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  border-radius: 11px;
+  background: rgba(251, 191, 36, 0.07);
+  color: #fcd34d;
+  font: 800 0.76rem/1 'Noto Sans KR', sans-serif;
+}
+
+.challenge-ranking__more:active { transform: scale(0.985); }
+
+.ranking-modal {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(2, 6, 23, 0.78);
+  backdrop-filter: blur(7px);
+}
+
+.ranking-modal__card {
+  width: min(100%, 390px);
+  max-height: min(78dvh, 660px);
+  overflow: hidden;
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  border-radius: 22px;
+  background: linear-gradient(145deg, #24334a, #121f34);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.45);
+}
+
+.ranking-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px 13px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.ranking-modal__header p { margin: 0 0 5px; color: #fbbf24; font: 800 0.7rem/1 'Noto Sans KR', sans-serif; }
+.ranking-modal__header h2 { margin: 0; color: #f8fafc; font: 900 1.25rem/1 'Noto Sans KR', sans-serif; }
+.ranking-modal__close { width: 35px; height: 35px; border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 50%; background: #17243a; color: #cbd5e1; font-size: 1.5rem; line-height: 1; }
+.ranking-modal__list { max-height: calc(min(78dvh, 660px) - 86px); overflow-y: auto; padding: 8px 18px 16px; }
+.ranking-modal__list .challenge-ranking__row { min-height: 47px; }
+
 .challenge-ranking__past-month { position: relative; z-index: 1; padding: 9px 10px; border: 1px solid rgba(192, 132, 252, 0.13); border-radius: 12px; background: rgba(15, 23, 42, 0.25); }
 .challenge-ranking__past-month + .challenge-ranking__past-month { margin-top: 8px; }
 .challenge-ranking__past-month h3 { color: #c084fc; font-size: 0.78rem; }

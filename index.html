@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1791774164">
+  <link rel="stylesheet" href="style.css?v=1791774491">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
@@ -115,6 +115,7 @@
             <section class="challenge-ranking__section challenge-ranking__section--alltime">
               <header><span aria-hidden="true">🏅</span><h3>역대 기록</h3></header>
               <div id="challengeAllTimeRanking" class="challenge-ranking__list"></div>
+              <button id="btnShowAllTimeRanking" class="challenge-ranking__more" type="button">전체 순위 더보기</button>
             </section>
             <section class="challenge-ranking__section challenge-ranking__section--monthly">
               <header><span aria-hidden="true">↻</span><h3>이번 달 랭킹</h3></header>
@@ -213,8 +214,18 @@
     </section>
   </div>
 
+  <div id="allTimeRankingModal" class="ranking-modal hidden" role="dialog" aria-modal="true" aria-labelledby="allTimeRankingTitle">
+    <section class="ranking-modal__card">
+      <header class="ranking-modal__header">
+        <div><p>🏅 전체 순위</p><h2 id="allTimeRankingTitle">역대 기록</h2></div>
+        <button id="btnCloseAllTimeRanking" class="ranking-modal__close" type="button" aria-label="전체 순위 닫기">×</button>
+      </header>
+      <div id="challengeAllTimeFullRanking" class="ranking-modal__list"></div>
+    </section>
+  </div>
+
   <iframe name="challengeRecordSubmitTarget" class="hidden" title="도전 기록 제출"></iframe>
 
-  <script src="app.js?v=1791774164"></script>
+  <script src="app.js?v=1791774491"></script>
 </body>
 </html>
