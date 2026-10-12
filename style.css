@@ -1143,6 +1143,137 @@ body,
   margin: 2px 0;
 }
 
+/* Final leaderboard typography system: compact, deliberate, and number-led. */
+.challenge-ranking {
+  padding: 4px 0 22px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.challenge-ranking__title {
+  margin: 0 2px 14px;
+}
+
+.challenge-ranking__title p {
+  margin: 0 0 5px;
+  color: #60a5fa;
+  font: 800 0.56rem/1 'Outfit', sans-serif;
+  letter-spacing: 0.12em;
+}
+
+.challenge-ranking__title h2 {
+  color: #f8fafc;
+  font: 800 1.28rem/1 'Noto Sans KR', sans-serif;
+  letter-spacing: -0.055em;
+}
+
+.challenge-ranking__grid { gap: 9px; }
+
+.challenge-ranking__section {
+  padding: 12px;
+  border-radius: 15px;
+  box-shadow: 0 8px 22px rgba(2, 6, 23, 0.17), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.challenge-ranking__section > header {
+  min-height: 18px;
+  margin-bottom: 8px;
+}
+
+.challenge-ranking__section > header h3,
+.challenge-ranking__section--alltime > header h3,
+.challenge-ranking__section--monthly > header h3,
+.challenge-ranking__section--champion > header h3 {
+  color: #cbd5e1;
+  font: 700 0.67rem/1 'Noto Sans KR', sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.challenge-ranking__section--alltime > header h3 { color: #fde68a; }
+.challenge-ranking__section--monthly > header h3 { color: #bfdbfe; }
+.challenge-ranking__section--champion > header h3 { color: #ddd6fe; }
+
+.challenge-ranking__row {
+  min-height: 40px;
+  grid-template-columns: 25px minmax(0, 1fr) auto;
+  gap: 5px;
+  margin: 4px 0;
+  padding: 0 6px;
+  border-radius: 10px;
+}
+
+.challenge-ranking__rank {
+  width: 19px;
+  height: 19px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.38);
+  color: #94a3b8 !important;
+  font: 800 0.61rem/1 'Outfit', sans-serif !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+.challenge-ranking__row strong {
+  color: #f1f5f9;
+  font: 700 0.75rem/1 'Noto Sans KR', sans-serif;
+  letter-spacing: -0.035em;
+}
+
+.challenge-ranking__row em {
+  color: #a8b7ca;
+  font: 800 0.72rem/1 'Outfit', sans-serif;
+  letter-spacing: 0.015em;
+}
+
+.challenge-ranking__row--rank-1 {
+  border-color: rgba(250, 204, 21, 0.3);
+  background: linear-gradient(90deg, rgba(250, 204, 21, 0.14), rgba(250, 204, 21, 0.025));
+}
+.challenge-ranking__row--rank-2 {
+  border-color: rgba(226, 232, 240, 0.32);
+  background: linear-gradient(90deg, rgba(226, 232, 240, 0.14), rgba(226, 232, 240, 0.02));
+}
+.challenge-ranking__row--rank-3 {
+  border-color: rgba(192, 132, 92, 0.23);
+  background: linear-gradient(90deg, rgba(192, 132, 92, 0.09), rgba(192, 132, 92, 0.01));
+}
+
+.challenge-ranking__rank--1 { border-color: #facc15; background: #facc15; color: #422006 !important; box-shadow: 0 0 10px rgba(250, 204, 21, 0.22); }
+.challenge-ranking__rank--2 { border-color: #e2e8f0; background: #e2e8f0; color: #334155 !important; box-shadow: 0 0 10px rgba(226, 232, 240, 0.2); }
+.challenge-ranking__rank--3 { border-color: #b87950; background: #b87950; color: #fff7ed !important; }
+.challenge-ranking__row--rank-1 strong { color: #fff7d1; }
+.challenge-ranking__row--rank-2 strong { color: #f8fafc; }
+.challenge-ranking__row--rank-3 strong { color: #e4c1aa; }
+
+.challenge-ranking__past-month {
+  margin-top: 7px;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.challenge-ranking__past-month h3 {
+  margin-bottom: 5px;
+  font: 700 0.6rem/1 'Noto Sans KR', sans-serif;
+}
+
+.challenge-ranking__past-month .challenge-ranking__row {
+  min-height: 35px;
+  margin: 3px 0;
+}
+
+.challenge-ranking__past-month .challenge-ranking__rank {
+  width: 17px;
+  height: 17px;
+  font-size: 0.55rem !important;
+}
+
+.challenge-ranking__more {
+  min-height: 32px;
+  border-radius: 8px;
+  font: 700 0.63rem/1 'Noto Sans KR', sans-serif;
+  letter-spacing: -0.02em;
+}
+
 
 @media (max-width: 374px) {
   .mode-switch__button { padding: 0 9px; }
