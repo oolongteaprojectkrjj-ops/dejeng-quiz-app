@@ -1899,7 +1899,10 @@ function formatDuration(milliseconds) {
 function updateChallengeTimer() {
   const timer = document.getElementById('challengeTimer');
   if (!timer || !state.challenge) return;
-  timer.textContent = formatDuration(Date.now() - state.challenge.startedAt);
+  const elapsed = Number.isFinite(state.challenge.elapsedSeconds)
+    ? state.challenge.elapsedSeconds * 1000
+    : Date.now() - state.challenge.startedAt;
+  timer.textContent = formatDuration(elapsed);
 }
 
 function stopChallengeTimer() {
@@ -2012,17 +2015,20 @@ function startChallenge() {
 
 function finishChallenge() {
   const challenge = state.challenge;
-  if (!challenge) return;
-  stopChallengeTimer();
-  const elapsed = Date.now() - challenge.startedAt;
+  if (!challenge || challenge.finishedAt) return;
+  const finishedAt = Date.now();
+  const elapsed = finishedAt - challenge.startedAt;
+  challenge.finishedAt = finishedAt;
   challenge.elapsedSeconds = Math.max(1, Math.floor(elapsed / 1000));
+  stopChallengeTimer();
+  updateChallengeTimer();
   const eligible = challenge.wrongBlanks <= 2;
   const stats = document.getElementById('challengeResultStats');
   const message = document.getElementById('challengeResultMessage');
   const recordButton = document.getElementById('btnSubmitRecord');
   const employeePicker = document.getElementById('challengeEmployeePicker');
   if (stats) {
-    stats.innerHTML = `<div><span>소요 시간</span><strong>${formatDuration(elapsed)}</strong></div><div><span>정답 빈칸</span><strong>${challenge.correctBlanks}개</strong></div><div><span>오답 빈칸</span><strong>${challenge.wrongBlanks}개</strong></div>`;
+    stats.innerHTML = `<div><span>소요 시간</span><strong>${formatDuration(challenge.elapsedSeconds * 1000)}</strong></div><div><span>정답 빈칸</span><strong>${challenge.correctBlanks}개</strong></div><div><span>오답 빈칸</span><strong>${challenge.wrongBlanks}개</strong></div>`;
   }
   if (message) message.textContent = eligible
     ? '오답 빈칸이 2개 이하입니다. 직원명을 선택한 뒤 기록하기를 눌러 주세요.'
