@@ -605,7 +605,8 @@ body,
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: rgba(2, 6, 23, 0.86);
+  /* Countdown is a true transition screen: the quiz behind it must not show. */
+  background: #020617;
   color: #fff;
   pointer-events: none;
 }
