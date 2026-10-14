@@ -6,7 +6,6 @@ BUILD_TIME=$(date +%s)
 sed -i '' -E "s/app\.js(\?v=[0-9]+)?/app.js?v=${BUILD_TIME}/g" index.html
 sed -i '' -E "s/style\.css(\?v=[0-9]+)?/style.css?v=${BUILD_TIME}/g" index.html
 sed -i '' -E "s/<meta name=\"app-build\" content=\"[0-9]+\">/<meta name=\"app-build\" content=\"${BUILD_TIME}\">/g" index.html
-printf '{"version":"%s"}\n' "${BUILD_TIME}" > version.json
 
 git add .
 if git diff-index --quiet HEAD --; then

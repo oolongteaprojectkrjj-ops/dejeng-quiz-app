@@ -1878,9 +1878,10 @@ let latestChallengeRankingRecords = [];
 async function refreshToLatestBuild() {
   if (!APP_BUILD_VERSION) return;
   try {
-    const response = await fetch(`version.json?cache=${Date.now()}`, { cache: 'no-store' });
+    const response = await fetch(`index.html?cache=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) return;
-    const { version } = await response.json();
+    const pageHtml = await response.text();
+    const version = pageHtml.match(/<meta name="app-build" content="([0-9]+)">/)?.[1];
     const currentUrl = new URL(window.location.href);
     if (!version || version === APP_BUILD_VERSION || currentUrl.searchParams.get('build') === String(version)) return;
     currentUrl.searchParams.set('build', version);
