@@ -2520,13 +2520,31 @@ function nextField() {
   if (state.isSubmitted || !state.currentQuiz) return;
   const fields = k(state.currentQuiz);
   const curIdx = fields.findIndex(f => f.id === state.activeFieldId);
-  if (curIdx >= fields.length - 1) {
+  const allFieldsHaveInput = fields.every((field) => String(state.answers[field.id] ?? '') !== '');
+  if (allFieldsHaveInput || curIdx >= fields.length - 1) {
     submitAnswers();
     return;
   }
   state.activeFieldId = fields[curIdx + 1].id;
   state.isInputBlank = true;
   renderInputFields();
+}
+
+function advanceFromSubmittedAnswer() {
+  if (!state.isSubmitted) return;
+  if (state.mode === 'challenge') {
+    advanceChallenge();
+  } else {
+    generateQuiz(state.selectedCategory, state.selectedMenu);
+  }
+}
+
+function handleNextControl() {
+  if (state.isSubmitted) {
+    advanceFromSubmittedAnswer();
+  } else {
+    nextField();
+  }
 }
 
 function prevField() {
@@ -2555,6 +2573,18 @@ function renderUI() {
   const statusDot = document.getElementById('statusDot');
   const statusText = document.getElementById('statusText');
   const btnAction = document.getElementById('btnAction');
+  const nextButtons = [
+    document.getElementById('btnNextField'),
+    document.getElementById('btnNextFieldRight'),
+  ].filter(Boolean);
+
+  const setNextButtons = (label, isAdvance) => {
+    const icon = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+    nextButtons.forEach((button) => {
+      button.classList.toggle('quiz-next-button--advance', isAdvance);
+      button.innerHTML = `<span>${label}</span>${icon}`;
+    });
+  };
 
   if (state.isSubmitted) {
     statusDot.className = `w-1.5 h-1.5 rounded-full animate-pulse shrink-0 ${state.isAllCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
@@ -2562,16 +2592,16 @@ function renderUI() {
       ? `${state.challenge.question} / ${state.challenge.totalQuestions} · `
       : '';
     statusText.textContent = `${challengeProgress}${state.isAllCorrect ? '완벽!' : '오답 확인'}`;
-    btnAction.className = 'h-9 px-4 text-white rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all flex items-center gap-1 flex-shrink-0 bg-blue-600 hover:bg-blue-500 shadow-blue-500/20';
+    btnAction.hidden = true;
     const isLastChallengeQuestion = state.mode === 'challenge' && state.challenge?.question === state.challenge.totalQuestions;
     const nextChallengeNumber = state.challenge ? state.challenge.question + 1 : null;
     const nextLabel = isLastChallengeQuestion ? '결과 보기' : (nextChallengeNumber ? `다음 ${nextChallengeNumber} / ${state.challenge.totalQuestions}` : '다음 문제');
-    btnAction.innerHTML = `${nextLabel} <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+    setNextButtons(nextLabel, true);
   } else {
     statusDot.className = 'w-1.5 h-1.5 rounded-full animate-pulse shrink-0 bg-blue-500';
     statusText.textContent = state.mode === 'challenge' && state.challenge ? `${state.challenge.question} / ${state.challenge.totalQuestions} 문제` : '입력 중';
-    btnAction.className = 'h-9 px-4 text-white rounded-xl font-bold text-xs shadow-lg active:scale-95 transition-all flex items-center gap-1 flex-shrink-0 bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20';
-    btnAction.innerHTML = `정답 확인 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+    btnAction.hidden = false;
+    setNextButtons('다음 칸', false);
   }
 }
 
@@ -3016,35 +3046,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Action Button (정답 확인 / 다음 문제)
+  // Separate answer-check button. Both side buttons handle field/question advance.
   const btnAction = document.getElementById('btnAction');
   btnAction.addEventListener('click', () => {
-    if (state.isSubmitted) {
-      if (state.mode === 'challenge') {
-        advanceChallenge();
-      } else {
-        generateQuiz(state.selectedCategory, state.selectedMenu);
-      }
-    } else {
-      submitAnswers();
-    }
+    submitAnswers();
   });
 
-  // Next Field Button
-  const btnNextField = document.getElementById('btnNextField');
-  btnNextField?.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'mouse') return;
-    e.preventDefault();
-    btnNextField.dataset.lastPointerInput = String(performance.now());
-    nextField();
-  }, { passive: false });
-  btnNextField?.addEventListener('click', (e) => {
-    const elapsed = performance.now() - Number(btnNextField.dataset.lastPointerInput || 0);
-    if (elapsed >= 0 && elapsed < 700) {
+  // Both side buttons react on touch contact and share exactly the same flow.
+  document.querySelectorAll('#btnNextField, #btnNextFieldRight').forEach((button) => {
+    button.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse') return;
       e.preventDefault();
-      return;
-    }
-    nextField();
+      button.dataset.lastPointerInput = String(performance.now());
+      handleNextControl();
+    }, { passive: false });
+    button.addEventListener('click', (e) => {
+      const elapsed = performance.now() - Number(button.dataset.lastPointerInput || 0);
+      if (elapsed >= 0 && elapsed < 700) {
+        e.preventDefault();
+        return;
+      }
+      handleNextControl();
+    });
   });
 
   // Virtual Keypad: react on contact for touch devices, then suppress the

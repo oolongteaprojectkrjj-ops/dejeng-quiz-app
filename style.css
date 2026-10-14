@@ -160,10 +160,54 @@ body,
   user-select: none;
 }
 
-#btnNextField {
+#btnNextField,
+#btnNextFieldRight,
+#btnAction {
   touch-action: manipulation;
   -webkit-touch-callout: none;
 }
+
+.quiz-action-row {
+  display: grid;
+  grid-template-columns: minmax(88px, 1fr) auto minmax(88px, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.quiz-next-button,
+.quiz-check-button {
+  min-height: 36px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 12px;
+  color: #cbd5e1;
+  background: #1e293b;
+  font-size: 0.76rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+.quiz-next-button:active,
+.quiz-check-button:active { transform: scale(0.97); }
+
+.quiz-next-button--advance {
+  color: #fff;
+  background: #2563eb;
+  border-color: #60a5fa;
+}
+
+.quiz-check-button {
+  width: 100%;
+  margin: 0 0 6px;
+  color: #ecfdf5;
+  background: #059669;
+  border-color: #34d399;
+}
+
+.quiz-check-button[hidden] { display: none; }
 
 /* Scrollbar polish */
 ::-webkit-scrollbar {
