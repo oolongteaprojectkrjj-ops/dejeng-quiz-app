@@ -1859,6 +1859,7 @@ function L(userAns, targetAns) {
 
 // --- 3. App State & Logic ---
 const CHALLENGE_RECORD_ENDPOINT = 'https://docs.google.com/forms/d/e/1FAIpQLSdUj40kea-mgGdFJznTvKZtyShiyBTVIxqNUdeq5S5WwrpKRA/formResponse';
+const APP_BUILD_VERSION = document.querySelector('meta[name="app-build"]')?.content || '';
 const CHALLENGE_FORM_FIELDS = {
   employee: 'entry.1316094893',
   correctBlanks: 'entry.529873074',
@@ -1873,6 +1874,23 @@ const EMPLOYEES = ['김사규', '김유리안', '이소정', '송연주', '양�
 let challengeTimerId = null;
 let challengeCountdownId = null;
 let latestChallengeRankingRecords = [];
+
+async function refreshToLatestBuild() {
+  if (!APP_BUILD_VERSION) return;
+  try {
+    const response = await fetch(`version.json?cache=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) return;
+    const { version } = await response.json();
+    const currentUrl = new URL(window.location.href);
+    if (!version || version === APP_BUILD_VERSION || currentUrl.searchParams.get('build') === String(version)) return;
+    currentUrl.searchParams.set('build', version);
+    window.location.replace(currentUrl.toString());
+  } catch (_) {
+    // The quiz remains usable if the version manifest is temporarily unavailable.
+  }
+}
+
+refreshToLatestBuild();
 
 const state = {
   selectedCategory: "all",
