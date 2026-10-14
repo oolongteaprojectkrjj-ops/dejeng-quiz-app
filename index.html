@@ -8,11 +8,11 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="app-build" content="1791983676">
+  <meta name="app-build" content="1791984174">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1791983676">
+  <link rel="stylesheet" href="style.css?v=1791984174">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
@@ -139,7 +139,12 @@
     <div id="quizDock" class="border-t border-white/5 bg-slate-900 flex-shrink-0 p-3 pb-6 safe-bottom">
       <div class="max-w-md mx-auto">
         
-        <!-- Action Row -->
+        <button id="btnAction" type="button" class="quiz-check-button">
+          <span>정답 확인</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+
+        <!-- Dual next controls -->
         <div class="quiz-action-row mb-2.5 px-1">
           <button id="btnNextField" type="button" class="quiz-next-button">
             <span>다음 칸</span>
@@ -156,11 +161,6 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </button>
         </div>
-
-        <button id="btnAction" type="button" class="quiz-check-button">
-          <span>정답 확인</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </button>
 
         <!-- Numeric Keypad Grid (1-9, ., 0, DEL) -->
         <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
@@ -235,6 +235,6 @@
 
   <iframe name="challengeRecordSubmitTarget" class="hidden" title="도전 기록 제출"></iframe>
 
-  <script src="app.js?v=1791983676"></script>
+  <script src="app.js?v=1791984174"></script>
 </body>
 </html>
