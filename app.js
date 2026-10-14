@@ -3032,7 +3032,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Next Field Button
   const btnNextField = document.getElementById('btnNextField');
-  btnNextField.addEventListener('click', () => {
+  btnNextField?.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    e.preventDefault();
+    btnNextField.dataset.lastPointerInput = String(performance.now());
+    nextField();
+  }, { passive: false });
+  btnNextField?.addEventListener('click', (e) => {
+    const elapsed = performance.now() - Number(btnNextField.dataset.lastPointerInput || 0);
+    if (elapsed >= 0 && elapsed < 700) {
+      e.preventDefault();
+      return;
+    }
     nextField();
   });
 

@@ -160,6 +160,11 @@ body,
   user-select: none;
 }
 
+#btnNextField {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
+
 /* Scrollbar polish */
 ::-webkit-scrollbar {
   width: 4px;
