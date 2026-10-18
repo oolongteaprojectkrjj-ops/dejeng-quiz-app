@@ -1401,10 +1401,10 @@ body.ranking-view #quizMain {
   }
 
   .filter-select {
-    height: 36px;
-    min-height: 36px;
-    border-radius: 10px;
-    font-size: 0.78rem;
+    height: 31px;
+    min-height: 31px;
+    border-radius: 9px;
+    font-size: 0.74rem;
   }
 
   #quizProblemStage {
@@ -1454,7 +1454,7 @@ body.ranking-view #quizMain {
   #quizMain { padding-top: 2px !important; }
   #filterPanel { gap: 2px !important; margin-bottom: 3px !important; }
   #filterPanel label { margin-bottom: 1px !important; font-size: 9px !important; line-height: 1 !important; }
-  .filter-select { height: 32px; min-height: 32px; border-radius: 9px; font-size: 0.73rem; }
+  .filter-select { height: 28px; min-height: 28px; border-radius: 8px; font-size: 0.7rem; }
   .dejeng-sticker-card { width: 108px; height: 140px; }
   .recipe-fields-5-rows { height: 140px; gap: 3px; }
   #recipeFieldsContainer.flex:not(.recipe-fields-5-rows) { gap: 4px !important; }
