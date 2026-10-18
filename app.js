@@ -1874,6 +1874,7 @@ const EMPLOYEES = ['김사규', '김유리안', '이소정', '송연주', '양�
 let challengeTimerId = null;
 let challengeCountdownId = null;
 let latestChallengeRankingRecords = [];
+let isChallengeRankingLoading = false;
 
 async function refreshToLatestBuild() {
   if (!APP_BUILD_VERSION) return;
@@ -2235,17 +2236,33 @@ function renderChallengeRanking(records) {
       <div class="challenge-ranking__list">${rankingRows(rankChallengeRecords(records, { month }), '기록이 없습니다.')}</div>
     </article>
   `).join('');
+
+  // The full-ranking modal may have been opened while the shared sheet was
+  // still loading. Replace its loading state as soon as fresh records arrive.
+  if (!document.getElementById('allTimeRankingModal')?.classList.contains('hidden')) {
+    renderAllTimeRankingModal(records);
+  }
+}
+
+function renderAllTimeRankingModal(records = latestChallengeRankingRecords) {
+  const list = document.getElementById('challengeAllTimeFullRanking');
+  if (!list) return;
+  list.innerHTML = rankingRows(
+    rankChallengeRecords(records, { limit: Number.POSITIVE_INFINITY }),
+    '아직 기록이 없습니다.'
+  );
 }
 
 function openAllTimeRankingModal() {
   const modal = document.getElementById('allTimeRankingModal');
   const list = document.getElementById('challengeAllTimeFullRanking');
   if (!modal || !list) return;
-  list.innerHTML = rankingRows(
-    rankChallengeRecords(latestChallengeRankingRecords, { limit: Number.POSITIVE_INFINITY }),
-    '아직 기록이 없습니다.'
-  );
   modal.classList.remove('hidden');
+  if (isChallengeRankingLoading) {
+    list.innerHTML = '<p class="challenge-ranking__empty challenge-ranking__loading">순위를 불러오는 중…</p>';
+    return;
+  }
+  renderAllTimeRankingModal();
 }
 
 function closeAllTimeRankingModal() {
@@ -2260,7 +2277,18 @@ function showChallengeRanking() {
   document.getElementById('quizDock')?.classList.add('hidden');
   document.getElementById('challengeRanking')?.classList.remove('hidden');
   renderChallengeRanking(getLocalChallengeRecords());
-  getChallengeRankingRecords().then(renderChallengeRanking);
+  isChallengeRankingLoading = true;
+  getChallengeRankingRecords()
+    .then(renderChallengeRanking)
+    .catch(() => {
+      // The local fallback is already rendered above.
+    })
+    .finally(() => {
+      isChallengeRankingLoading = false;
+      if (!document.getElementById('allTimeRankingModal')?.classList.contains('hidden')) {
+        renderAllTimeRankingModal();
+      }
+    });
 }
 
 function advanceChallenge() {

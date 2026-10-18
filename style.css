@@ -209,6 +209,10 @@ body,
 
 .quiz-check-button[hidden] { display: none; }
 
+.challenge-ranking__loading {
+  color: #93c5fd;
+}
+
 /* Scrollbar polish */
 ::-webkit-scrollbar {
   width: 4px;
