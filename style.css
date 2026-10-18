@@ -1433,10 +1433,10 @@ body.ranking-view #quizMain {
   }
 
   #quizDock .quiz-check-button {
-    min-height: 47px;
-    margin-bottom: 8px;
-    border-radius: 14px;
-    font-size: 0.88rem;
+    min-height: 36px;
+    margin-bottom: 6px;
+    border-radius: 12px;
+    font-size: 0.8rem;
   }
 
   #quizDock .quiz-next-button {
@@ -1464,6 +1464,6 @@ body.ranking-view #quizMain {
   .challenge-restart-button { min-height: 33px; margin-top: 5px; }
   .challenge-rule-notice, .challenge-allowance { margin-top: 4px; }
   #quizDock .pad-key-btn { height: clamp(43px, 6.5vh, 50px) !important; }
-  #quizDock .quiz-check-button { min-height: 42px; }
+  #quizDock .quiz-check-button { min-height: 34px; }
   #quizDock .quiz-next-button { min-height: 40px; }
 }
