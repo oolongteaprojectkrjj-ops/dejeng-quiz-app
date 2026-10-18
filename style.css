@@ -1449,18 +1449,18 @@ body.ranking-view #quizMain {
 }
 
 @media (max-height: 720px) {
-  .quiz-header { padding-top: 5px !important; padding-bottom: 5px !important; }
-  .mode-switch__button { min-height: 30px; }
-  #quizMain { padding-top: 5px !important; }
-  #filterPanel { gap: 5px !important; margin-bottom: 6px !important; }
-  #filterPanel label { margin-bottom: 2px !important; font-size: 10px !important; }
-  .filter-select { height: 35px; min-height: 35px; border-radius: 10px; font-size: 0.76rem; }
-  .dejeng-sticker-card { width: 116px; height: 160px; }
-  .recipe-fields-5-rows { height: 160px; gap: 3px; }
-  #recipeFieldsContainer.flex:not(.recipe-fields-5-rows) { gap: 5px !important; }
-  #recipeFieldsContainer .field-btn { padding-top: 6px !important; padding-bottom: 6px !important; border-radius: 10px; }
-  #shortenPromptContainer { margin-top: 5px !important; }
-  .problem-shorten-button { min-height: 36px; font-size: 0.78rem; }
+  .quiz-header { min-height: 38px; padding-top: 3px !important; padding-bottom: 3px !important; }
+  .mode-switch__button { min-height: 28px; }
+  #quizMain { padding-top: 2px !important; }
+  #filterPanel { gap: 2px !important; margin-bottom: 3px !important; }
+  #filterPanel label { margin-bottom: 1px !important; font-size: 9px !important; line-height: 1 !important; }
+  .filter-select { height: 32px; min-height: 32px; border-radius: 9px; font-size: 0.73rem; }
+  .dejeng-sticker-card { width: 108px; height: 140px; }
+  .recipe-fields-5-rows { height: 140px; gap: 3px; }
+  #recipeFieldsContainer.flex:not(.recipe-fields-5-rows) { gap: 4px !important; }
+  #recipeFieldsContainer .field-btn { padding-top: 3px !important; padding-bottom: 3px !important; border-radius: 10px; }
+  #shortenPromptContainer { margin-top: 3px !important; }
+  .problem-shorten-button { min-height: 32px; font-size: 0.74rem; }
   .challenge-restart-button { min-height: 33px; margin-top: 5px; }
   .challenge-rule-notice, .challenge-allowance { margin-top: 4px; }
   #quizDock .pad-key-btn { height: clamp(43px, 6.5vh, 50px) !important; }
