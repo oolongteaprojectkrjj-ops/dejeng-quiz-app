@@ -1515,7 +1515,7 @@ let j = {
     },
     "cheese": {
       "default": {
-        "ice": "티, 얼음, 시럽",
+        "ice": "티, 시럽, 얼음",
         "hot": ""
       },
       "choco": {
@@ -1557,7 +1557,7 @@ const defaultFieldOrders = {
     hojicha: { ice: "얼음, 시럽, 온수, 호지차, 우유", hot: "온수, 호지차, 시럽, 우유" }
   },
   cheese: {
-    default: { ice: "티, 얼음, 시럽", hot: "" },
+    default: { ice: "티, 시럽, 얼음", hot: "" },
     choco: { ice: "온수, 초코, 얼음, 시럽", hot: "" },
     hojicha: { ice: "온수, 호지차, 얼음, 시럽", hot: "" }
   }
