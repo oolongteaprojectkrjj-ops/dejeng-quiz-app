@@ -1467,3 +1467,10 @@ body.ranking-view #quizMain {
   #quizDock .quiz-check-button { min-height: 30px; }
   #quizDock .quiz-next-button { min-height: 48px; }
 }
+
+/* Pre-season ranking screen: old records stay private until the two-week season begins. */
+.ranking-coming-soon { min-height: min(520px, calc(100dvh - 82px)); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 34px 24px; text-align: center; border: 1px solid rgba(110,150,214,.28); border-radius: 24px; background: radial-gradient(circle at 50% 0%,rgba(59,130,246,.2),transparent 42%),linear-gradient(145deg,#152641,#0e1a2f); box-shadow: 0 18px 46px rgba(1,7,19,.35); }
+.ranking-coming-soon__badge { padding: 6px 10px; border: 1px solid rgba(147,197,253,.35); border-radius: 999px; color: #bfdbfe; background: rgba(30,64,175,.2); font: 800 .62rem/1 'Outfit',sans-serif; letter-spacing: .14em; }
+.ranking-coming-soon__trophy { margin: 18px 0 10px; font-size: 3.1rem; filter: drop-shadow(0 8px 12px rgba(250,204,21,.22)); }.ranking-coming-soon h2 { margin: 0; color: #f8fafc; font: 900 clamp(1.7rem,7vw,2.3rem)/1 'Noto Sans KR',sans-serif; letter-spacing: -.07em; }.ranking-coming-soon__lead { margin: 10px 0 20px; color: #b8c7df; font: 700 .88rem/1.5 'Noto Sans KR',sans-serif; }
+.ranking-coming-soon__rules { width: min(100%,340px); overflow: hidden; border: 1px solid rgba(148,163,184,.17); border-radius: 14px; background: rgba(8,18,36,.48); }.ranking-coming-soon__rules p { display: flex; justify-content: space-between; gap: 16px; margin: 0; padding: 12px 14px; border-bottom: 1px solid rgba(148,163,184,.12); text-align: left; font: 700 .78rem/1 'Noto Sans KR',sans-serif; }.ranking-coming-soon__rules p:last-child { border-bottom: 0; }.ranking-coming-soon__rules strong { color: #93a9c7; }.ranking-coming-soon__rules span { color: #f8fafc; font-weight: 800; }.ranking-coming-soon__note { margin: 17px 0 0; color: #8293ad; font: 600 .72rem/1.6 'Noto Sans KR',sans-serif; }
+@media (max-width:420px) { .ranking-coming-soon { min-height: calc(100dvh - 74px); padding: 26px 19px; border-radius: 19px; }.ranking-coming-soon__trophy { margin: 15px 0 8px; font-size: 2.65rem; } }

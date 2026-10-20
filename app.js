@@ -2012,6 +2012,7 @@ function startChallenge() {
   if (employeeSelect) employeeSelect.value = '';
   document.getElementById('challengeSetupError')?.classList.add('hidden');
   document.getElementById('challengeRanking')?.classList.add('hidden');
+  document.getElementById('challengeRankingComingSoon')?.classList.add('hidden');
   document.getElementById('quizProblemStage')?.classList.remove('hidden');
   document.getElementById('shortenPromptContainer')?.classList.remove('hidden');
   document.getElementById('quizDock')?.classList.remove('hidden');
@@ -2269,26 +2270,20 @@ function closeAllTimeRankingModal() {
   document.getElementById('allTimeRankingModal')?.classList.add('hidden');
 }
 
-function showChallengeRanking() {
+function showRankingComingSoon() {
   setMode('ranking');
   document.getElementById('challengeResult')?.classList.add('hidden');
   document.getElementById('quizProblemStage')?.classList.add('hidden');
   document.getElementById('shortenPromptContainer')?.classList.add('hidden');
   document.getElementById('quizDock')?.classList.add('hidden');
-  document.getElementById('challengeRanking')?.classList.remove('hidden');
-  renderChallengeRanking(getLocalChallengeRecords());
-  isChallengeRankingLoading = true;
-  getChallengeRankingRecords()
-    .then(renderChallengeRanking)
-    .catch(() => {
-      // The local fallback is already rendered above.
-    })
-    .finally(() => {
-      isChallengeRankingLoading = false;
-      if (!document.getElementById('allTimeRankingModal')?.classList.contains('hidden')) {
-        renderAllTimeRankingModal();
-      }
-    });
+  // The legacy public board remains fully paused until the two-week season begins.
+  document.getElementById('challengeRanking')?.classList.add('hidden');
+  document.getElementById('allTimeRankingModal')?.classList.add('hidden');
+  document.getElementById('challengeRankingComingSoon')?.classList.remove('hidden');
+}
+
+function showChallengeRanking() {
+  showRankingComingSoon();
 }
 
 function advanceChallenge() {
@@ -2307,6 +2302,7 @@ function exitChallenge() {
   setMode('practice');
   document.getElementById('challengeResult')?.classList.add('hidden');
   document.getElementById('challengeRanking')?.classList.add('hidden');
+  document.getElementById('challengeRankingComingSoon')?.classList.add('hidden');
   document.getElementById('quizProblemStage')?.classList.remove('hidden');
   document.getElementById('shortenPromptContainer')?.classList.remove('hidden');
   document.getElementById('quizDock')?.classList.remove('hidden');

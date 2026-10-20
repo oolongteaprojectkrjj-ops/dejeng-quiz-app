@@ -8,11 +8,11 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="app-build" content="1792315762">
+  <meta name="app-build" content="1792475137">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1792315762">
+  <link rel="stylesheet" href="style.css?v=1792475137">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
@@ -107,7 +107,19 @@
           </div>
         </div>
 
-        <section id="challengeRanking" class="challenge-ranking hidden" aria-live="polite">
+        <section id="challengeRankingComingSoon" class="ranking-coming-soon hidden" aria-live="polite">
+          <div class="ranking-coming-soon__badge">COMING SOON</div>
+          <span class="ranking-coming-soon__trophy" aria-hidden="true">🏆</span>
+          <h2>2주 시즌 랭킹</h2>
+          <p class="ranking-coming-soon__lead">새 시즌을 준비하고 있어요.</p>
+          <div class="ranking-coming-soon__rules">
+            <p><strong>진행 기간</strong><span>2주</span></p>
+            <p><strong>시상</strong><span>1 · 2 · 3등</span></p>
+            <p><strong>공개 정보</strong><span>내 순위만</span></p>
+          </div>
+          <p class="ranking-coming-soon__note">시즌이 시작되면 해당 2주간의 기록만 집계합니다.<br>기록 시간과 과거 시즌 기록은 공개하지 않습니다.</p>
+        </section>
+        <section id="challengeRanking" class="challenge-ranking hidden" aria-live="polite" aria-hidden="true">
           <header class="challenge-ranking__title">
             <span aria-hidden="true">🏆</span>
             <div>
@@ -235,6 +247,6 @@
 
   <iframe name="challengeRecordSubmitTarget" class="hidden" title="도전 기록 제출"></iframe>
 
-  <script src="app.js?v=1792315762"></script>
+  <script src="app.js?v=1792475137"></script>
 </body>
 </html>
