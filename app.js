@@ -1858,7 +1858,7 @@ function L(userAns, targetAns) {
 }
 
 // --- 3. App State & Logic ---
-const CHALLENGE_RECORD_ENDPOINT = 'https://docs.google.com/forms/d/e/1FAIpQLSdUj40kea-mgGdFJznTvKZtyShiyBTVIxqNUdeq5S5WwrpKRA/formResponse';
+const CHALLENGE_RECORD_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdUj40kea-mgGdFJznTvKZtyShiyBTVIxqNUdeq5S5WwrpKRA/viewform?usp=pp_url';
 const APP_BUILD_VERSION = document.querySelector('meta[name="app-build"]')?.content || '';
 const CHALLENGE_FORM_FIELDS = {
   employee: 'entry.1316094893',
@@ -2090,36 +2090,22 @@ function submitChallengeRecord() {
     return;
   }
 
-  // Google Forms accepts standard form posts. Targeting the hidden iframe keeps
-  // the trainee on the result page while the completed record is sent.
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = CHALLENGE_RECORD_ENDPOINT;
-  form.target = 'challengeRecordSubmitTarget';
-  form.style.display = 'none';
-  const payload = {
-    [CHALLENGE_FORM_FIELDS.employee]: employeeSelect.value,
-    [CHALLENGE_FORM_FIELDS.correctBlanks]: String(challenge.correctBlanks),
-    [CHALLENGE_FORM_FIELDS.wrongBlanks]: String(challenge.wrongBlanks),
-    [CHALLENGE_FORM_FIELDS.elapsedSeconds]: String(challenge.elapsedSeconds)
-  };
-  Object.entries(payload).forEach(([name, value]) => {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = name;
-    input.value = value;
-    form.appendChild(input);
-  });
-  document.body.appendChild(form);
-  form.submit();
-  form.remove();
+  // The official record is deliberately submitted through the published Google
+  // Form instead of a background POST. Google therefore verifies the signed-in
+  // account and records its email alongside the selected employee name.
+  const recordFormUrl = new URL(CHALLENGE_RECORD_FORM_URL);
+  recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.employee, employeeSelect.value);
+  recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.correctBlanks, String(challenge.correctBlanks));
+  recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.wrongBlanks, String(challenge.wrongBlanks));
+  recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.elapsedSeconds, String(challenge.elapsedSeconds));
+  window.open(recordFormUrl.toString(), '_blank', 'noopener');
 
   challenge.submitted = true;
   if (button) {
     button.disabled = true;
     button.textContent = '기록 완료';
   }
-  if (message) message.textContent = '기록이 제출되었습니다.';
+  if (message) message.textContent = 'Google Form을 열었습니다. 로그인 후 제출해야 공식 기록으로 반영됩니다.';
   saveLocalChallengeRecord(challenge, employeeSelect.value);
   showChallengeRanking();
 }
