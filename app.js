@@ -1870,6 +1870,8 @@ const CHALLENGE_FORM_FIELDS = {
 // that works on every device; the former `/pub` URL requires a separate publish ID.
 const CHALLENGE_RANKING_CSV_URL = 'https://docs.google.com/spreadsheets/d/1kIlcPLr0GPp3yZkpoc9xEFrIBkKSvJLFVLHYMLnJmwk/export?format=csv&gid=1114167429';
 const CHALLENGE_LOCAL_RANKINGS_KEY = 'dejeng-challenge-rankings';
+// The public board remains private while the prize event is underway.
+const EVENT_RANKING_VISIBLE_AT = new Date('2026-12-01T00:00:00+09:00');
 const EMPLOYEES = ['김사규', '김유리안', '이소정', '송연주', '양지윤', '황재성', '김혜인', '장재혁', '정성은', '창징', '서주형', '김상아', '이예진', '이아름', '여은', '고성재', '박재성', '김수빈', '채지훈', '엄수연', '권은림', '임믿음', '박주아', '호채억', '문현규', '염하늘', '이충호', '박혜인', '진관운', '이지호', '최선아', '신승용', '박지혜', '고나영', '김진영', '황현민', '조유진'];
 let challengeTimerId = null;
 let challengeCountdownId = null;
@@ -1942,6 +1944,7 @@ function beginChallengeCountdown() {
   const overlay = document.getElementById('challengeCountdown');
   const number = document.getElementById('challengeCountdownNumber');
   setMode('challenge');
+  document.getElementById('challengeEvent')?.classList.add('hidden');
   if (number) number.textContent = String(count);
   overlay?.classList.remove('hidden');
   challengeCountdownId = window.setInterval(() => {
@@ -1959,6 +1962,7 @@ function setMode(mode) {
   state.mode = mode;
   const practice = document.getElementById('btnPracticeMode');
   const challenge = document.getElementById('btnChallengeMode');
+  const event = document.getElementById('btnEventMode');
   const ranking = document.getElementById('btnRankingMode');
   const filterPanel = document.getElementById('filterPanel');
   const timer = document.getElementById('challengeTimer');
@@ -1967,18 +1971,29 @@ function setMode(mode) {
   const allowance = document.getElementById('challengeAllowance');
   const isChallenge = mode === 'challenge';
   const isRanking = mode === 'ranking';
+  const isEvent = mode === 'event';
   document.body.classList.toggle('ranking-view', isRanking);
+  document.body.classList.toggle('event-view', isEvent);
   practice?.classList.toggle('is-active', mode === 'practice');
   challenge?.classList.toggle('is-active', isChallenge);
+  event?.classList.toggle('is-active', isEvent);
   ranking?.classList.toggle('is-active', isRanking);
   practice?.setAttribute('aria-selected', String(mode === 'practice'));
   challenge?.setAttribute('aria-selected', String(isChallenge));
+  event?.setAttribute('aria-selected', String(isEvent));
   ranking?.setAttribute('aria-selected', String(isRanking));
-  filterPanel?.classList.toggle('hidden', isChallenge || isRanking);
+  filterPanel?.classList.toggle('hidden', isChallenge || isRanking || isEvent);
   timer?.classList.toggle('hidden', !isChallenge || !state.challenge);
   restartButton?.classList.toggle('hidden', !isChallenge);
   ruleNotice?.classList.toggle('hidden', !isChallenge);
   allowance?.classList.toggle('hidden', !isChallenge);
+}
+
+function updateRankingBoardAvailability() {
+  const rankingButton = document.getElementById('btnRankingMode');
+  const eventIsActive = new Date() < EVENT_RANKING_VISIBLE_AT;
+  rankingButton?.classList.toggle('hidden', eventIsActive);
+  if (eventIsActive && state.mode === 'ranking') showChallengeEvent();
 }
 
 function renderChallengeAllowance() {
@@ -2013,6 +2028,7 @@ function startChallenge() {
   document.getElementById('challengeSetupError')?.classList.add('hidden');
   document.getElementById('challengeRanking')?.classList.add('hidden');
   document.getElementById('challengeRankingComingSoon')?.classList.add('hidden');
+  document.getElementById('challengeEvent')?.classList.add('hidden');
   document.getElementById('quizProblemStage')?.classList.remove('hidden');
   document.getElementById('shortenPromptContainer')?.classList.remove('hidden');
   document.getElementById('quizDock')?.classList.remove('hidden');
@@ -2124,6 +2140,7 @@ function saveLocalChallengeRecord(challenge, employee) {
       createdAt: new Date().toISOString()
     });
     localStorage.setItem(CHALLENGE_LOCAL_RANKINGS_KEY, JSON.stringify(records.slice(-100)));
+    window.ChallengeEvent?.rememberEmployee(employee);
   } catch (_) {
     // Local fallback is optional; the Google Form submission remains authoritative.
   }
@@ -2283,7 +2300,22 @@ function showRankingComingSoon() {
 }
 
 function showChallengeRanking() {
+  if (new Date() < EVENT_RANKING_VISIBLE_AT) {
+    showChallengeEvent();
+    return;
+  }
   showRankingComingSoon();
+}
+
+function showChallengeEvent() {
+  setMode('event');
+  document.getElementById('challengeResult')?.classList.add('hidden');
+  document.getElementById('quizProblemStage')?.classList.add('hidden');
+  document.getElementById('shortenPromptContainer')?.classList.add('hidden');
+  document.getElementById('quizDock')?.classList.add('hidden');
+  document.getElementById('challengeRanking')?.classList.add('hidden');
+  document.getElementById('challengeRankingComingSoon')?.classList.add('hidden');
+  document.getElementById('challengeEvent')?.classList.remove('hidden');
 }
 
 function advanceChallenge() {
@@ -2303,6 +2335,7 @@ function exitChallenge() {
   document.getElementById('challengeResult')?.classList.add('hidden');
   document.getElementById('challengeRanking')?.classList.add('hidden');
   document.getElementById('challengeRankingComingSoon')?.classList.add('hidden');
+  document.getElementById('challengeEvent')?.classList.add('hidden');
   document.getElementById('quizProblemStage')?.classList.remove('hidden');
   document.getElementById('shortenPromptContainer')?.classList.remove('hidden');
   document.getElementById('quizDock')?.classList.remove('hidden');
@@ -2788,6 +2821,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lastTapAt = now;
   }, { passive: false });
   document.addEventListener('dblclick', (event) => event.preventDefault(), { passive: false });
+  updateRankingBoardAvailability();
 
   // Mode selection and timed challenge setup
   const employeeSelect = document.getElementById('challengeEmployee');
@@ -2797,6 +2831,7 @@ document.addEventListener('DOMContentLoaded', () => {
     option.textContent = employee;
     employeeSelect?.appendChild(option);
   });
+  window.ChallengeEvent?.init(EMPLOYEES);
 
   document.getElementById('btnPracticeMode')?.addEventListener('click', () => {
     if (challengeCountdownId) {
@@ -2806,7 +2841,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // The mode switch remains an always-available escape route during a round.
     // Leaving early discards the unfinished challenge instead of recording it.
-    if ((state.mode === 'challenge' && state.challenge) || state.mode === 'ranking') {
+    if ((state.mode === 'challenge' && state.challenge) || state.mode === 'ranking' || state.mode === 'event') {
       exitChallenge();
       return;
     }
@@ -2815,6 +2850,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnChallengeMode')?.addEventListener('click', () => {
     if (state.mode === 'challenge' && state.challenge) return;
     if (state.mode === 'ranking') state.challenge = null;
+    beginChallengeCountdown();
+  });
+  document.getElementById('btnEventMode')?.addEventListener('click', () => {
+    if (state.mode === 'challenge' && state.challenge) return;
+    showChallengeEvent();
+  });
+  document.getElementById('btnStartChallengeFromEvent')?.addEventListener('click', () => {
+    state.challenge = null;
     beginChallengeCountdown();
   });
   document.getElementById('btnRankingMode')?.addEventListener('click', () => {
