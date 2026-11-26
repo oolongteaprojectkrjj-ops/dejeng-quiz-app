@@ -5,15 +5,13 @@
   const EVENT_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf7inAh55gJLJX37prw9YTVG-r3142MYm_VpukRrIWF6UibWQ/viewform?usp=pp_url';
   const EVENT_FORM_FIELDS = {
     employee: 'entry.1881930434',
-    seconds: 'entry.1953810195',
-    centiseconds: 'entry.674009828'
+    recordCode: 'entry.1533391049'
   };
 
-  function buildEventFormUrl(employee, seconds, centiseconds) {
+  function buildEventFormUrl(employee, recordCode) {
     const url = new URL(EVENT_FORM_URL);
     url.searchParams.set(EVENT_FORM_FIELDS.employee, employee);
-    url.searchParams.set(EVENT_FORM_FIELDS.seconds, seconds);
-    url.searchParams.set(EVENT_FORM_FIELDS.centiseconds, centiseconds);
+    url.searchParams.set(EVENT_FORM_FIELDS.recordCode, recordCode);
     return url.toString();
   }
 
@@ -117,16 +115,33 @@
           input.addEventListener('blur', () => normalizeTimeInput(input, maximum));
         });
 
-      form.addEventListener('submit', (event) => {
+      form.addEventListener('submit', async (event) => {
         event.preventDefault();
         if (!employeeSelect.value) return;
         normalizeTimeInput(secondsInput, 59);
         normalizeTimeInput(centisecondsInput, 99);
+        const submitButton = form.querySelector('button[type="submit"]');
         const value = predictionValue();
-        savePreviewPrediction(employeeSelect.value, value);
-        rememberEmployee(employeeSelect.value);
-        modal?.classList.add('hidden');
-        window.open(buildEventFormUrl(employeeSelect.value, secondsInput.value, centisecondsInput.value), '_blank', 'noopener');
+        try {
+          if (!window.QuizRecordService?.isConfigured?.()) throw new Error('공식 기록 서버가 아직 연결되지 않았습니다.');
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = '기록 잠그는 중…';
+          }
+          const sessionId = window.QuizRecordService.createSessionId();
+          await window.QuizRecordService.lockPrediction(sessionId, employeeSelect.value, secondsInput.value, centisecondsInput.value);
+          savePreviewPrediction(employeeSelect.value, value);
+          rememberEmployee(employeeSelect.value);
+          modal?.classList.add('hidden');
+          window.open(buildEventFormUrl(employeeSelect.value, sessionId), '_blank', 'noopener');
+        } catch (error) {
+          window.alert(error.message || '예측 기록을 잠그지 못했습니다.');
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = '제출';
+          }
+        }
       });
       openButton?.addEventListener('click', () => modal?.classList.remove('hidden'));
       closeButton?.addEventListener('click', () => modal?.classList.add('hidden'));

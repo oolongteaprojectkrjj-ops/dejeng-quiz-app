@@ -1862,9 +1862,7 @@ const CHALLENGE_RECORD_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdUj
 const APP_BUILD_VERSION = document.querySelector('meta[name="app-build"]')?.content || '';
 const CHALLENGE_FORM_FIELDS = {
   employee: 'entry.1316094893',
-  correctBlanks: 'entry.529873074',
-  wrongBlanks: 'entry.986390711',
-  elapsedSeconds: 'entry.686093816'
+  recordCode: 'entry.734861592'
 };
 // The response sheet is shared for viewing. `export` is the public CSV endpoint
 // that works on every device; the former `/pub` URL requires a separate publish ID.
@@ -2032,6 +2030,7 @@ function startChallenge() {
   document.getElementById('quizProblemStage')?.classList.remove('hidden');
   document.getElementById('shortenPromptContainer')?.classList.remove('hidden');
   document.getElementById('quizDock')?.classList.remove('hidden');
+  const recordSessionId = window.QuizRecordService?.createSessionId?.() || '';
   state.challenge = {
     employee: '',
     startedAt: Date.now(),
@@ -2040,9 +2039,16 @@ function startChallenge() {
     wrongBlanks: 0,
     totalBlanks: 0,
     correctBlanks: 0,
+    recordSessionId,
+    recordStartPromise: null,
+    recordLocked: false,
     // Exactly three topping orders per round: M twice and L once.
     toppingPlan: ['M', 'M', 'L', null, null, null, null, null, null, null].sort(() => Math.random() - 0.5)
   };
+  if (recordSessionId && window.QuizRecordService?.isConfigured?.()) {
+    state.challenge.recordStartPromise = window.QuizRecordService.startChallenge(recordSessionId)
+      .catch((error) => { state.challenge.recordError = error.message; });
+  }
   setMode('challenge');
   updateChallengeTimer();
   stopChallengeTimer();
@@ -2068,15 +2074,44 @@ function finishChallenge() {
     stats.innerHTML = `<div><span>소요 시간</span><strong>${formatDuration(challenge.elapsedSeconds * 1000)}</strong></div><div><span>정답 빈칸</span><strong>${challenge.correctBlanks}개</strong></div><div><span>오답 빈칸</span><strong>${challenge.wrongBlanks}개</strong></div>`;
   }
   if (message) message.textContent = eligible
-    ? '오답 빈칸이 2개 이하입니다. 직원명을 선택한 뒤 기록하기를 눌러 주세요.'
+    ? '공식 기록을 잠그는 중입니다.'
     : '오답 빈칸이 3개 이상이라 이번 기록은 순위에 반영되지 않습니다.';
   employeePicker?.classList.toggle('hidden', !eligible);
   if (recordButton) {
-    recordButton.disabled = false;
+    recordButton.disabled = true;
     recordButton.textContent = '기록하기';
     recordButton.classList.add('hidden');
   }
   document.getElementById('challengeResult')?.classList.remove('hidden');
+  if (eligible) lockChallengeRecord(challenge);
+}
+
+async function lockChallengeRecord(challenge) {
+  const message = document.getElementById('challengeResultMessage');
+  const recordButton = document.getElementById('btnSubmitRecord');
+  try {
+    if (!window.QuizRecordService?.isConfigured?.() || !challenge.recordSessionId) {
+      throw new Error('공식 기록 서버가 아직 연결되지 않았습니다.');
+    }
+    await challenge.recordStartPromise;
+    if (challenge.recordError) throw new Error(challenge.recordError);
+    const result = await window.QuizRecordService.finishChallenge(
+      challenge.recordSessionId,
+      challenge.correctBlanks,
+      challenge.wrongBlanks
+    );
+    challenge.elapsedSeconds = Number(result.elapsedSeconds);
+    challenge.recordLocked = true;
+    const stats = document.getElementById('challengeResultStats');
+    if (stats) {
+      stats.innerHTML = `<div><span>소요 시간</span><strong>${formatDuration(challenge.elapsedSeconds * 1000)}</strong></div><div><span>정답 빈칸</span><strong>${challenge.correctBlanks}개</strong></div><div><span>오답 빈칸</span><strong>${challenge.wrongBlanks}개</strong></div>`;
+    }
+    if (message) message.textContent = '공식 기록이 잠겼습니다. 직원명을 선택한 뒤 기록하기를 눌러 주세요.';
+    if (recordButton) recordButton.disabled = false;
+  } catch (error) {
+    challenge.recordError = error.message || '공식 기록을 잠그지 못했습니다.';
+    if (message) message.textContent = `${challenge.recordError} 기록 제출은 사용할 수 없습니다.`;
+  }
 }
 
 function submitChallengeRecord() {
@@ -2084,20 +2119,17 @@ function submitChallengeRecord() {
   const employeeSelect = document.getElementById('challengeEmployee');
   const button = document.getElementById('btnSubmitRecord');
   const message = document.getElementById('challengeResultMessage');
-  if (!challenge || challenge.submitted) return;
+  if (!challenge || challenge.submitted || !challenge.recordLocked) return;
   if (!employeeSelect?.value) {
     document.getElementById('challengeSetupError')?.classList.remove('hidden');
     return;
   }
 
-  // The official record is deliberately submitted through the published Google
-  // Form instead of a background POST. Google therefore verifies the signed-in
-  // account and records its email alongside the selected employee name.
+  // Google Form receives identity only. The locked server record is joined by
+  // this opaque code, so a participant cannot alter the time or score.
   const recordFormUrl = new URL(CHALLENGE_RECORD_FORM_URL);
   recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.employee, employeeSelect.value);
-  recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.correctBlanks, String(challenge.correctBlanks));
-  recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.wrongBlanks, String(challenge.wrongBlanks));
-  recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.elapsedSeconds, String(challenge.elapsedSeconds));
+  recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.recordCode, challenge.recordSessionId);
   window.open(recordFormUrl.toString(), '_blank', 'noopener');
 
   challenge.submitted = true;
@@ -2105,7 +2137,7 @@ function submitChallengeRecord() {
     button.disabled = true;
     button.textContent = '기록 완료';
   }
-  if (message) message.textContent = 'Google Form을 열었습니다. 로그인 후 제출해야 공식 기록으로 반영됩니다.';
+  if (message) message.textContent = 'Google Form을 열었습니다. 로그인 후 직원명과 확인 코드만 제출하면 공식 기록에 연결됩니다.';
   saveLocalChallengeRecord(challenge, employeeSelect.value);
   showChallengeRanking();
 }
