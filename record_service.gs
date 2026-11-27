@@ -10,6 +10,7 @@ const LOCKED_RECORDS_SHEET = '퀴즈_잠금기록';
 const OFFICIAL_CHALLENGE_SHEET = '공식_도전기록';
 const OFFICIAL_EVENT_SHEET = '공식_이벤트응모';
 const SESSION_TTL_MINUTES = 30;
+const OAUTH_CLIENT_ID = '183416031967-ckr632jlvitdvg7m0vqmp1or9jpu4s9p.apps.googleusercontent.com';
 
 function doGet(e) {
   const action = String(e?.parameter?.action || '');
@@ -21,6 +22,10 @@ function doGet(e) {
         ? finishChallengeRecord_(e.parameter)
         : action === 'event_lock'
           ? lockEventPrediction_(e.parameter)
+          : action === 'challenge_submit'
+            ? submitChallengeWithGoogle_(e.parameter)
+            : action === 'event_submit'
+              ? submitEventWithGoogle_(e.parameter)
           : { ok: false, error: '지원하지 않는 요청입니다.' };
     return jsonp_(e.parameter.callback, result);
   } catch (error) {
@@ -66,6 +71,40 @@ function lockEventPrediction_(params) {
   const now = new Date();
   sheet.appendRow([sessionId, 'event', now, now, '', seconds, centiseconds, 'locked', employee, '']);
   return { ok: true, sessionId: sessionId };
+}
+
+function submitChallengeWithGoogle_(params) {
+  const sessionId = validSessionId_(params.sessionId);
+  const employee = String(params.employee || '').trim();
+  if (!employee) throw new Error('직원명을 선택해 주세요.');
+  const identity = verifyGoogleCredential_(params.credential);
+  const sheet = sessionSheet_();
+  const row = findSessionRow_(sheet, sessionId);
+  if (!row || row.values[1] !== 'challenge' || row.values[7] !== 'locked') throw new Error('유효하지 않거나 아직 완료되지 않은 도전 기록입니다.');
+  finalizeChallenge_(sessionId, employee, identity.email, new Date());
+  return { ok: true, sessionId: sessionId };
+}
+
+function submitEventWithGoogle_(params) {
+  const sessionId = validSessionId_(params.sessionId);
+  const employee = String(params.employee || '').trim();
+  if (!employee) throw new Error('직원명을 선택해 주세요.');
+  const seconds = boundedInt_(params.seconds, 0, 59, '예측 초');
+  const centiseconds = boundedInt_(params.centiseconds, 0, 99, '예측 1/100초');
+  const identity = verifyGoogleCredential_(params.credential);
+  const sheet = sessionSheet_();
+  if (!findSessionRow_(sheet, sessionId)) sheet.appendRow([sessionId, 'event', new Date(), new Date(), '', seconds, centiseconds, 'locked', employee, '']);
+  finalizeEvent_(sessionId, employee, identity.email, new Date());
+  return { ok: true, sessionId: sessionId };
+}
+
+function verifyGoogleCredential_(credential) {
+  if (!credential) throw new Error('Google 로그인이 필요합니다.');
+  const response = UrlFetchApp.fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(String(credential)), { muteHttpExceptions: true });
+  if (response.getResponseCode() !== 200) throw new Error('Google 계정 인증을 확인하지 못했습니다.');
+  const token = JSON.parse(response.getContentText());
+  if (token.aud !== OAUTH_CLIENT_ID || String(token.email_verified) !== 'true' || !token.email) throw new Error('검증되지 않은 Google 계정입니다.');
+  return { email: String(token.email).toLowerCase() };
 }
 
 /** Install as a spreadsheet trigger on the challenge Form response sheet. */

@@ -1,72 +1,42 @@
-/*
- * Official quiz record transport.
- *
- * The static GitHub Pages app has no private credential. Requests therefore use
- * a one-time session id and JSONP to the Apps Script web app. The web app owns
- * all timestamps, locks the record, and later joins the form response by this
- * opaque id. A participant never submits elapsed time through Google Forms.
- */
+/* Browser transport and Google identity prompt for official quiz records. */
 (() => {
   const SERVICE_URL = 'https://script.google.com/macros/s/AKfycby2hXr6wJunOkYVXu15DWJ5HdLzhY1pKc9HvRAI3ddhm3vbQmxbrXE5iwVivlYqRBUE/exec';
-  const REQUEST_TIMEOUT_MS = 12000;
-
-  function isConfigured() {
-    return SERVICE_URL.startsWith('https://script.google.com/macros/s/');
-  }
-
-  function createSessionId() {
-    if (window.crypto?.randomUUID) return window.crypto.randomUUID().replace(/-/g, '');
-    const values = new Uint32Array(4);
-    window.crypto?.getRandomValues?.(values);
-    return Array.from(values, (value) => value.toString(16).padStart(8, '0')).join('') || `${Date.now()}${Math.random()}`;
-  }
-
+  const CLIENT_ID = '183416031967-ckr632jlvitdvg7m0vqmp1or9jpu4s9p.apps.googleusercontent.com';
+  const REQUEST_TIMEOUT_MS = 15000;
+  const isConfigured = () => SERVICE_URL.includes('/macros/s/') && CLIENT_ID.endsWith('.apps.googleusercontent.com');
+  const createSessionId = () => crypto?.randomUUID ? crypto.randomUUID().replace(/-/g, '') : `${Date.now()}${Math.random()}`.replace(/\D/g, '').slice(0, 48);
   function request(action, payload = {}) {
     if (!isConfigured()) return Promise.reject(new Error('공식 기록 서버가 아직 연결되지 않았습니다.'));
     return new Promise((resolve, reject) => {
       const callback = `quizRecordCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-      const url = new URL(SERVICE_URL);
-      url.searchParams.set('action', action);
-      url.searchParams.set('callback', callback);
+      const url = new URL(SERVICE_URL); url.searchParams.set('action', action); url.searchParams.set('callback', callback);
       Object.entries(payload).forEach(([key, value]) => url.searchParams.set(key, String(value)));
       const script = document.createElement('script');
-      const cleanup = () => {
-        window.clearTimeout(timeout);
-        delete window[callback];
-        script.remove();
-      };
-      const timeout = window.setTimeout(() => {
-        cleanup();
-        reject(new Error('기록 서버 응답 시간이 초과되었습니다.'));
-      }, REQUEST_TIMEOUT_MS);
-      window[callback] = (response) => {
-        cleanup();
-        if (!response?.ok) {
-          reject(new Error(response?.error || '공식 기록을 잠그지 못했습니다.'));
-          return;
-        }
-        resolve(response);
-      };
-      script.onerror = () => {
-        cleanup();
-        reject(new Error('기록 서버에 연결하지 못했습니다.'));
-      };
-      script.src = url.toString();
-      document.head.append(script);
+      const cleanup = () => { clearTimeout(timeout); delete window[callback]; script.remove(); };
+      const timeout = setTimeout(() => { cleanup(); reject(new Error('기록 서버 응답 시간이 초과되었습니다.')); }, REQUEST_TIMEOUT_MS);
+      window[callback] = (response) => { cleanup(); response?.ok ? resolve(response) : reject(new Error(response?.error || '기록 처리에 실패했습니다.')); };
+      script.onerror = () => { cleanup(); reject(new Error('기록 서버에 연결하지 못했습니다.')); };
+      script.src = url.toString(); document.head.append(script);
     });
   }
-
+  function waitForGoogle() { return new Promise((resolve, reject) => { const until = Date.now() + 10000; const tick = () => window.google?.accounts?.id ? resolve() : Date.now() > until ? reject(new Error('Google 로그인을 불러오지 못했습니다.')) : setTimeout(tick, 100); tick(); }); }
+  async function requireGoogleCredential() {
+    await waitForGoogle();
+    return new Promise((resolve, reject) => {
+      const overlay = document.createElement('div');
+      overlay.className = 'quiz-google-auth-overlay';
+      overlay.innerHTML = '<section class="quiz-google-auth-card" role="dialog" aria-modal="true"><button type="button" aria-label="닫기">×</button><p>공식 기록 제출</p><h2>Google 계정으로 본인 인증</h2><small>선택한 이름과 로그인 이메일은 관리자 확인용으로만 저장됩니다.</small><div class="quiz-google-auth-button"></div></section>';
+      const close = () => { overlay.remove(); reject(new Error('Google 로그인이 취소되었습니다.')); };
+      overlay.querySelector('button').addEventListener('click', close); overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); }); document.body.append(overlay);
+      google.accounts.id.initialize({ client_id: CLIENT_ID, auto_select: false, cancel_on_tap_outside: false, callback: ({ credential }) => { overlay.remove(); credential ? resolve(credential) : reject(new Error('Google 인증을 확인하지 못했습니다.')); } });
+      google.accounts.id.renderButton(overlay.querySelector('.quiz-google-auth-button'), { theme: 'outline', size: 'large', shape: 'pill', text: 'signin_with', width: 280 });
+    });
+  }
   window.QuizRecordService = {
-    isConfigured,
-    createSessionId,
-    startChallenge(sessionId) {
-      return request('challenge_start', { sessionId });
-    },
-    finishChallenge(sessionId, correctBlanks, wrongBlanks) {
-      return request('challenge_finish', { sessionId, correctBlanks, wrongBlanks });
-    },
-    lockPrediction(sessionId, employee, seconds, centiseconds) {
-      return request('event_lock', { sessionId, employee, seconds, centiseconds });
-    }
+    isConfigured, createSessionId,
+    startChallenge: (sessionId) => request('challenge_start', { sessionId }),
+    finishChallenge: (sessionId, correctBlanks, wrongBlanks) => request('challenge_finish', { sessionId, correctBlanks, wrongBlanks }),
+    async submitChallenge(sessionId, employee) { return request('challenge_submit', { sessionId, employee, credential: await requireGoogleCredential() }); },
+    async submitPrediction(sessionId, employee, seconds, centiseconds) { return request('event_submit', { sessionId, employee, seconds, centiseconds, credential: await requireGoogleCredential() }); }
   };
 })();

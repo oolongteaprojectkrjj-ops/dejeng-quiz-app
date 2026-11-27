@@ -2114,7 +2114,7 @@ async function lockChallengeRecord(challenge) {
   }
 }
 
-function submitChallengeRecord() {
+async function submitChallengeRecord() {
   const challenge = state.challenge;
   const employeeSelect = document.getElementById('challengeEmployee');
   const button = document.getElementById('btnSubmitRecord');
@@ -2125,21 +2125,18 @@ function submitChallengeRecord() {
     return;
   }
 
-  // Google Form receives identity only. The locked server record is joined by
-  // this opaque code, so a participant cannot alter the time or score.
-  const recordFormUrl = new URL(CHALLENGE_RECORD_FORM_URL);
-  recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.employee, employeeSelect.value);
-  recordFormUrl.searchParams.set(CHALLENGE_FORM_FIELDS.recordCode, challenge.recordSessionId);
-  window.open(recordFormUrl.toString(), '_blank', 'noopener');
-
-  challenge.submitted = true;
-  if (button) {
-    button.disabled = true;
-    button.textContent = '기록 완료';
+  try {
+    if (button) { button.disabled = true; button.textContent = '제출 중…'; }
+    await window.QuizRecordService.submitChallenge(challenge.recordSessionId, employeeSelect.value);
+    challenge.submitted = true;
+    if (button) button.textContent = '기록 완료';
+    if (message) message.textContent = 'Google 계정 인증을 확인하고 공식 기록을 저장했습니다.';
+    saveLocalChallengeRecord(challenge, employeeSelect.value);
+    showChallengeRanking();
+  } catch (error) {
+    if (button) { button.disabled = false; button.textContent = '기록하기'; }
+    if (message) message.textContent = error.message || '기록을 제출하지 못했습니다.';
   }
-  if (message) message.textContent = 'Google Form을 열었습니다. 로그인 후 직원명과 확인 코드만 제출하면 공식 기록에 연결됩니다.';
-  saveLocalChallengeRecord(challenge, employeeSelect.value);
-  showChallengeRanking();
 }
 
 function getCurrentMonthKey(date = new Date()) {

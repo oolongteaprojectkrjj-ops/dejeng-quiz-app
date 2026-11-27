@@ -2,18 +2,6 @@
   const STORAGE_KEY = 'dejeng-challenge-event-predictions';
   const CHALLENGE_RECORDS_KEY = 'dejeng-challenge-rankings';
   const PROFILE_KEY = 'dejeng-challenge-event-profile';
-  const EVENT_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf7inAh55gJLJX37prw9YTVG-r3142MYm_VpukRrIWF6UibWQ/viewform?usp=pp_url';
-  const EVENT_FORM_FIELDS = {
-    employee: 'entry.1881930434',
-    recordCode: 'entry.1533391049'
-  };
-
-  function buildEventFormUrl(employee, recordCode) {
-    const url = new URL(EVENT_FORM_URL);
-    url.searchParams.set(EVENT_FORM_FIELDS.employee, employee);
-    url.searchParams.set(EVENT_FORM_FIELDS.recordCode, recordCode);
-    return url.toString();
-  }
 
   function predictionValue() {
     const seconds = document.getElementById('challengePredictionSeconds').value.padStart(2, '0');
@@ -129,11 +117,10 @@
             submitButton.textContent = '제출 중…';
           }
           const sessionId = window.QuizRecordService.createSessionId();
-          await window.QuizRecordService.lockPrediction(sessionId, employeeSelect.value, secondsInput.value, centisecondsInput.value);
+          await window.QuizRecordService.submitPrediction(sessionId, employeeSelect.value, secondsInput.value, centisecondsInput.value);
           savePreviewPrediction(employeeSelect.value, value);
           rememberEmployee(employeeSelect.value);
           modal?.classList.add('hidden');
-          window.open(buildEventFormUrl(employeeSelect.value, sessionId), '_blank', 'noopener');
         } catch (error) {
           window.alert(error.message || '예측 기록을 제출하지 못했습니다.');
         } finally {
