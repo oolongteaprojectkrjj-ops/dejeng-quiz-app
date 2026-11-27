@@ -126,7 +126,7 @@
           if (!window.QuizRecordService?.isConfigured?.()) throw new Error('공식 기록 서버가 아직 연결되지 않았습니다.');
           if (submitButton) {
             submitButton.disabled = true;
-            submitButton.textContent = '기록 잠그는 중…';
+            submitButton.textContent = '제출 중…';
           }
           const sessionId = window.QuizRecordService.createSessionId();
           await window.QuizRecordService.lockPrediction(sessionId, employeeSelect.value, secondsInput.value, centisecondsInput.value);
@@ -135,7 +135,7 @@
           modal?.classList.add('hidden');
           window.open(buildEventFormUrl(employeeSelect.value, sessionId), '_blank', 'noopener');
         } catch (error) {
-          window.alert(error.message || '예측 기록을 잠그지 못했습니다.');
+          window.alert(error.message || '예측 기록을 제출하지 못했습니다.');
         } finally {
           if (submitButton) {
             submitButton.disabled = false;
