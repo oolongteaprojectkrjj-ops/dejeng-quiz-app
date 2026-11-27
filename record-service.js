@@ -26,10 +26,23 @@
       const overlay = document.createElement('div');
       overlay.className = 'quiz-google-auth-overlay';
       overlay.innerHTML = '<section class="quiz-google-auth-card" role="dialog" aria-modal="true"><button type="button" aria-label="닫기">×</button><p>공식 기록 제출</p><h2>Google 계정으로 본인 인증</h2><small>선택한 이름과 로그인 이메일은 관리자 확인용으로만 저장됩니다.</small><div class="quiz-google-auth-button"></div></section>';
-      const close = () => { overlay.remove(); reject(new Error('Google 로그인이 취소되었습니다.')); };
+      let settled = false;
+      const finish = (callback) => (value) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        overlay.remove();
+        callback(value);
+      };
+      const close = finish(() => reject(new Error('Google 로그인이 취소되었습니다.')));
+      const timeout = setTimeout(finish(() => reject(new Error('Google 로그인 창을 열지 못했습니다. 다시 시도해 주세요.'))), 20000);
       overlay.querySelector('button').addEventListener('click', close); overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); }); document.body.append(overlay);
-      google.accounts.id.initialize({ client_id: CLIENT_ID, auto_select: false, cancel_on_tap_outside: false, callback: ({ credential }) => { overlay.remove(); credential ? resolve(credential) : reject(new Error('Google 인증을 확인하지 못했습니다.')); } });
-      google.accounts.id.renderButton(overlay.querySelector('.quiz-google-auth-button'), { theme: 'outline', size: 'large', shape: 'pill', text: 'signin_with', width: 280 });
+      try {
+        google.accounts.id.initialize({ client_id: CLIENT_ID, auto_select: false, cancel_on_tap_outside: false, callback: ({ credential }) => credential ? finish(resolve)(credential) : finish(reject)(new Error('Google 인증을 확인하지 못했습니다.')) });
+        google.accounts.id.renderButton(overlay.querySelector('.quiz-google-auth-button'), { theme: 'outline', size: 'large', shape: 'pill', text: 'signin_with', width: 280 });
+      } catch (_) {
+        finish(reject)(new Error('Google 로그인 창을 열지 못했습니다. 다시 시도해 주세요.'));
+      }
     });
   }
   window.QuizRecordService = {
