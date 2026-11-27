@@ -58,8 +58,6 @@
     const prediction = document.getElementById('challengePersonalPrediction');
     const hint = document.getElementById('challengePersonalHint');
     const savedNotice = document.getElementById('challengePredictionSaved');
-    if (!name || !quizRecord || !prediction || !hint) return;
-
     const records = JSON.parse(localStorage.getItem(CHALLENGE_RECORDS_KEY) || '[]');
     const best = records
       .filter((record) => record.employee === employee && Number.isFinite(Number(record.elapsedSeconds)))
@@ -67,15 +65,22 @@
     const predictions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     const savedPrediction = employee ? predictions[employee]?.value : '';
 
+    if (savedNotice) {
+      savedNotice.textContent = savedPrediction
+        ? `${savedPrediction}초 예측이 저장되어 있습니다. 다시 응모하면 예측을 수정할 수 있습니다.`
+        : '';
+    }
+    if (!name || !quizRecord || !prediction || !hint) {
+      renderPersonalBest(employee);
+      return;
+    }
+
     name.textContent = employee ? `${employee}의 기록` : '내 기록';
     quizRecord.textContent = best ? formatDuration(Number(best.elapsedSeconds)) : '아직 기록 없음';
     prediction.textContent = savedPrediction ? `${savedPrediction}초` : '아직 제출 전';
     hint.textContent = employee
       ? '이 휴대폰에 저장된 개인 기록입니다.'
       : '도전 기록 또는 예측을 제출하면 이 휴대폰에 자동 저장됩니다.';
-    savedNotice.textContent = savedPrediction
-      ? `${savedPrediction}초 예측이 저장되어 있습니다. 다시 제출하면 예측을 수정할 수 있습니다.`
-      : '';
     renderPersonalBest(employee);
   }
 
