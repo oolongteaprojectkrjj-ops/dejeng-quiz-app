@@ -141,11 +141,10 @@
       modal?.addEventListener('click', (event) => {
         if (event.target === modal) modal.classList.add('hidden');
       });
-      employeeSelect.addEventListener('change', () => renderPersonalBest(employeeSelect.value));
       renderPersonalSummary();
-      renderPersonalBest(employeeSelect.value);
     }
     ,
-    rememberEmployee
+    rememberEmployee,
+    refresh: renderPersonalSummary
   };
 })();

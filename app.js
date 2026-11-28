@@ -2133,7 +2133,6 @@ async function submitChallengeRecord() {
     if (message) message.textContent = 'Google 계정 인증을 확인하고 공식 기록을 저장했습니다.';
     saveLocalChallengeRecord(challenge, employeeSelect.value);
     showChallengeRanking();
-    window.alert('도전 기록 제출이 완료되었습니다.');
   } catch (error) {
     if (button) { button.disabled = false; button.textContent = '기록하기'; }
     if (message) message.textContent = error.message || '기록을 제출하지 못했습니다.';
@@ -2324,6 +2323,7 @@ function showChallengeRanking() {
 }
 
 function showChallengeEvent() {
+  window.ChallengeEvent?.refresh();
   setMode('event');
   document.getElementById('challengeResult')?.classList.add('hidden');
   document.getElementById('quizProblemStage')?.classList.add('hidden');
