@@ -3,6 +3,27 @@
   const SERVICE_URL = 'https://script.google.com/macros/s/AKfycby2hXr6wJunOkYVXu15DWJ5HdLzhY1pKc9HvRAI3ddhm3vbQmxbrXE5iwVivlYqRBUE/exec';
   const CLIENT_ID = '183416031967-ckr632jlvitdvg7m0vqmp1or9jpu4s9p.apps.googleusercontent.com';
   const REQUEST_TIMEOUT_MS = 15000;
+  // Memory only: reuse a successfully verified account while this page stays open.
+  // Expiry here is only a UX check; the server still validates every ID token.
+  let verifiedAccount = null;
+  function credentialExpiry(credential) {
+    try {
+      const payload = credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return Number(JSON.parse(atob(payload)).exp) * 1000 || 0;
+    } catch (_) { return 0; }
+  }
+  async function submitAuthenticated(action, payload) {
+    if (verifiedAccount && (verifiedAccount.employee !== payload.employee || verifiedAccount.expiresAt <= Date.now() + 60000)) verifiedAccount = null;
+    const credential = verifiedAccount?.credential || await requireGoogleCredential();
+    try {
+      const response = await request(action, { ...payload, credential });
+      verifiedAccount = { employee: payload.employee, credential, expiresAt: credentialExpiry(credential) };
+      return response;
+    } catch (error) {
+      verifiedAccount = null;
+      throw error;
+    }
+  }
   const isConfigured = () => SERVICE_URL.includes('/macros/s/') && CLIENT_ID.endsWith('.apps.googleusercontent.com');
   const createSessionId = () => crypto?.randomUUID ? crypto.randomUUID().replace(/-/g, '') : `${Date.now()}${Math.random()}`.replace(/\D/g, '').slice(0, 48);
   function request(action, payload = {}) {
@@ -49,7 +70,7 @@
     isConfigured, createSessionId,
     startChallenge: (sessionId) => request('challenge_start', { sessionId }),
     finishChallenge: (sessionId, correctBlanks, wrongBlanks) => request('challenge_finish', { sessionId, correctBlanks, wrongBlanks }),
-    async submitChallenge(sessionId, employee) { return request('challenge_submit', { sessionId, employee, credential: await requireGoogleCredential() }); },
-    async submitPrediction(sessionId, employee, seconds, centiseconds) { return request('event_submit', { sessionId, employee, seconds, centiseconds, credential: await requireGoogleCredential() }); }
+    submitChallenge: (sessionId, employee) => submitAuthenticated('challenge_submit', { sessionId, employee }),
+    submitPrediction: (sessionId, employee, seconds, centiseconds) => submitAuthenticated('event_submit', { sessionId, employee, seconds, centiseconds })
   };
 })();
