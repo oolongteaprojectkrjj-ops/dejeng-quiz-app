@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1792741200">
+  <link rel="stylesheet" href="style.css?v=1792741300">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
@@ -234,15 +234,15 @@
       <div id="challengeResultStats" class="challenge-result-stats"></div>
       <p id="challengeResultMessage" class="challenge-copy"></p>
       <div id="challengeEmployeePicker" class="hidden">
-        <label class="challenge-label" for="challengeEmployee">기록할 직원명 선택</label>
+        <label class="challenge-label" for="challengeEmployee">본인 이름 선택</label>
         <select id="challengeEmployee" class="challenge-select">
-          <option value="">직원명을 선택하세요</option>
+          <option value="">본인 이름을 선택하세요</option>
         </select>
-        <p id="challengeSetupError" class="challenge-error hidden" role="alert">직원명을 선택해 주세요.</p>
+        <p id="challengeSetupError" class="challenge-error hidden" role="alert">본인 이름을 선택해 주세요.</p>
       </div>
       <div class="challenge-actions challenge-actions--stack">
         <button id="btnSubmitRecord" class="challenge-primary hidden" type="button">기록하기</button>
-        <button id="btnSkipRecord" class="challenge-secondary" type="button">기록하지 않기</button>
+        <button id="btnRetryChallenge" class="challenge-secondary hidden" type="button">돌아가기</button>
       </div>
     </section>
   </div>
@@ -284,6 +284,6 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="record-service.js?v=1792741100"></script>
   <script src="challenge-event.js?v=1792741200"></script>
-  <script src="app.js?v=1792741200"></script>
+  <script src="app.js?v=1792741300"></script>
 </body>
 </html>

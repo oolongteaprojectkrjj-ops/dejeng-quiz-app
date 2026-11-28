@@ -2071,12 +2071,13 @@ function finishChallenge() {
   const recordButton = document.getElementById('btnSubmitRecord');
   const employeePicker = document.getElementById('challengeEmployeePicker');
   if (stats) {
-    stats.innerHTML = `<div><span>소요 시간</span><strong>${formatDuration(challenge.elapsedSeconds * 1000)}</strong></div><div><span>정답 빈칸</span><strong>${challenge.correctBlanks}개</strong></div><div><span>오답 빈칸</span><strong>${challenge.wrongBlanks}개</strong></div>`;
+    stats.innerHTML = `<div><span>소요 시간</span><strong>${formatDuration(challenge.elapsedSeconds * 1000)}</strong></div>`;
   }
   if (message) message.textContent = eligible
-    ? '공식 기록을 제출하는 중입니다.'
+    ? ''
     : '오답 빈칸이 3개 이상이라 이번 기록은 순위에 반영되지 않습니다.';
   employeePicker?.classList.toggle('hidden', !eligible);
+  document.getElementById('btnRetryChallenge')?.classList.toggle('hidden', eligible);
   if (recordButton) {
     recordButton.disabled = true;
     recordButton.textContent = '기록하기';
@@ -2104,11 +2105,12 @@ async function lockChallengeRecord(challenge) {
     challenge.recordLocked = true;
     const stats = document.getElementById('challengeResultStats');
     if (stats) {
-      stats.innerHTML = `<div><span>소요 시간</span><strong>${formatDuration(challenge.elapsedSeconds * 1000)}</strong></div><div><span>정답 빈칸</span><strong>${challenge.correctBlanks}개</strong></div><div><span>오답 빈칸</span><strong>${challenge.wrongBlanks}개</strong></div>`;
+      stats.innerHTML = `<div><span>소요 시간</span><strong>${formatDuration(challenge.elapsedSeconds * 1000)}</strong></div>`;
     }
-    if (message) message.textContent = '공식 기록이 잠겼습니다. 직원명을 선택한 뒤 기록하기를 눌러 주세요.';
-    if (recordButton) recordButton.disabled = false;
+    if (message) message.textContent = '';
+    if (recordButton) { recordButton.disabled = false; recordButton.classList.remove('hidden'); }
   } catch (error) {
+    document.getElementById('btnRetryChallenge')?.classList.remove('hidden');
     challenge.recordError = error.message || '공식 기록을 제출하지 못했습니다.';
     if (message) message.textContent = `${challenge.recordError} 기록 제출은 사용할 수 없습니다.`;
   }
@@ -2889,7 +2891,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('allTimeRankingModal')?.addEventListener('click', (event) => {
     if (event.target === event.currentTarget) closeAllTimeRankingModal();
   });
-  document.getElementById('btnSkipRecord')?.addEventListener('click', showChallengeRanking);
+  document.getElementById('btnRetryChallenge')?.addEventListener('click', showChallengeRanking);
   document.getElementById('btnRetryFromRanking')?.addEventListener('click', () => {
     state.challenge = null;
     beginChallengeCountdown();

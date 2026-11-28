@@ -1514,3 +1514,9 @@ body.event-view #quizMain {
 @keyframes personal-best-glow { 0%,100% { box-shadow: 0 0 0 0 #ffd65b00; } 50% { box-shadow: 0 0 24px 5px #ffd65b88, inset 0 0 18px #ffe8a033; color: #fff8d6; } }
 @keyframes personal-best-badge { 0% { opacity: 0; transform: translate(-50%, 8px); } 15%,80% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -6px); } }
 @media (prefers-reduced-motion: reduce) { #challengeEventMyRecord.is-personal-best { animation: none; box-shadow: 0 0 0 2px #ffe5a0; } .personal-best-badge { animation: none; } }
+
+/* Compact challenge completion form. */
+#challengeResultStats { display: block; }
+#challengeResultStats > div { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+#challengeResultStats span { margin: 0; }
+#challengeResultMessage:empty { display: none; }
