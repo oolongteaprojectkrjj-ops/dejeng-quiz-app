@@ -1520,3 +1520,11 @@ body.event-view #quizMain {
 #challengeResultStats > div { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 #challengeResultStats span { margin: 0; }
 #challengeResultMessage:empty { display: none; }
+
+/* Separate prediction and quiz cards while keeping one event navigation target. */
+.challenge-event { overflow: visible; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.challenge-event__card { padding: 22px 17px 18px; border: 1px solid rgba(104,142,202,.38); border-radius: 22px; background: radial-gradient(circle at 82% 0%,rgba(65,110,227,.28),transparent 35%),linear-gradient(145deg,#182b49,#0b1629); box-shadow: 0 12px 28px rgba(0,0,0,.2); }
+.challenge-event__card + .challenge-event__card { margin-top: 20px; }
+.challenge-event__card--quiz { background: linear-gradient(145deg,#1d2541,#0b1629); border-color: rgba(155,137,212,.38); }
+.challenge-event__card--quiz .challenge-event__mystery { margin-top: 0; padding-top: 0; border-top: 0; }
+@media (max-width: 420px) { .challenge-event__card { padding: 19px 14px 15px; border-radius: 18px; } }

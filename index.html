@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=1792741300">
+  <link rel="stylesheet" href="style.css?v=1792741400">
 </head>
 <body class="antialiased bg-[#111827] text-white">
   <div class="app-wrapper min-h-[100dvh] flex flex-col font-outfit pb-4 safe-bottom relative">
@@ -112,6 +112,7 @@
           <p>COMING SOON</p>
         </section>
         <section id="challengeEvent" class="challenge-event hidden" aria-labelledby="challengeEventTitle">
+          <section class="challenge-event__card" aria-labelledby="challengeEventTitle">
           <header class="challenge-event__header">
             <p>EVENT</p>
             <h2 id="challengeEventTitle">7등의 시간을 맞춰라!!!</h2>
@@ -120,6 +121,8 @@
           <p id="challengePredictionSaved" class="challenge-event__saved" aria-live="polite"></p>
           <button id="btnOpenPredictionModal" class="challenge-event__apply" type="button">응모하기</button>
 
+          </section>
+          <section class="challenge-event__card challenge-event__card--quiz" aria-label="음료퀴즈 도전">
           <section class="challenge-event__mystery" aria-label="비공개 내 순위">
             <p class="challenge-event__mystery-label">랭킹보드</p>
             <div class="challenge-event__slots">
@@ -130,6 +133,7 @@
             <p class="challenge-event__saved">나의 최단 기록만 표시됩니다.</p>
           </section>
           <button id="btnStartChallengeFromEvent" class="challenge-event__start" type="button">음료퀴즈 도전하기</button>
+          </section>
         </section>
         <section id="challengeRanking" class="challenge-ranking hidden" aria-live="polite" aria-hidden="true">
           <header class="challenge-ranking__title">
