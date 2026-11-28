@@ -84,6 +84,27 @@
     renderPersonalBest(employee);
   }
 
+  let celebrationTimer;
+  function celebratePersonalBest() {
+    const slot = document.getElementById('challengeEventMyRecord');
+    if (!slot) return;
+    clearTimeout(celebrationTimer);
+    slot.classList.remove('is-personal-best');
+    slot.querySelector('.personal-best-badge')?.remove();
+    const badge = document.createElement('span');
+    badge.className = 'personal-best-badge';
+    badge.setAttribute('role', 'status');
+    badge.textContent = '✨ 최단 기록 갱신!';
+    slot.append(badge);
+    // Restart the brief effect even if another improvement arrives immediately.
+    void slot.offsetWidth;
+    slot.classList.add('is-personal-best');
+    celebrationTimer = setTimeout(() => {
+      slot.classList.remove('is-personal-best');
+      badge.remove();
+    }, 3200);
+  }
+
   window.ChallengeEvent = {
     init(employees) {
       const form = document.getElementById('challengePredictionForm');
@@ -145,6 +166,7 @@
     }
     ,
     rememberEmployee,
+    celebratePersonalBest,
     refresh: renderPersonalSummary
   };
 })();

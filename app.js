@@ -2131,8 +2131,9 @@ async function submitChallengeRecord() {
     challenge.submitted = true;
     if (button) button.textContent = '기록 완료';
     if (message) message.textContent = 'Google 계정 인증을 확인하고 공식 기록을 저장했습니다.';
-    saveLocalChallengeRecord(challenge, employeeSelect.value);
+    const improved = saveLocalChallengeRecord(challenge, employeeSelect.value);
     showChallengeRanking();
+    if (improved) window.ChallengeEvent?.celebratePersonalBest();
   } catch (error) {
     if (button) { button.disabled = false; button.textContent = '기록하기'; }
     if (message) message.textContent = error.message || '기록을 제출하지 못했습니다.';
@@ -2146,6 +2147,8 @@ function getCurrentMonthKey(date = new Date()) {
 function saveLocalChallengeRecord(challenge, employee) {
   try {
     const records = JSON.parse(localStorage.getItem(CHALLENGE_LOCAL_RANKINGS_KEY) || '[]');
+    const previous = records.filter(record => record.employee === employee && Number.isFinite(Number(record.elapsedSeconds)));
+    const improved = previous.length > 0 && challenge.elapsedSeconds < Math.min(...previous.map(record => Number(record.elapsedSeconds)));
     records.push({
       employee,
       correctBlanks: challenge.correctBlanks,
@@ -2156,6 +2159,7 @@ function saveLocalChallengeRecord(challenge, employee) {
     });
     localStorage.setItem(CHALLENGE_LOCAL_RANKINGS_KEY, JSON.stringify(records.slice(-100)));
     window.ChallengeEvent?.rememberEmployee(employee);
+    return improved;
   } catch (_) {
     // Local fallback is optional; the Google Form submission remains authoritative.
   }

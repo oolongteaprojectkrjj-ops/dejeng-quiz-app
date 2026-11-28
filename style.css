@@ -1507,3 +1507,10 @@ body.event-view #quizMain {
 .quiz-google-auth-card h2 { margin: 0 0 10px; font-size: 21px; }
 .quiz-google-auth-card small { display: block; margin: 0 auto 20px; color: #b8c7df; line-height: 1.5; }
 .quiz-google-auth-button { display: flex; justify-content: center; min-height: 42px; }
+
+/* Brief personal-best achievement, contained within the mystery ranking slot. */
+#challengeEventMyRecord.is-personal-best { position: relative; animation: personal-best-glow .8s ease-in-out 4; }
+.personal-best-badge { position: absolute; left: 50%; top: -16px; transform: translateX(-50%); white-space: nowrap; padding: 5px 12px; border: 1px solid #ffe6a0; border-radius: 20px; background: #ffe5a0; color: #503400; font-size: 12px; font-weight: 800; line-height: 1.4; pointer-events: none; animation: personal-best-badge 3.2s ease both; }
+@keyframes personal-best-glow { 0%,100% { box-shadow: 0 0 0 0 #ffd65b00; } 50% { box-shadow: 0 0 24px 5px #ffd65b88, inset 0 0 18px #ffe8a033; color: #fff8d6; } }
+@keyframes personal-best-badge { 0% { opacity: 0; transform: translate(-50%, 8px); } 15%,80% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -6px); } }
+@media (prefers-reduced-motion: reduce) { #challengeEventMyRecord.is-personal-best { animation: none; box-shadow: 0 0 0 2px #ffe5a0; } .personal-best-badge { animation: none; } }
