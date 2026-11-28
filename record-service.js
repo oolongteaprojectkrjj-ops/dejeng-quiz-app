@@ -56,7 +56,9 @@
         callback(value);
       };
       const close = finish(() => reject(new Error('Google 로그인이 취소되었습니다.')));
-      const timeout = setTimeout(finish(() => reject(new Error('Google 로그인 창을 열지 못했습니다. 다시 시도해 주세요.'))), 20000);
+      // Account selection, password/MFA and consent can legitimately take minutes.
+      // This deadline is separate from the API request timeout after authentication.
+      const timeout = setTimeout(finish(() => reject(new Error('로그인 대기 시간이 만료되었습니다. 다시 제출해 주세요.'))), 300000);
       overlay.querySelector('button').addEventListener('click', close); overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); }); document.body.append(overlay);
       try {
         google.accounts.id.initialize({ client_id: CLIENT_ID, auto_select: false, cancel_on_tap_outside: false, callback: ({ credential }) => credential ? finish(resolve)(credential) : finish(reject)(new Error('Google 인증을 확인하지 못했습니다.')) });
