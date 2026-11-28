@@ -126,6 +126,7 @@
           savePreviewPrediction(employeeSelect.value, value);
           rememberEmployee(employeeSelect.value);
           modal?.classList.add('hidden');
+          window.alert('응모 제출이 완료되었습니다.');
         } catch (error) {
           window.alert(error.message || '예측 기록을 제출하지 못했습니다.');
         } finally {
